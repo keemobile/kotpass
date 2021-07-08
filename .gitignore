@@ -1,0 +1,89 @@
+*.iml
+*.iws
+/out/
+/local.properties
+/build
+/captures
+
+# Built application files
+*.apk
+*.ap_
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
+bin/
+gen/
+out/
+
+# Gradle files
+.gradle/
+build/
+
+# Signing files
+.signing/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Log Files
+*.log
+
+# Android Studio
+/*/build/
+/*/local.properties
+/*/out
+/*/*/build
+/*/*/production
+captures/
+.navigation/
+*.ipr
+*~
+*.swp
+
+# Android Patch
+gen-external-apklibs
+
+# External native build folder
+.externalNativeBuild
+
+# NDK
+obj/
+
+# User-specific configurations
+.idea/
+
+# OS-specific files
+.DS_Store
+.DS_Store?
+._*
+.attach_pid*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Package Files
+*.war
+*.ear
+
+# virtual machine crash logs
+hs_err_pid*
+
+# mpeltonen/sbt-idea plugin
+.idea_modules/
+
+# JIRA plugin
+atlassian-ide-plugin.xml
+
+# Crashlytics plugin (for Android Studio and IntelliJ)
+com_crashlytics_export_strings.xml
+crashlytics.properties
+crashlytics-build.properties
+fabric.properties
+
+!/gradle/wrapper/gradle-wrapper.jar

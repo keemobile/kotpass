@@ -1,0 +1,11 @@
+[versions]
+kotlin = "1.5.10"
+ktlint = "0.41.0"
+kotest = "4.6.0"
+
+[libraries]
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+testing-kotest = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+
+kotlin-xml-builder = "org.redundent:kotlin-xml-builder:1.7.3"
+commons-codec = "commons-codec:commons-codec:1.15"

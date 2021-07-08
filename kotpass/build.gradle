@@ -1,0 +1,47 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.5.20'
+    id 'org.jetbrains.dokka' version "1.4.30"
+    id 'java-library'
+}
+
+group = 'io.github.anvell'
+version = "0.1.0"
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        freeCompilerArgs += ["-Xopt-in=kotlin.RequiresOptIn"]
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+tasks.named('jar') {
+    manifest {
+        attributes(
+            'Implementation-Title': project.name,
+            'Implementation-Version': project.version
+        )
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+dependencies {
+    testImplementation libs.testing.kotest
+    testImplementation libs.kotlin.reflect
+
+    implementation libs.kotlin.xml.builder
+    implementation libs.commons.codec
+}
