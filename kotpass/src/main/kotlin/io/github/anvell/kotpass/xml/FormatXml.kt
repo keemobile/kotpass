@@ -33,7 +33,11 @@ internal object FormatXml {
             const val HistoryMaxSize = "HistoryMaxSize"
             const val LastSelectedGroup = "LastSelectedGroup"
             const val LastTopVisibleGroup = "LastTopVisibleGroup"
-            const val Binaries = "Binaries"
+
+            object Binaries {
+                const val Name = "Binaries"
+                const val Item = "Binary"
+            }
 
             object MemoryProtection {
                 const val Name = "MemoryProtection"
