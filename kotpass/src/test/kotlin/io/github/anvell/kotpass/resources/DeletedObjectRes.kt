@@ -4,7 +4,7 @@ import io.github.anvell.kotpass.models.DeletedObject
 import java.time.Instant
 import java.util.*
 
-internal object KdbxDeletedObjectRes {
+internal object DeletedObjectRes {
     const val Base64StringUuid = "LtoeZ26BBkqtr93N9tqO4g=="
 
     val BasicXml = """

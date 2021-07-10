@@ -1,6 +1,6 @@
 package io.github.anvell.kotpass.resources
 
-internal object KdbxCustomDataRes {
+internal object CustomDataRes {
     const val BasicXml = "<CustomData>" +
         "<Item><Key>k1</Key><Value>v1</Value></Item>" +
         "<Item><Key>k2</Key><Value>v2</Value></Item>" +

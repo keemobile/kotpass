@@ -9,7 +9,7 @@ internal object FormatXml {
         const val Uuid = "UUID"
 
         object Meta {
-            const val Name = "Meta"
+            const val TagName = "Meta"
             const val Generator = "Generator"
             const val HeaderHash = "HeaderHash"
             const val SettingsChanged = "SettingsChanged"
@@ -35,12 +35,12 @@ internal object FormatXml {
             const val LastTopVisibleGroup = "LastTopVisibleGroup"
 
             object Binaries {
-                const val Name = "Binaries"
+                const val TagName = "Binaries"
                 const val Item = "Binary"
             }
 
             object MemoryProtection {
-                const val Name = "MemoryProtection"
+                const val TagName = "MemoryProtection"
                 const val ProtectTitle = "ProtectTitle"
                 const val ProtectUserName = "ProtectUserName"
                 const val ProtectPassword = "ProtectPassword"
@@ -49,16 +49,17 @@ internal object FormatXml {
             }
 
             object CustomIcons {
-                const val Name = "CustomIcons"
+                const val TagName = "CustomIcons"
                 const val Item = "Icon"
+                const val ItemUuid = Uuid
                 const val ItemData = "Data"
                 const val ItemName = "Name"
             }
         }
 
         object Group {
-            const val Name = "Group"
-            const val Title = "Name"
+            const val TagName = "Group"
+            const val Name = "Name"
             const val Notes = "Notes"
             const val IconId = "IconID"
             const val CustomIconId = "CustomIconUUID"
@@ -71,7 +72,7 @@ internal object FormatXml {
         }
 
         object Entry {
-            const val Name = "Entry"
+            const val TagName = "Entry"
             const val IconId = "IconID"
             const val CustomIconId = "CustomIconUUID"
             const val ForegroundColor = "ForegroundColor"
@@ -85,7 +86,7 @@ internal object FormatXml {
             const val PreviousParentGroup = "PreviousParentGroup"
 
             object AutoType {
-                const val Name = "AutoType"
+                const val TagName = "AutoType"
                 const val AutoTypeEnabled = "Enabled"
                 const val AutoTypeObfuscation = "DataTransferObfuscation"
                 const val AutoTypeDefaultSequence = "DefaultSequence"
@@ -96,14 +97,14 @@ internal object FormatXml {
         }
 
         object CustomData {
-            const val Name = "CustomData"
+            const val TagName = "CustomData"
             const val Item = "Item"
             const val ItemKey = "Key"
             const val ItemValue = "Value"
         }
 
         object TimeData {
-            const val Name = "Times"
+            const val TagName = "Times"
             const val CreationTime = "CreationTime"
             const val LastModificationTime = "LastModificationTime"
             const val LastAccessTime = "LastAccessTime"
@@ -114,7 +115,7 @@ internal object FormatXml {
         }
 
         object DeletedObjects {
-            const val Name = "DeletedObjects"
+            const val TagName = "DeletedObjects"
             const val Object = "DeletedObject"
             const val Time = "DeletionTime"
         }

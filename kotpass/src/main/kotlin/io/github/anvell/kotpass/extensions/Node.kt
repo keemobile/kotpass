@@ -11,6 +11,8 @@ import java.nio.ByteBuffer
 import java.time.Instant
 import java.util.*
 
+internal fun Node.childNodes() = children.filterIsInstance(Node::class.java)
+
 internal fun Node.getText() = (children.firstOrNull() as? TextElement)?.text
 
 internal fun Node.getUuid(): UUID? = getText()?.let { text ->

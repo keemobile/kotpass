@@ -21,7 +21,7 @@ internal fun TimeData.Companion.unmarshal(node: Node): TimeData = with(node) {
 }
 
 internal fun TimeData.marshal(context: FormatContext): Node {
-    return node(FormatXml.Tags.TimeData.Name) {
+    return node(FormatXml.Tags.TimeData.TagName) {
         FormatXml.Tags.TimeData.CreationTime { addDateTime(context, creationTime) }
         FormatXml.Tags.TimeData.LastAccessTime { addDateTime(context, lastAccessTime) }
         FormatXml.Tags.TimeData.LastModificationTime { addDateTime(context, lastModificationTime) }
