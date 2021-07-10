@@ -6,7 +6,7 @@ import io.github.anvell.kotpass.xml.marshal
 import io.github.anvell.kotpass.xml.unmarshal
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import org.apache.commons.codec.binary.Base64
+import org.apache.commons.codec.binary.Base64.encodeBase64String
 
 private const val Contents = "hello kotpass"
 private const val ContentsAsXml =
@@ -22,7 +22,7 @@ class BinarySpec : DescribeSpec({
                 data = BinaryData.Uncompressed(Contents.toByteArray())
             )
                 .marshal()
-                .getText() shouldBe Base64.encodeBase64String(Contents.toByteArray())
+                .getText() shouldBe encodeBase64String(Contents.toByteArray())
         }
 
         it("Binary is properly decompressed") {

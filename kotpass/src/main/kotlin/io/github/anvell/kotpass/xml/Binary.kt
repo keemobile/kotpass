@@ -5,7 +5,7 @@ import io.github.anvell.kotpass.extensions.addBytes
 import io.github.anvell.kotpass.extensions.getText
 import io.github.anvell.kotpass.models.Binary
 import io.github.anvell.kotpass.models.BinaryData
-import org.apache.commons.codec.binary.Base64
+import org.apache.commons.codec.binary.Base64.decodeBase64
 import org.redundent.kotlin.xml.Node
 import org.redundent.kotlin.xml.node
 
@@ -18,7 +18,7 @@ internal fun Binary.Companion.unmarshal(node: Node): Binary = with(node) {
     val text = getText()
         ?: throw FormatError.InvalidXml("Empty body of binary node with id: $id.")
     val compressed = get<String?>(FormatXml.Attributes.Compressed).toBoolean()
-    val binaryData = Base64.decodeBase64(text).let {
+    val binaryData = decodeBase64(text).let {
         when {
             compressed -> BinaryData.Compressed(it)
             else -> BinaryData.Uncompressed(it)
