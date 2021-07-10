@@ -12,7 +12,7 @@ internal object KdbxDeletedObjectRes {
         <UUID>$Base64StringUuid</UUID>
         <DeletionTime>2015-08-16T14:50:13Z</DeletionTime>
     </DeletedObject>
-""".trimIndent()
+    """.trimIndent()
 
     val BasicObject = DeletedObject(
         id = UUID.fromString("2eda1e67-6e81-064a-adaf-ddcdf6da8ee2"),

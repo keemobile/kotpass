@@ -9,7 +9,6 @@ fun ByteArray.sha256(): ByteArray = MessageDigest
     .getInstance(Sha256)
     .digest(this)
 
-
 fun ByteArray.sha512(): ByteArray = MessageDigest
     .getInstance(Sha512)
     .digest(this)

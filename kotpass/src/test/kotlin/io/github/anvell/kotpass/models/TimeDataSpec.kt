@@ -2,8 +2,8 @@ package io.github.anvell.kotpass.models
 
 import io.github.anvell.kotpass.extensions.parseAsXml
 import io.github.anvell.kotpass.resources.TimeDataRes
-import io.github.anvell.kotpass.xml.unmarshal
 import io.github.anvell.kotpass.xml.marshal
+import io.github.anvell.kotpass.xml.unmarshal
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe

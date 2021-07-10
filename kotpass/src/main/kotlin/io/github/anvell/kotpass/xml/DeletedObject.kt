@@ -3,10 +3,10 @@
 package io.github.anvell.kotpass.xml
 
 import io.github.anvell.kotpass.extensions.addDateTime
-import io.github.anvell.kotpass.extensions.getUuid
 import io.github.anvell.kotpass.extensions.addUuid
-import io.github.anvell.kotpass.models.FormatContext
+import io.github.anvell.kotpass.extensions.getUuid
 import io.github.anvell.kotpass.models.DeletedObject
+import io.github.anvell.kotpass.models.FormatContext
 import org.redundent.kotlin.xml.Node
 import org.redundent.kotlin.xml.node
 
