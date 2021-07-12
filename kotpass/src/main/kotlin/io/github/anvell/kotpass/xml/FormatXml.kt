@@ -79,17 +79,27 @@ internal object FormatXml {
             const val BackgroundColor = "BackgroundColor"
             const val OverrideUrl = "OverrideURL"
             const val Tags = "Tags"
-            const val Fields = "String"
             const val History = "History"
-            const val Binary = "Binary"
             const val QualityCheck = "QualityCheck"
             const val PreviousParentGroup = "PreviousParentGroup"
 
+            object Fields {
+                const val TagName = "String"
+                const val ItemKey = "Key"
+                const val ItemValue = "Value"
+            }
+
+            object BinaryReferences {
+                const val TagName = "Binary"
+                const val ItemKey = "Key"
+                const val ItemValue = "Value"
+            }
+
             object AutoType {
                 const val TagName = "AutoType"
-                const val AutoTypeEnabled = "Enabled"
-                const val AutoTypeObfuscation = "DataTransferObfuscation"
-                const val AutoTypeDefaultSequence = "DefaultSequence"
+                const val Enabled = "Enabled"
+                const val Obfuscation = "DataTransferObfuscation"
+                const val DefaultSequence = "DefaultSequence"
                 const val Association = "Association"
                 const val Window = "Window"
                 const val KeystrokeSequence = "KeystrokeSequence"

@@ -1,9 +1,10 @@
 package io.github.anvell.kotpass.models
 
+import io.github.anvell.kotpass.cryptography.EncryptionSaltGenerator
 import io.github.anvell.kotpass.extensions.parseAsXml
 import io.github.anvell.kotpass.resources.TimeDataRes
 import io.github.anvell.kotpass.xml.marshal
-import io.github.anvell.kotpass.xml.unmarshal
+import io.github.anvell.kotpass.xml.unmarshalTimeData
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -16,7 +17,7 @@ class TimeDataSpec : DescribeSpec({
             val root = TimeDataRes
                 .getBaseXml(TimeDataRes.DateTimeText)
                 .parseAsXml()
-            val times = TimeData.unmarshal(root)
+            val times = unmarshalTimeData(root)
 
             times.creationTime shouldBe TimeDataRes.ParsedDateTime
             times.lastAccessTime shouldBe TimeDataRes.ParsedDateTime
@@ -27,7 +28,7 @@ class TimeDataSpec : DescribeSpec({
             val root = TimeDataRes
                 .getBaseXml(TimeDataRes.Base64BinaryDateTimeText)
                 .parseAsXml()
-            val times = TimeData.unmarshal(root)
+            val times = unmarshalTimeData(root)
 
             times.creationTime?.toString() shouldBe TimeDataRes.DateTimeText
             times.lastAccessTime?.toString() shouldBe TimeDataRes.DateTimeText
@@ -37,7 +38,10 @@ class TimeDataSpec : DescribeSpec({
 
     describe("Writing DateTime to Xml string") {
         it("Using text format") {
-            val context = FormatContext(FormatVersion(3, 1))
+            val context = FormatContext(
+                version = FormatVersion(3, 1),
+                encryption = EncryptionSaltGenerator.ChaCha20(byteArrayOf())
+            )
             val times = TimeData(
                 creationTime = TimeDataRes.ParsedDateTime,
                 lastAccessTime = TimeDataRes.ParsedDateTime,
@@ -52,7 +56,10 @@ class TimeDataSpec : DescribeSpec({
         }
 
         it("Using binary format") {
-            val context = FormatContext(FormatVersion(4, 0))
+            val context = FormatContext(
+                version = FormatVersion(4, 0),
+                encryption = EncryptionSaltGenerator.ChaCha20(byteArrayOf())
+            )
             val times = TimeData(
                 creationTime = TimeDataRes.ParsedDateTime,
                 lastAccessTime = TimeDataRes.ParsedDateTime,

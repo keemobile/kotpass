@@ -8,7 +8,7 @@ import io.github.anvell.kotpass.models.TimeData
 import org.redundent.kotlin.xml.Node
 import org.redundent.kotlin.xml.node
 
-internal fun TimeData.Companion.unmarshal(node: Node): TimeData = with(node) {
+internal fun unmarshalTimeData(node: Node): TimeData = with(node) {
     return TimeData(
         creationTime = firstOrNull(FormatXml.Tags.TimeData.CreationTime)?.getInstant(),
         lastAccessTime = firstOrNull(FormatXml.Tags.TimeData.LastAccessTime)?.getInstant(),

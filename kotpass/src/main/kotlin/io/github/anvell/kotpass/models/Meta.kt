@@ -32,7 +32,7 @@ data class Meta(
     val memoryProtection: Set<BasicFields> = setOf(BasicFields.Password),
     val binaries: List<Binary> = listOf(),
     val customIcons: Map<UUID, CustomIcon> = mapOf(),
-    val customData: Map<String, CustomDataValue> = mapOf(),
+    val customData: Map<String, CustomDataValue> = mapOf()
 ) {
 
     override fun equals(other: Any?): Boolean {

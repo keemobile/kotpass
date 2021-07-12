@@ -163,7 +163,7 @@ internal fun Meta.marshal(context: FormatContext): Node {
         // In version 4.x files are stored in binary inner header
         if (context.version.major < 4) {
             Tags.Meta.Binaries.TagName {
-                for(item in binaries) addNode(item.marshal())
+                for (item in binaries) addNode(item.marshal())
             }
         }
     }
