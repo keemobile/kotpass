@@ -6,6 +6,4 @@ import java.util.*
 data class DeletedObject(
     val id: UUID,
     val deletionTime: Instant
-) {
-    companion object
-}
+)

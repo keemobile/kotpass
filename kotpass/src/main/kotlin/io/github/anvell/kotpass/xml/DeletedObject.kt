@@ -10,7 +10,7 @@ import io.github.anvell.kotpass.models.FormatContext
 import org.redundent.kotlin.xml.Node
 import org.redundent.kotlin.xml.node
 
-internal fun DeletedObject.Companion.unmarshal(node: Node): DeletedObject? {
+internal fun unmarshalDeletedObject(node: Node): DeletedObject? {
     val uuid = node.firstOrNull(FormatXml.Tags.Uuid)?.getUuid()
     val dateTime = node.firstOrNull(FormatXml.Tags.DeletedObjects.Time)?.getInstant()
 

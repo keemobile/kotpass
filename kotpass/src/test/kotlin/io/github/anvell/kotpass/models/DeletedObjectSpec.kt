@@ -4,7 +4,7 @@ import io.github.anvell.kotpass.cryptography.EncryptionSaltGenerator
 import io.github.anvell.kotpass.extensions.parseAsXml
 import io.github.anvell.kotpass.resources.DeletedObjectRes
 import io.github.anvell.kotpass.xml.marshal
-import io.github.anvell.kotpass.xml.unmarshal
+import io.github.anvell.kotpass.xml.unmarshalDeletedObject
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -17,7 +17,7 @@ class DeletedObjectSpec : DescribeSpec({
             val root = DeletedObjectRes
                 .BasicXml
                 .parseAsXml()
-            val deletedObject = DeletedObject.unmarshal(root)
+            val deletedObject = unmarshalDeletedObject(root)
 
             deletedObject shouldBe DeletedObjectRes.BasicObject
         }
