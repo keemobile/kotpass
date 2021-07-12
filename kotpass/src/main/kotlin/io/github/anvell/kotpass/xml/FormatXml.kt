@@ -69,6 +69,7 @@ internal object FormatXml {
             const val EnableAutoType = "EnableAutoType"
             const val EnableSearching = "EnableSearching"
             const val LastTopVisibleEntry = "LastTopVisibleEntry"
+            const val PreviousParentGroup = "PreviousParentGroup"
         }
 
         object Entry {
@@ -140,7 +141,8 @@ internal object FormatXml {
     }
 
     object Values {
-        const val False = "False"
         const val True = "True"
+        const val False = "False"
+        const val Null = "Null"
     }
 }

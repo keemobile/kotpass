@@ -57,7 +57,7 @@ internal fun unmarshalEntry(context: FormatContext, node: Node): Entry {
         binaries = unmarshalBinaryReferences(node),
         history = node
             .firstOrNull(Tags.Entry.History)
-            ?.let { unmarshalHistory(context, it) }
+            ?.let { unmarshalEntries(context, it) }
             ?: listOf(),
         customData = node
             .firstOrNull(Tags.CustomData.TagName)
@@ -74,7 +74,7 @@ internal fun unmarshalEntry(context: FormatContext, node: Node): Entry {
     )
 }
 
-private fun unmarshalHistory(
+internal fun unmarshalEntries(
     context: FormatContext,
     node: Node
 ): List<Entry> = node

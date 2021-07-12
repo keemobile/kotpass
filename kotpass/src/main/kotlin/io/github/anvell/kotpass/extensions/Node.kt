@@ -40,6 +40,16 @@ internal fun Node.addBoolean(value: Boolean) {
     text(if (value) FormatXml.Values.True else FormatXml.Values.False)
 }
 
+internal fun Node.addOptionalBoolean(value: Boolean?) {
+    text(
+        when (value) {
+            true -> FormatXml.Values.True
+            false -> FormatXml.Values.False
+            else -> FormatXml.Values.Null
+        }
+    )
+}
+
 internal fun Node.addUuid(value: UUID) {
     val buffer = ByteBuffer.allocate(16).apply {
         putLong(value.mostSignificantBits)
