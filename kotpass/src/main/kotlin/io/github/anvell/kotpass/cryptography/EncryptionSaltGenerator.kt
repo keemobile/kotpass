@@ -7,7 +7,7 @@ private val SalsaNonce = intArrayOf(0xe8, 0x30, 0x09, 0x4b, 0x97, 0x20, 0x5d, 0x
     .map(Int::toByte)
     .toByteArray()
 
-internal sealed class EncryptionSaltGenerator {
+sealed class EncryptionSaltGenerator {
 
     abstract fun getSalt(length: Int): ByteArray
 

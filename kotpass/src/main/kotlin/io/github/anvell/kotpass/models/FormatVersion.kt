@@ -1,6 +1,6 @@
 package io.github.anvell.kotpass.models
 
-internal data class FormatVersion(
+data class FormatVersion(
     val major: Int,
     val minor: Int
 ) {

@@ -100,7 +100,9 @@ internal fun Group.marshal(context: FormatContext): Node {
         if (context.version.isAtLeast(4, 1) && previousParentGroup != null) {
             Tags.Group.PreviousParentGroup { addUuid(previousParentGroup) }
         }
-        addNode(CustomData.marshal(context, customData))
+        if (customData.isNotEmpty()) {
+            addNode(CustomData.marshal(context, customData))
+        }
         groups.forEach { group -> addNode(group.marshal(context)) }
         entries.forEach { entry -> addNode(entry.marshal(context)) }
     }

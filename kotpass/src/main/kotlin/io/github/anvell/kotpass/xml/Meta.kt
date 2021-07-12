@@ -130,12 +130,12 @@ private fun unmarshalMemoryProtection(node: Node): Set<BasicFields> =
 internal fun Meta.marshal(context: FormatContext): Node {
     return node(Tags.Meta.TagName) {
         Tags.Meta.Generator { text(generator) }
-        Tags.Meta.HeaderHash {
-            if (context.version.major < 4 && headerHash != null) {
-                addBytes(headerHash)
-            }
+        if (context.version.major < 4 && headerHash != null) {
+            Tags.Meta.HeaderHash { addBytes(headerHash) }
         }
-        Tags.Meta.SettingsChanged { addDateTime(context, settingsChanged) }
+        if (settingsChanged != null) {
+            Tags.Meta.SettingsChanged { addDateTime(context, settingsChanged) }
+        }
         Tags.Meta.DatabaseName { text(name) }
         Tags.Meta.DatabaseNameChanged { addDateTime(context, nameChanged) }
         Tags.Meta.DatabaseDescription { text(description) }

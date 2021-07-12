@@ -4,7 +4,7 @@ package io.github.anvell.kotpass.xml
 
 internal object FormatXml {
     object Tags {
-        const val DocumentNode = "KeePassFile"
+        const val Document = "KeePassFile"
         const val Root = "Root"
         const val Uuid = "UUID"
 

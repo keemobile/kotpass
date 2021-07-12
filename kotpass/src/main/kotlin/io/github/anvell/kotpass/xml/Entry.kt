@@ -133,7 +133,9 @@ internal fun Entry.marshal(context: FormatContext): Node {
         }
         marshalFields(fields).forEach(this::addNode)
         binaries.forEach { addNode(it.marshal()) }
-        addNode(CustomData.marshal(context, customData))
+        if (customData.isNotEmpty()) {
+            addNode(CustomData.marshal(context, customData))
+        }
         if (autoType != null) {
             addNode(autoType.marshal())
         }
