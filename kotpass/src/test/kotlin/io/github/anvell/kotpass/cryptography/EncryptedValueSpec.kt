@@ -1,6 +1,5 @@
-package io.github.anvell.kotpass.models
+package io.github.anvell.kotpass.cryptography
 
-import io.github.anvell.kotpass.cryptography.EncryptedValue
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import org.apache.commons.codec.binary.Base16
