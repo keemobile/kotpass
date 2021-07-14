@@ -1,5 +1,6 @@
 package io.github.anvell.kotpass.xml
 
+import io.github.anvell.kotpass.constants.Const
 import io.github.anvell.kotpass.errors.FormatError
 import io.github.anvell.kotpass.extensions.addBoolean
 import io.github.anvell.kotpass.extensions.addOptionalBoolean
@@ -61,6 +62,11 @@ internal fun unmarshalGroup(context: FormatContext, node: Node): Group {
         previousParentGroup = node
             .firstOrNull(Tags.Group.PreviousParentGroup)
             ?.getUuid(),
+        tags = node
+            .firstOrNull(Tags.Group.Tags)
+            ?.getText()
+            ?.split(Const.TagsSeparatorsRegex)
+            ?: listOf(),
         groups = unmarshalGroups(context, node),
         entries = unmarshalEntries(context, node),
         customData = node
@@ -99,6 +105,9 @@ internal fun Group.marshal(context: FormatContext): Node {
         }
         if (context.version.isAtLeast(4, 1) && previousParentGroup != null) {
             Tags.Group.PreviousParentGroup { addUuid(previousParentGroup) }
+        }
+        if (context.version.isAtLeast(4, 1)) {
+            Tags.Group.Tags { text(tags.joinToString(Const.TagsSeparator)) }
         }
         if (customData.isNotEmpty()) {
             addNode(CustomData.marshal(context, customData))

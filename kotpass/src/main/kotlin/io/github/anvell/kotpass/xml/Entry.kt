@@ -1,5 +1,6 @@
 package io.github.anvell.kotpass.xml
 
+import io.github.anvell.kotpass.constants.Const
 import io.github.anvell.kotpass.cryptography.EncryptedValue
 import io.github.anvell.kotpass.errors.FormatError
 import io.github.anvell.kotpass.extensions.addBoolean
@@ -14,9 +15,6 @@ import io.github.anvell.kotpass.models.FormatContext
 import io.github.anvell.kotpass.xml.FormatXml.Tags
 import org.redundent.kotlin.xml.Node
 import org.redundent.kotlin.xml.node
-
-private const val TagsSeparator = ";"
-private val TagsSeparatorsRegex = Regex("""\s*[;,:]\s*""")
 
 internal fun unmarshalEntry(context: FormatContext, node: Node): Entry {
     return Entry(
@@ -52,7 +50,7 @@ internal fun unmarshalEntry(context: FormatContext, node: Node): Entry {
         tags = node
             .firstOrNull(Tags.Entry.Tags)
             ?.getText()
-            ?.split(TagsSeparatorsRegex)
+            ?.split(Const.TagsSeparatorsRegex)
             ?: listOf(),
         binaries = unmarshalBinaryReferences(node),
         history = node
@@ -121,7 +119,7 @@ internal fun Entry.marshal(context: FormatContext): Node {
         Tags.Entry.ForegroundColor { foregroundColor?.let(::text) }
         Tags.Entry.BackgroundColor { backgroundColor?.let(::text) }
         Tags.Entry.OverrideUrl { text(overrideUrl) }
-        Tags.Entry.Tags { text(tags.joinToString(TagsSeparator)) }
+        Tags.Entry.Tags { text(tags.joinToString(Const.TagsSeparator)) }
         if (context.version.isAtLeast(4, 1)) {
             Tags.Entry.QualityCheck { addBoolean(qualityCheck) }
         }
