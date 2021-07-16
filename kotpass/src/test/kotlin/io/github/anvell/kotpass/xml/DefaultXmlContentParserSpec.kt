@@ -1,17 +1,13 @@
 package io.github.anvell.kotpass.xml
 
 import io.github.anvell.kotpass.cryptography.EncryptionSaltGenerator
-import io.github.anvell.kotpass.extensions.parseAsXml
 import io.github.anvell.kotpass.models.FormatContext
 import io.github.anvell.kotpass.models.FormatVersion
 import io.github.anvell.kotpass.resources.DefaultXmlContentParserRes
-import io.github.anvell.kotpass.resources.EntryRes
 import io.github.anvell.kotpass.resources.MetaRes
 import io.github.anvell.kotpass.resources.TimeDataRes
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
-import java.io.ByteArrayInputStream
 
 class DefaultXmlContentParserSpec : DescribeSpec({
 
