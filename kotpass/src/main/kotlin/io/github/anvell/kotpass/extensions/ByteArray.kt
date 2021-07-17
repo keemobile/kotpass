@@ -12,3 +12,7 @@ fun ByteArray.sha256(): ByteArray = MessageDigest
 fun ByteArray.sha512(): ByteArray = MessageDigest
     .getInstance(Sha512)
     .digest(this)
+
+fun ByteArray.clear() {
+    for (i in indices) this[i] = 0x0
+}

@@ -24,7 +24,7 @@
 
 package io.github.anvell.kotpass.cryptography
 
-import io.github.anvell.kotpass.errors.StreamCipherError
+import io.github.anvell.kotpass.errors.CryptoError
 import kotlin.experimental.xor
 
 /**
@@ -106,13 +106,13 @@ internal open class Salsa20Engine(protected val rounds: Int = DefaultRounds) {
         check(initialised) { "$algorithmName not initialised" }
 
         if (inputOffset + length > input.size) {
-            throw StreamCipherError.DataLengthException("Input buffer too short")
+            throw CryptoError.InvalidDataLength("Input buffer too short")
         }
         if (roundsOffset + length > output.size) {
-            throw StreamCipherError.OutputLengthException("Output buffer too short")
+            throw CryptoError.InvalidDataLength("Output buffer too short")
         }
         if (limitExceeded(length)) {
-            throw StreamCipherError.MaxBytesExceededException("2^70 byte limit per IV would be exceeded; Change IV")
+            throw CryptoError.MaxBytesExceeded("2^70 byte limit per IV would be exceeded; Change IV")
         }
         for (i in 0 until length) {
             output[i + roundsOffset] = (keyStream[index] xor input[i + inputOffset])
