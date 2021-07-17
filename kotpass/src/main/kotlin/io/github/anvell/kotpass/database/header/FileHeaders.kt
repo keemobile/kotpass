@@ -30,7 +30,7 @@ sealed class FileHeaders {
         override val masterSeed: ByteString,
         override val encryptionIV: ByteString,
         val transformSeed: ByteString,
-        val transformRounds: Long,
+        val transformRounds: ULong,
         val innerRandomStreamId: CrsAlgorithm,
         val innerRandomStreamKey: ByteString,
         val streamStartBytes: ByteString,
@@ -90,7 +90,7 @@ sealed class FileHeaders {
                     write(transformSeed)
                 }
                 writeHeaderValue(sink, HeaderFieldId.TransformRounds, Long.SIZE_BYTES) {
-                    writeLongLe(transformRounds)
+                    writeLongLe(transformRounds.toLong())
                 }
                 writeHeaderValue(sink, HeaderFieldId.InnerRandomStreamId, Int.SIZE_BYTES) {
                     writeIntLe(innerRandomStreamId.ordinal)
@@ -144,7 +144,7 @@ sealed class FileHeaders {
             var compression: Compression? = null
             var masterSeed: ByteString? = null
             var transformSeed: ByteString? = null
-            var transformRounds: Long? = null
+            var transformRounds: ULong? = null
             var encryptionIV: ByteString? = null
             var innerRandomStreamKey: ByteString? = null
             var streamStartBytes: ByteString? = null
@@ -172,7 +172,7 @@ sealed class FileHeaders {
                     }
                     HeaderFieldId.MasterSeed -> masterSeed = data
                     HeaderFieldId.TransformSeed -> transformSeed = data
-                    HeaderFieldId.TransformRounds -> transformRounds = data.asLongLe()
+                    HeaderFieldId.TransformRounds -> transformRounds = data.asLongLe().toULong()
                     HeaderFieldId.EncryptionIV -> encryptionIV = data
                     HeaderFieldId.InnerRandomStreamKey -> innerRandomStreamKey = data
                     HeaderFieldId.StreamStartBytes -> streamStartBytes = data
