@@ -49,6 +49,24 @@ internal fun littleEndianToInt(bs: ByteArray, off: Int, count: Int): IntArray {
     return ns
 }
 
+internal fun littleEndianToLong(bs: ByteArray, off: Int, ns: LongArray) {
+    var offset = off
+    for (i in ns.indices) {
+        ns[i] = littleEndianToLong(bs, offset)
+        offset += 8
+    }
+}
+
+internal fun littleEndianToLong(bs: ByteArray, off: Int): Long {
+    val lo = littleEndianToInt(bs, off)
+    val hi = littleEndianToInt(bs, off + 4)
+    return (hi.toLong() and 0xffffffffL) shl 32 or (lo.toLong() and 0xffffffffL)
+}
+
+internal fun intToLittleEndian(n: Int) = ByteArray(4).apply {
+    intToLittleEndian(n, this, 0)
+}
+
 internal fun intToLittleEndian(n: Int, bs: ByteArray, off: Int) {
     bs[off] = n.toByte()
     bs[off + 1] = (n ushr 8).toByte()
@@ -62,4 +80,21 @@ internal fun intToLittleEndian(ns: IntArray, bs: ByteArray, off: Int) {
         intToLittleEndian(ns[i], bs, offset)
         offset += 4
     }
+}
+
+internal fun longToLittleEndian(n: Long) = ByteArray(8).apply {
+    longToLittleEndian(n, this, 0)
+}
+
+internal fun longToLittleEndian(ns: LongArray, bs: ByteArray, off: Int) {
+    var offset = off
+    for (i in ns.indices) {
+        longToLittleEndian(ns[i], bs, offset)
+        offset += 8
+    }
+}
+
+internal fun longToLittleEndian(n: Long, bs: ByteArray, off: Int) {
+    intToLittleEndian((n and 0xffffffffL).toInt(), bs, off)
+    intToLittleEndian((n ushr 32).toInt(), bs, off + 4)
 }

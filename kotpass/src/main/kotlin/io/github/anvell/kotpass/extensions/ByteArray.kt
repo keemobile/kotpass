@@ -1,6 +1,8 @@
 package io.github.anvell.kotpass.extensions
 
 import java.security.MessageDigest
+import kotlin.experimental.inv
+import kotlin.experimental.xor
 
 private const val Sha256 = "SHA-256"
 private const val Sha512 = "SHA-512"
@@ -15,4 +17,19 @@ fun ByteArray.sha512(): ByteArray = MessageDigest
 
 fun ByteArray.clear() {
     for (i in indices) this[i] = 0x0
+}
+
+fun ByteArray.constantTimeEquals(other: ByteArray): Boolean {
+    if (this === other) {
+        return true
+    }
+    val length = if (other.size < this.size) other.size else this.size
+    var notEqual = other.size xor this.size
+    for (i in 0 until length) {
+        notEqual = notEqual or (other[i] xor this[i]).toInt()
+    }
+    for (i in length until this.size) {
+        notEqual = notEqual or (this[i] xor this[i].inv()).toInt()
+    }
+    return notEqual == 0
 }
