@@ -26,6 +26,6 @@ internal object AesKdf {
             key.clear()
         }
     } catch (e: NoSuchAlgorithmException) {
-        throw CryptoError.AlgorithmUnavailable("AES/ECB encryption is not support in current environment.")
+        throw CryptoError.AlgorithmUnavailable("AES/ECB encryption is not supported in current environment.")
     }
 }
