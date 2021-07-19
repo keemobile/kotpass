@@ -28,7 +28,7 @@ class AesKdfSpec : DescribeSpec({
             val credentials = Credentials.from(EncryptedValue.fromString("secret"))
             val seed = ByteArray(32) { 0x1.b }
             val result = AesKdf.transformKey(
-                key = credentials.createCompositeKey(),
+                key = KeyTransform.compositeKey(credentials),
                 seed = seed,
                 rounds = 10UL
             )
