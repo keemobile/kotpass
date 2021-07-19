@@ -3,6 +3,7 @@ package io.github.anvell.kotpass.cryptography
 import io.github.anvell.kotpass.errors.CryptoError
 import io.github.anvell.kotpass.extensions.clear
 import io.github.anvell.kotpass.extensions.sha256
+import java.security.GeneralSecurityException
 import java.security.NoSuchAlgorithmException
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
@@ -25,7 +26,11 @@ internal object AesKdf {
         key.sha256().also {
             key.clear()
         }
-    } catch (e: NoSuchAlgorithmException) {
-        throw CryptoError.AlgorithmUnavailable("AES/ECB encryption is not supported in current environment.")
+    } catch (e: GeneralSecurityException) {
+        if (e is NoSuchAlgorithmException) {
+            throw CryptoError.AlgorithmUnavailable("AES/ECB encryption is not supported in current environment.")
+        } else {
+            throw CryptoError.InvalidKey("Wrong KDF seed used for decryption.")
+        }
     }
 }
