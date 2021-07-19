@@ -21,9 +21,12 @@ sealed class KdfParameters {
         val parallelism: UInt,
         val memory: ULong,
         val iterations: ULong,
-        val version: UInt
+        val version: UInt,
+        val secretKey: ByteString?,
+        val associatedData: ByteString?,
     ) : KdfParameters()
 
+    @OptIn(ExperimentalStdlibApi::class)
     internal fun writeToByteString(): ByteString {
         val items = when (this) {
             is Aes -> mapOf(
@@ -31,14 +34,20 @@ sealed class KdfParameters {
                 KdfConst.Keys.Rounds to VariantItem.UInt64(rounds),
                 KdfConst.Keys.SaltOrSeed to VariantItem.Bytes(seed)
             )
-            is Argon2 -> mapOf(
-                KdfConst.Keys.Uuid to VariantItem.Bytes(uuid),
-                KdfConst.Keys.SaltOrSeed to VariantItem.Bytes(salt),
-                KdfConst.Keys.Parallelism to VariantItem.UInt32(parallelism),
-                KdfConst.Keys.Memory to VariantItem.UInt64(memory),
-                KdfConst.Keys.Iterations to VariantItem.UInt64(iterations),
-                KdfConst.Keys.Version to VariantItem.UInt32(version)
-            )
+            is Argon2 -> buildMap {
+                put(KdfConst.Keys.Uuid, VariantItem.Bytes(uuid))
+                put(KdfConst.Keys.SaltOrSeed, VariantItem.Bytes(salt))
+                put(KdfConst.Keys.Parallelism, VariantItem.UInt32(parallelism))
+                put(KdfConst.Keys.Memory, VariantItem.UInt64(memory))
+                put(KdfConst.Keys.Iterations, VariantItem.UInt64(iterations))
+                put(KdfConst.Keys.Version, VariantItem.UInt32(version))
+                if (secretKey != null) {
+                    put(KdfConst.Keys.SecretKey, VariantItem.Bytes(secretKey))
+                }
+                if (associatedData != null) {
+                    put(KdfConst.Keys.AssocData, VariantItem.Bytes(associatedData))
+                }
+            }
         }
         return VariantDictionary.writeToByteString(items)
     }
@@ -59,13 +68,6 @@ sealed class KdfParameters {
                     )
                 }
                 KdfConst.KdfArgon2d, KdfConst.KdfArgon2id -> {
-                    if (get(KdfConst.Keys.SecretKey) != null) {
-                        throw FormatError.InvalidHeader("KDF secret key is not supported.")
-                    }
-                    if (get(KdfConst.Keys.AssocData) != null) {
-                        throw FormatError.InvalidHeader("KDF associated data is not supported.")
-                    }
-
                     Argon2(
                         uuid = (get(KdfConst.Keys.Uuid) as? VariantItem.Bytes)?.value
                             ?: throw FormatError.InvalidHeader("No KDF uuid found."),
@@ -78,7 +80,9 @@ sealed class KdfParameters {
                         iterations = (get(KdfConst.Keys.Iterations) as? VariantItem.UInt64)?.value
                             ?: throw FormatError.InvalidHeader("No KDF iterations found."),
                         version = (get(KdfConst.Keys.Version) as? VariantItem.UInt32)?.value
-                            ?: throw FormatError.InvalidHeader("No KDF version found.")
+                            ?: throw FormatError.InvalidHeader("No KDF version found."),
+                        secretKey = (get(KdfConst.Keys.SecretKey) as? VariantItem.Bytes)?.value,
+                        associatedData = (get(KdfConst.Keys.AssocData) as? VariantItem.Bytes)?.value,
                     )
                 }
                 else -> throw FormatError.InvalidHeader("Unknown KDF UUID.")
