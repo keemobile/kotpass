@@ -10,6 +10,7 @@ import org.redundent.kotlin.xml.XmlVersion
 import org.redundent.kotlin.xml.parse
 import org.redundent.kotlin.xml.xml
 import java.io.ByteArrayInputStream
+import java.io.InputStream
 
 object DefaultXmlContentParser : XmlContentParser {
     private const val XmlEncoding = "utf-8"
@@ -17,8 +18,13 @@ object DefaultXmlContentParser : XmlContentParser {
     override fun unmarshalContent(
         context: FormatContext,
         xmlData: ByteArray
+    ) = unmarshalContent(context, ByteArrayInputStream(xmlData))
+
+    override fun unmarshalContent(
+        context: FormatContext,
+        source: InputStream
     ): DatabaseContent {
-        val documentNode = parse(ByteArrayInputStream(xmlData))
+        val documentNode = parse(source)
         val rootNode = documentNode
             .firstOrNull(Tags.Root)
             ?: throw FormatError.InvalidXml("No root found.")
