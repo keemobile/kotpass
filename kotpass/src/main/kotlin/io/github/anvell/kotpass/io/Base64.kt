@@ -103,7 +103,7 @@ internal fun String.decodeBase64ToArray(): ByteArray {
             bits = 62
         } else if (c == '/' || c == '_') {
             bits = 63
-        } else if (c == '\n' || c == '\r' || c == ' ' || c == '\t') {
+        } else if (c == '\n' || c == '\r' || c == ' ' || c == '\t' || c == '=') {
             continue
         } else {
             throw IllegalArgumentException("Unexpected character at: $pos.")
