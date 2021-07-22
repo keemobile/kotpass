@@ -31,17 +31,20 @@ class Credentials private constructor(
         // TODO: 16/07/2021 Add proper Xml support
         private fun parse(keyData: ByteArray) = when (keyData.size) {
             32 -> keyData
-            64 -> keyData
-                .toString(Charsets.UTF_8)
-                .lowercase()
-                .decodeHexToArray()
-            else ->
+            64 -> {
+                keyData
+                    .toString(Charsets.UTF_8)
+                    .lowercase()
+                    .decodeHexToArray()
+            }
+            else -> {
                 KeyDataPattern
                     .find(keyData.toString(Charsets.UTF_8))
                     ?.groupValues
                     ?.getOrNull(1)
                     ?.decodeBase64ToArray()
                     ?: keyData.sha256()
+            }
         }
     }
 }
