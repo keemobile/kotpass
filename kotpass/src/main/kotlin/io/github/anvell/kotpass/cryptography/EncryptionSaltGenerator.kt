@@ -1,14 +1,16 @@
 package io.github.anvell.kotpass.cryptography
 
+import io.github.anvell.kotpass.constants.CrsAlgorithm
+import io.github.anvell.kotpass.errors.FormatError
 import io.github.anvell.kotpass.extensions.sha256
 import io.github.anvell.kotpass.extensions.sha512
+import okio.ByteString
 
 private val SalsaNonce = intArrayOf(0xe8, 0x30, 0x09, 0x4b, 0x97, 0x20, 0x5d, 0x2a)
     .map(Int::toByte)
     .toByteArray()
 
 sealed class EncryptionSaltGenerator {
-
     abstract fun getSalt(length: Int): ByteArray
 
     class Salsa20(key: ByteArray) : EncryptionSaltGenerator() {
@@ -29,5 +31,13 @@ sealed class EncryptionSaltGenerator {
         }
 
         override fun getSalt(length: Int) = engine.getBytes(length)
+    }
+
+    companion object {
+        fun create(id: CrsAlgorithm, key: ByteString) = when (id) {
+            CrsAlgorithm.Salsa20 -> Salsa20(key.toByteArray())
+            CrsAlgorithm.ChaCha20 -> ChaCha20(key.toByteArray())
+            else -> throw FormatError.InvalidHeader("Unsupported inner random stream cipher.")
+        }
     }
 }
