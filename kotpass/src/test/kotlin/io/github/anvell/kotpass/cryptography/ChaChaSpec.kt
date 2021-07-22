@@ -1,11 +1,9 @@
 package io.github.anvell.kotpass.cryptography
 
+import io.github.anvell.kotpass.io.decodeHexToArray
 import io.github.anvell.kotpass.resources.ChaChaRes
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import org.apache.commons.codec.binary.Base16
-
-private val HexDec = Base16()
 
 class ChaChaSpec : DescribeSpec({
 
@@ -14,11 +12,11 @@ class ChaChaSpec : DescribeSpec({
             ChaChaRes.ChaChaTestCases.forEach { testCase ->
                 val engine = ChaChaEngine(testCase.rounds).apply {
                     init(
-                        key = HexDec.decode(testCase.key),
-                        iv = HexDec.decode(testCase.iv)
+                        key = testCase.key.decodeHexToArray(),
+                        iv = testCase.iv.decodeHexToArray()
                     )
                 }
-                val expectedOutput = HexDec.decode(testCase.output)
+                val expectedOutput = testCase.output.decodeHexToArray()
                 engine.getBytes(expectedOutput.size) shouldBe expectedOutput
             }
         }

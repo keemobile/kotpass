@@ -8,5 +8,4 @@ kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref =
 testing-kotest = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 
 kotlin-xml-builder = "org.redundent:kotlin-xml-builder:1.7.3"
-commons-codec = "commons-codec:commons-codec:1.15"
 okio = "com.squareup.okio:okio:2.1.0"

@@ -1,8 +1,8 @@
 package io.github.anvell.kotpass.cryptography
 
+import io.github.anvell.kotpass.io.encodeHex
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import org.apache.commons.codec.binary.Base16
 import kotlin.experimental.xor
 
 class EncryptedValueSpec : DescribeSpec({
@@ -28,10 +28,8 @@ class EncryptedValueSpec : DescribeSpec({
 
         it("Calculates SHA256 hash") {
             EncryptedValue(encValueBytes, saltBytes)
-                .let { Base16().encodeToString(it.getHash()) }
-                .also {
-                    it shouldBe "1F5C3EF76D43E72EE2C5216C36187C799B153CAB3D0CB63A6F3ECCCC2627F535"
-                }
+                .getHash()
+                .encodeHex() shouldBe "1f5c3ef76d43e72ee2c5216c36187c799b153cab3d0cb63a6f3ecccc2627f535"
         }
 
         it("Creates value from string") {

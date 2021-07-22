@@ -43,6 +43,5 @@ dependencies {
     testImplementation libs.kotlin.reflect
 
     implementation libs.kotlin.xml.builder
-    implementation libs.commons.codec
     implementation libs.okio
 }

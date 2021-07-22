@@ -1,6 +1,6 @@
 package io.github.anvell.kotpass.resources
 
-import org.apache.commons.codec.binary.Base64
+import io.github.anvell.kotpass.io.encodeBase64
 
 object DefaultXmlContentParserRes {
     val BasicXml = """
@@ -32,7 +32,7 @@ object DefaultXmlContentParserRes {
             <HistoryMaxItems>10</HistoryMaxItems>
             <HistoryMaxSize>6291456</HistoryMaxSize>
             <Binaries>
-                <Binary ID="0" Compressed="False">${Base64.encodeBase64String(MetaRes.DummyText.toByteArray())}</Binary>
+                <Binary ID="0" Compressed="False">${MetaRes.DummyText.toByteArray().encodeBase64()}</Binary>
             </Binaries>
             <CustomData />
 	    </Meta>

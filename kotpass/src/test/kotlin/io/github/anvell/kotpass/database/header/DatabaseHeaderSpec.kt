@@ -1,5 +1,6 @@
 package io.github.anvell.kotpass.database.header
 
+import io.github.anvell.kotpass.io.decodeBase64ToArray
 import io.github.anvell.kotpass.resources.DatabaseRes
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
@@ -7,7 +8,6 @@ import io.kotest.matchers.types.shouldBeInstanceOf
 import okio.Buffer
 import okio.buffer
 import okio.source
-import org.apache.commons.codec.binary.Base64.decodeBase64
 import java.io.ByteArrayInputStream
 
 class DatabaseHeaderSpec : DescribeSpec({
@@ -52,6 +52,6 @@ class DatabaseHeaderSpec : DescribeSpec({
 })
 
 private fun decodeHeader(base64Data: String): DatabaseHeader {
-    val bytes = decodeBase64(base64Data)
+    val bytes = base64Data.decodeBase64ToArray()
     return DatabaseHeader.readFrom(ByteArrayInputStream(bytes).source().buffer())
 }

@@ -1,8 +1,8 @@
 package io.github.anvell.kotpass.cryptography
 
 import io.github.anvell.kotpass.extensions.sha256
-import org.apache.commons.codec.binary.Base64.decodeBase64
-import org.apache.commons.codec.binary.Base64.encodeBase64String
+import io.github.anvell.kotpass.io.decodeBase64ToArray
+import io.github.anvell.kotpass.io.encodeBase64
 import java.security.SecureRandom
 import kotlin.experimental.xor
 
@@ -32,14 +32,14 @@ class EncryptedValue(
         }
     }
 
-    fun toBase64(): String = encodeBase64String(getBinary())
+    fun toBase64(): String = getBinary().encodeBase64()
 
-    override fun toString(): String = encodeBase64String(value)
+    override fun toString(): String = value.encodeBase64()
 
     companion object {
         fun fromString(text: String) = fromBinary(text.toByteArray())
 
-        fun fromBase64(base64: String) = fromBinary(decodeBase64(base64))
+        fun fromBase64(base64: String) = fromBinary(base64.decodeBase64ToArray())
 
         fun fromBinary(bytes: ByteArray): EncryptedValue {
             val salt = ByteArray(bytes.size)

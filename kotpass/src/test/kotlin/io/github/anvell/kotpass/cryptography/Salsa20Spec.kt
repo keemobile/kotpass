@@ -1,11 +1,10 @@
 package io.github.anvell.kotpass.cryptography
 
+import io.github.anvell.kotpass.io.decodeHexToArray
+import io.github.anvell.kotpass.io.encodeHex
 import io.github.anvell.kotpass.resources.Salsa20Res
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import org.apache.commons.codec.binary.Base16
-
-private val HexDec = Base16()
 
 class Salsa20Spec : DescribeSpec({
 
@@ -14,12 +13,12 @@ class Salsa20Spec : DescribeSpec({
             Salsa20Res.SalsaTestCases.forEach { testCase ->
                 val engine = Salsa20Engine(testCase.rounds).apply {
                     init(
-                        key = HexDec.decode(testCase.key),
-                        iv = HexDec.decode(testCase.iv)
+                        key = testCase.key.decodeHexToArray(),
+                        iv = testCase.iv.decodeHexToArray()
                     )
                 }
-                val output = engine.processBytes(HexDec.decode(testCase.plaintext))
-                HexDec.encodeToString(output) shouldBe testCase.cipher
+                val output = engine.processBytes(testCase.plaintext.decodeHexToArray())
+                output.encodeHex() shouldBe testCase.cipher
             }
         }
     }

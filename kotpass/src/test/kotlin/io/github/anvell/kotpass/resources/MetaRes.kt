@@ -1,6 +1,6 @@
 package io.github.anvell.kotpass.resources
 
-import org.apache.commons.codec.binary.Base64.encodeBase64String
+import io.github.anvell.kotpass.io.encodeBase64
 
 internal object MetaRes {
     const val DummyText = "Kotpass demo"
@@ -32,7 +32,7 @@ internal object MetaRes {
 		<HistoryMaxItems>10</HistoryMaxItems>
 		<HistoryMaxSize>6291456</HistoryMaxSize>
 		<Binaries>
-			<Binary ID="0" Compressed="False">${encodeBase64String(DummyText.toByteArray())}</Binary>
+			<Binary ID="0" Compressed="False">${DummyText.toByteArray().encodeBase64()}</Binary>
 		</Binaries>
 		<CustomData />
 	</Meta>

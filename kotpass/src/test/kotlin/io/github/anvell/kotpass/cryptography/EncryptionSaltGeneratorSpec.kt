@@ -1,8 +1,8 @@
 package io.github.anvell.kotpass.cryptography
 
+import io.github.anvell.kotpass.io.decodeBase64ToArray
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import org.apache.commons.codec.binary.Base64.decodeBase64
 
 class EncryptionSaltGeneratorSpec : DescribeSpec({
 
@@ -13,11 +13,11 @@ class EncryptionSaltGeneratorSpec : DescribeSpec({
             ).run {
                 getSalt(0).size shouldBe 0
 
-                getSalt(10) shouldBe decodeBase64("q1l4McuyQYDcDg==")
+                getSalt(10) shouldBe "q1l4McuyQYDcDg==".decodeBase64ToArray()
 
-                getSalt(10) shouldBe decodeBase64("LJTKXBjqlTS8cg==")
+                getSalt(10) shouldBe "LJTKXBjqlTS8cg==".decodeBase64ToArray()
 
-                getSalt(20) shouldBe decodeBase64("jKVBKKNUnieRr47Wxh0YTKn82Pw=")
+                getSalt(20) shouldBe "jKVBKKNUnieRr47Wxh0YTKn82Pw=".decodeBase64ToArray()
             }
         }
 
@@ -27,11 +27,11 @@ class EncryptionSaltGeneratorSpec : DescribeSpec({
             ).run {
                 getSalt(0).size shouldBe 0
 
-                getSalt(10) shouldBe decodeBase64("iUIv7m2BJN2ubQ==")
+                getSalt(10) shouldBe "iUIv7m2BJN2ubQ==".decodeBase64ToArray()
 
-                getSalt(10) shouldBe decodeBase64("BILRgZKxaxbRzg==")
+                getSalt(10) shouldBe "BILRgZKxaxbRzg==".decodeBase64ToArray()
 
-                getSalt(20) shouldBe decodeBase64("KUeBUGjNBYhAoJstSqnMXQwuD6E=")
+                getSalt(20) shouldBe "KUeBUGjNBYhAoJstSqnMXQwuD6E=".decodeBase64ToArray()
             }
         }
     }
