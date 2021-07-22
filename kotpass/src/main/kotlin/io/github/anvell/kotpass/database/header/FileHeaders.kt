@@ -2,6 +2,7 @@
 
 package io.github.anvell.kotpass.database.header
 
+import io.github.anvell.kotpass.constants.CrsAlgorithm
 import io.github.anvell.kotpass.constants.HeaderFieldId
 import io.github.anvell.kotpass.errors.FormatError
 import io.github.anvell.kotpass.extensions.asIntLe
@@ -56,13 +57,6 @@ sealed class FileHeaders {
         GZip
     }
 
-    enum class CrsAlgorithm {
-        None,
-        ArcFourVariant,
-        Salsa20,
-        ChaCha20
-    }
-
     internal fun writeTo(sink: BufferedSink) {
         writeHeaderValue(sink, HeaderFieldId.Comment, comment.size) {
             write(comment)
@@ -95,7 +89,11 @@ sealed class FileHeaders {
                 writeHeaderValue(sink, HeaderFieldId.InnerRandomStreamId, Int.SIZE_BYTES) {
                     writeIntLe(innerRandomStreamId.ordinal)
                 }
-                writeHeaderValue(sink, HeaderFieldId.InnerRandomStreamKey, innerRandomStreamKey.size) {
+                writeHeaderValue(
+                    sink,
+                    HeaderFieldId.InnerRandomStreamKey,
+                    innerRandomStreamKey.size
+                ) {
                     write(innerRandomStreamKey)
                 }
                 writeHeaderValue(sink, HeaderFieldId.StreamStartBytes, streamStartBytes.size) {
@@ -234,11 +232,16 @@ sealed class FileHeaders {
         ): Pair<Int, ByteString> {
             val id = source.readByte()
             val length = if (version.major >= 4) {
-                source.readIntLe()
+                source.readIntLe().toLong()
             } else {
-                source.readShortLe()
+                source.readShortLe().toLong()
             }
-            return id.toInt() to source.readByteString(length.toLong())
+            val data = if (length > 0) {
+                source.readByteString(length)
+            } else {
+                ByteString.EMPTY
+            }
+            return id.toInt() to data
         }
     }
 }
