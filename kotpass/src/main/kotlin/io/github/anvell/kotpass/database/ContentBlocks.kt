@@ -27,9 +27,9 @@ internal object ContentBlocks {
         while (true) {
             val index = source.readIntLe()
             val hash = source.readByteArray(32)
-            val length = source.readIntLe().toUInt()
+            val length = source.readIntLe()
 
-            if (length > 0U) {
+            if (length > 0) {
                 val data = source.readByteArray(length.toLong())
                 if (!data.sha256().contentEquals(hash)) {
                     throw FormatError.InvalidContent("Hash for block $index does not match.")
@@ -53,19 +53,19 @@ internal object ContentBlocks {
         var index = 0L
 
         while (true) {
-            val blockHMAC = source.readByteArray(32)
+            val hash = source.readByteArray(32)
             val length = source.readIntLe()
-            val data = source.readByteArray(length.toLong())
 
-            if (!createBlockHmac(hmacKey, index, length, data).constantTimeEquals(blockHMAC)) {
-                throw FormatError.InvalidContent("HMAC for block $index does not match.")
-            }
-            contentData.write(data)
-
-            if (length == 0) {
+            if (length > 0) {
+                val data = source.readByteArray(length.toLong())
+                if (!createBlockHmac(hmacKey, index, length, data).constantTimeEquals(hash)) {
+                    throw FormatError.InvalidContent("HMAC for block $index does not match.")
+                }
+                contentData.write(data)
+                index++
+            } else {
                 break
             }
-            index++
         }
 
         return contentData.readByteArray()
