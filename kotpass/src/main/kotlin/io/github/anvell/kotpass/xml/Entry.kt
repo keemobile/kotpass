@@ -98,7 +98,7 @@ private fun unmarshalFields(
         if (protected) {
             val bytes = fieldNode.firstOrNull(Tags.Entry.Fields.ItemValue)
                 ?.getBytes()
-                ?: throw FormatError.InvalidXml("Undefined protected value in entry with id: $key.")
+                ?: ByteArray(0)
             val salt = context.encryption.getSalt(bytes.size)
             key to EntryValue.Encrypted(EncryptedValue(bytes, salt))
         } else {
