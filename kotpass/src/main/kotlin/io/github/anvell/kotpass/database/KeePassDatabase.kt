@@ -13,14 +13,14 @@ sealed class KeePassDatabase {
         override val credentials: Credentials,
         override val header: DatabaseHeader.Ver3x,
         override val content: DatabaseContent
-    ): KeePassDatabase()
+    ) : KeePassDatabase()
 
     data class Ver4x(
         override val credentials: Credentials,
         override val header: DatabaseHeader.Ver4x,
         override val content: DatabaseContent,
         internal val innerHeader: DatabaseInnerHeader
-    ): KeePassDatabase()
+    ) : KeePassDatabase()
 
     companion object {
         const val MinSupportedVersion = 3

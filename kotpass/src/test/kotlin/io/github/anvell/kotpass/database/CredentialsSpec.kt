@@ -15,5 +15,16 @@ class CredentialsSpec : DescribeSpec({
             val hex = KeyTransform.compositeKey(credentials).encodeHex()
             hex shouldBe output
         }
+
+        it("Creates Xml key file") {
+            val key = ByteArray(32) { 1 }
+            val keyfile = Credentials.createKeyfile(key)
+
+            Credentials
+                .from(keyfile.toByteArray())
+                .key!!
+                .getBinary()
+                .encodeHex() shouldBe key.encodeHex()
+        }
     }
 })
