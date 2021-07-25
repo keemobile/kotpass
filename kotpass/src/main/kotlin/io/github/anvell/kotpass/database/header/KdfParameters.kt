@@ -9,13 +9,13 @@ import okio.ByteString
 sealed class KdfParameters {
     abstract val uuid: ByteString
 
-    class Aes(
+    data class Aes(
         override val uuid: ByteString,
         val rounds: ULong,
         val seed: ByteString
     ) : KdfParameters()
 
-    class Argon2(
+    data class Argon2(
         override val uuid: ByteString,
         val salt: ByteString,
         val parallelism: UInt,

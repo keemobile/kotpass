@@ -24,7 +24,7 @@ sealed class FileHeaders {
     abstract val masterSeed: ByteString
     abstract val encryptionIV: ByteString
 
-    class Ver3x(
+    data class Ver3x(
         override val comment: ByteString,
         override val cipherId: CipherId,
         override val compression: Compression,
@@ -37,7 +37,7 @@ sealed class FileHeaders {
         val streamStartBytes: ByteString,
     ) : FileHeaders()
 
-    class Ver4x(
+    data class Ver4x(
         override val comment: ByteString,
         override val cipherId: CipherId,
         override val compression: Compression,

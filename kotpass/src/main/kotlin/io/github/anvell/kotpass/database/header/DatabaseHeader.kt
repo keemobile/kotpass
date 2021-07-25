@@ -4,7 +4,7 @@ import io.github.anvell.kotpass.models.FormatVersion
 import okio.BufferedSink
 import okio.BufferedSource
 
-class DatabaseHeader(
+data class DatabaseHeader(
     val signature: Signature,
     val version: FormatVersion,
     val fileHeaders: FileHeaders
