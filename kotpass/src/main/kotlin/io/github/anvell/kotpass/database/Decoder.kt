@@ -5,7 +5,6 @@ import io.github.anvell.kotpass.cryptography.EncryptionSaltGenerator
 import io.github.anvell.kotpass.cryptography.KeyTransform
 import io.github.anvell.kotpass.database.header.DatabaseHeader
 import io.github.anvell.kotpass.database.header.DatabaseInnerHeader
-import io.github.anvell.kotpass.database.header.FileHeaders
 import io.github.anvell.kotpass.database.header.Signature
 import io.github.anvell.kotpass.errors.CryptoError
 import io.github.anvell.kotpass.errors.FormatError
@@ -44,11 +43,11 @@ fun KeePassDatabase.Companion.decode(
             throw FormatError.UnsupportedVersion("File version is not supported.")
         }
         val rawHeaderData = headerBuffer.snapshot()
-        val transformedKey = KeyTransform.transformedKey(header.fileHeaders, credentials)
+        val transformedKey = KeyTransform.transformedKey(header, credentials)
 
-        return when (header.fileHeaders) {
-            is FileHeaders.Ver3x -> {
-                val saltGenerator = with(header.fileHeaders) {
+        return when (header) {
+            is DatabaseHeader.Ver3x -> {
+                val saltGenerator = with(header) {
                     EncryptionSaltGenerator.create(innerRandomStreamId, innerRandomStreamKey)
                 }
                 val context = FormatContext(header.version, saltGenerator)
@@ -61,7 +60,7 @@ fun KeePassDatabase.Companion.decode(
                 }
                 KeePassDatabase(credentials, header, null, content)
             }
-            is FileHeaders.Ver4x -> {
+            is DatabaseHeader.Ver4x -> {
                 val expectedSha256 = source.readByteString(32)
                 val expectedHmacSha256 = source.readByteString(32)
 
@@ -71,7 +70,7 @@ fun KeePassDatabase.Companion.decode(
                     }
 
                     val hmacKey = KeyTransform.hmacKey(
-                        masterSeed = header.fileHeaders.masterSeed.toByteArray(),
+                        masterSeed = header.masterSeed.toByteArray(),
                         transformedKey = transformedKey
                     )
                     val hmacSha256 = rawHeaderData.hmacSha256(hmacKey.toByteString())
@@ -106,10 +105,10 @@ private fun decryptRawContent(
     source: BufferedSource,
     transformedKey: ByteArray
 ): ByteArray {
-    val masterSeed = header.fileHeaders.masterSeed.toByteArray()
-    val encryptedContent = when (header.fileHeaders) {
-        is FileHeaders.Ver3x -> source.readByteArray()
-        is FileHeaders.Ver4x -> ContentBlocks.readContentBlocksVer4x(
+    val masterSeed = header.masterSeed.toByteArray()
+    val encryptedContent = when (header) {
+        is DatabaseHeader.Ver3x -> source.readByteArray()
+        is DatabaseHeader.Ver4x -> ContentBlocks.readContentBlocksVer4x(
             source = source,
             masterSeed = masterSeed,
             transformedKey = transformedKey
@@ -117,14 +116,14 @@ private fun decryptRawContent(
     }
 
     var decryptedContent = ContentEncryption.decrypt(
-        cipherId = header.fileHeaders.cipherId,
+        cipherId = header.cipherId,
         key = KeyTransform.masterKey(masterSeed, transformedKey),
-        iv = header.fileHeaders.encryptionIV.toByteArray(),
+        iv = header.encryptionIV.toByteArray(),
         data = encryptedContent
     )
 
-    if (header.fileHeaders is FileHeaders.Ver3x) {
-        val streamStartBytes = header.fileHeaders.streamStartBytes
+    if (header is DatabaseHeader.Ver3x) {
+        val streamStartBytes = header.streamStartBytes
         if (!streamStartBytes.rangeEquals(0, decryptedContent, 0, streamStartBytes.size)) {
             FormatError.InvalidContent("Database content could be corrupted or cannot be decrypted.")
         }
@@ -136,7 +135,7 @@ private fun decryptRawContent(
         )
     }
 
-    if (header.fileHeaders.compression == FileHeaders.Compression.GZip) {
+    if (header.compression == DatabaseHeader.Compression.GZip) {
         decryptedContent = try {
             GZIPInputStream(ByteArrayInputStream(decryptedContent))
                 .use(GZIPInputStream::readBytes)

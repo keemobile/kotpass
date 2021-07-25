@@ -2,7 +2,7 @@ package io.github.anvell.kotpass.cryptography
 
 import io.github.anvell.kotpass.constants.KdfConst
 import io.github.anvell.kotpass.database.Credentials
-import io.github.anvell.kotpass.database.header.FileHeaders
+import io.github.anvell.kotpass.database.header.DatabaseHeader
 import io.github.anvell.kotpass.database.header.KdfParameters
 import io.github.anvell.kotpass.errors.FormatError
 import io.github.anvell.kotpass.extensions.b
@@ -27,41 +27,41 @@ internal object KeyTransform {
             .also { composite.clear() }
     }
 
-    fun transformedKey(fileHeaders: FileHeaders, credentials: Credentials): ByteArray {
-        return when (fileHeaders) {
-            is FileHeaders.Ver3x -> {
+    fun transformedKey(header: DatabaseHeader, credentials: Credentials): ByteArray {
+        return when (header) {
+            is DatabaseHeader.Ver3x -> {
                 AesKdf.transformKey(
                     key = compositeKey(credentials),
-                    seed = fileHeaders.transformSeed.toByteArray(),
-                    rounds = fileHeaders.transformRounds
+                    seed = header.transformSeed.toByteArray(),
+                    rounds = header.transformRounds
                 )
             }
-            is FileHeaders.Ver4x -> {
-                when (fileHeaders.kdfParameters) {
+            is DatabaseHeader.Ver4x -> {
+                when (header.kdfParameters) {
                     is KdfParameters.Aes -> {
                         AesKdf.transformKey(
                             key = compositeKey(credentials),
-                            seed = fileHeaders.kdfParameters.seed.toByteArray(),
-                            rounds = fileHeaders.kdfParameters.rounds
+                            seed = header.kdfParameters.seed.toByteArray(),
+                            rounds = header.kdfParameters.rounds
                         )
                     }
                     is KdfParameters.Argon2 -> {
                         Argon2Kdf.transformKey(
-                            type = when (fileHeaders.kdfParameters.uuid) {
+                            type = when (header.kdfParameters.uuid) {
                                 KdfConst.KdfArgon2d -> Argon2Engine.Type.Argon2D
                                 KdfConst.KdfArgon2id -> Argon2Engine.Type.Argon2Id
                                 else -> throw FormatError.InvalidHeader(
-                                    "Unsupported Kdf UUID (Argon2): ${fileHeaders.kdfParameters.uuid}"
+                                    "Unsupported Kdf UUID (Argon2): ${header.kdfParameters.uuid}"
                                 )
                             },
-                            version = Argon2Engine.Version.from(fileHeaders.kdfParameters.version),
+                            version = Argon2Engine.Version.from(header.kdfParameters.version),
                             password = compositeKey(credentials),
-                            salt = fileHeaders.kdfParameters.salt.toByteArray(),
-                            secretKey = fileHeaders.kdfParameters.secretKey?.toByteArray(),
-                            additional = fileHeaders.kdfParameters.associatedData?.toByteArray(),
-                            iterations = fileHeaders.kdfParameters.iterations,
-                            parallelism = fileHeaders.kdfParameters.parallelism,
-                            memory = fileHeaders.kdfParameters.memory,
+                            salt = header.kdfParameters.salt.toByteArray(),
+                            secretKey = header.kdfParameters.secretKey?.toByteArray(),
+                            additional = header.kdfParameters.associatedData?.toByteArray(),
+                            iterations = header.kdfParameters.iterations,
+                            parallelism = header.kdfParameters.parallelism,
+                            memory = header.kdfParameters.memory,
                         )
                     }
                 }

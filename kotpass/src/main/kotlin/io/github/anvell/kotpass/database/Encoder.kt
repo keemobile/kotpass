@@ -4,7 +4,6 @@ import io.github.anvell.kotpass.cryptography.ContentEncryption
 import io.github.anvell.kotpass.cryptography.EncryptionSaltGenerator
 import io.github.anvell.kotpass.cryptography.KeyTransform
 import io.github.anvell.kotpass.database.header.DatabaseHeader
-import io.github.anvell.kotpass.database.header.FileHeaders
 import io.github.anvell.kotpass.models.FormatContext
 import io.github.anvell.kotpass.xml.DefaultXmlContentParser
 import io.github.anvell.kotpass.xml.XmlContentParser
@@ -22,7 +21,7 @@ fun KeePassDatabase.encode(
     contentParser: XmlContentParser = DefaultXmlContentParser
 ) {
     val transformedKey = KeyTransform.transformedKey(
-        fileHeaders = header.fileHeaders,
+        header = header,
         credentials = credentials
     )
     val headerBuffer = Buffer().apply {
@@ -30,10 +29,10 @@ fun KeePassDatabase.encode(
     }
     val headerHash = headerBuffer.sha256()
 
-    var rawContent = when (header.fileHeaders) {
-        is FileHeaders.Ver3x -> {
+    var rawContent = when (header) {
+        is DatabaseHeader.Ver3x -> {
             val newMeta = content.meta.copy(headerHash = headerHash.toByteArray())
-            val saltGenerator = with(header.fileHeaders) {
+            val saltGenerator = with(header) {
                 EncryptionSaltGenerator.create(innerRandomStreamId, innerRandomStreamKey)
             }
             val context = FormatContext(header.version, saltGenerator)
@@ -42,11 +41,11 @@ fun KeePassDatabase.encode(
                 .marshalContent(context, content.copy(meta = newMeta))
                 .toByteArray(Charsets.UTF_8)
         }
-        is FileHeaders.Ver4x -> {
+        is DatabaseHeader.Ver4x -> {
             requireNotNull(innerHeader) { "Inner header is required for version 4.x." }
 
             val hmacKey = KeyTransform.hmacKey(
-                masterSeed = header.fileHeaders.masterSeed.toByteArray(),
+                masterSeed = header.masterSeed.toByteArray(),
                 transformedKey = transformedKey
             )
             val hmacSha256 = headerBuffer.hmacSha256(hmacKey.toByteString())
@@ -70,7 +69,7 @@ fun KeePassDatabase.encode(
         }
     }
 
-    if (header.fileHeaders.compression == FileHeaders.Compression.GZip) {
+    if (header.compression == DatabaseHeader.Compression.GZip) {
         val gzipStream = ByteArrayOutputStream()
         GZIPOutputStream(gzipStream).use { it.write(rawContent) }
         rawContent = gzipStream.toByteArray()
@@ -87,15 +86,15 @@ private fun BufferedSink.writeEncryptedContent(
     rawContent: ByteArray,
     transformedKey: ByteArray
 ) {
-    val masterSeed = header.fileHeaders.masterSeed.toByteArray()
+    val masterSeed = header.masterSeed.toByteArray()
     val contentBuffer = Buffer()
 
-    when (header.fileHeaders) {
-        is FileHeaders.Ver3x -> {
-            contentBuffer.write(header.fileHeaders.streamStartBytes)
+    when (header) {
+        is DatabaseHeader.Ver3x -> {
+            contentBuffer.write(header.streamStartBytes)
             ContentBlocks.writeContentBlocksVer3x(contentBuffer, rawContent)
         }
-        is FileHeaders.Ver4x -> contentBuffer.write(rawContent)
+        is DatabaseHeader.Ver4x -> contentBuffer.write(rawContent)
     }
 
     if (contentBuffer.size % 16 != 0L) {
@@ -104,17 +103,17 @@ private fun BufferedSink.writeEncryptedContent(
     }
 
     val encryptedContent = ContentEncryption.encrypt(
-        cipherId = header.fileHeaders.cipherId,
+        cipherId = header.cipherId,
         key = KeyTransform.masterKey(masterSeed, transformedKey),
-        iv = header.fileHeaders.encryptionIV.toByteArray(),
+        iv = header.encryptionIV.toByteArray(),
         data = contentBuffer.readByteArray()
     )
 
-    when (header.fileHeaders) {
-        is FileHeaders.Ver3x -> {
+    when (header) {
+        is DatabaseHeader.Ver3x -> {
             write(encryptedContent)
         }
-        is FileHeaders.Ver4x -> {
+        is DatabaseHeader.Ver4x -> {
             ContentBlocks.writeContentBlocksVer4x(
                 sink = this,
                 contentData = encryptedContent,

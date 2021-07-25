@@ -16,19 +16,19 @@ class DatabaseHeaderSpec : DescribeSpec({
         it("Properly reads KDF parameters") {
             val ver4Argon2 = decodeHeader(DatabaseRes.DbVer4Argon2)
             ver4Argon2.signature.base shouldBe Signature.Base
-            ver4Argon2.fileHeaders.shouldBeInstanceOf<FileHeaders.Ver4x>()
-            with(ver4Argon2.fileHeaders as FileHeaders.Ver4x) {
+            ver4Argon2.shouldBeInstanceOf<DatabaseHeader.Ver4x>()
+            with(ver4Argon2) {
                 kdfParameters.shouldBeInstanceOf<KdfParameters.Argon2>()
             }
 
             val ver4Aes = decodeHeader(DatabaseRes.DbVer4Aes)
-            ver4Aes.fileHeaders.shouldBeInstanceOf<FileHeaders.Ver4x>()
-            with(ver4Aes.fileHeaders as FileHeaders.Ver4x) {
+            ver4Aes.shouldBeInstanceOf<DatabaseHeader.Ver4x>()
+            with(ver4Aes) {
                 kdfParameters.shouldBeInstanceOf<KdfParameters.Aes>()
             }
 
             val ver3Aes = decodeHeader(DatabaseRes.DbVer3Aes)
-            ver3Aes.fileHeaders.shouldBeInstanceOf<FileHeaders.Ver3x>()
+            ver3Aes.shouldBeInstanceOf<DatabaseHeader.Ver3x>()
         }
 
         it("Try to read/write header") {
@@ -43,8 +43,8 @@ class DatabaseHeaderSpec : DescribeSpec({
             }.let(DatabaseHeader.Companion::readFrom)
 
             ver4Argon2.signature.base shouldBe Signature.Base
-            ver4Argon2.fileHeaders.shouldBeInstanceOf<FileHeaders.Ver4x>()
-            with(ver4Argon2.fileHeaders as FileHeaders.Ver4x) {
+            ver4Argon2.shouldBeInstanceOf<DatabaseHeader.Ver4x>()
+            with(ver4Argon2) {
                 kdfParameters.shouldBeInstanceOf<KdfParameters.Argon2>()
             }
         }
