@@ -4,8 +4,8 @@ plugins {
     id 'java-library'
 }
 
-group = 'io.github.anvell'
-version = "0.1.0"
+group = ArtifactGroup
+version = ArtifactVersion
 
 repositories {
     mavenCentral()
@@ -44,4 +44,16 @@ dependencies {
 
     implementation libs.kotlin.xml.builder
     implementation libs.okio
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = ArtifactGroup
+            artifactId = ArtifactId
+            version = ArtifactVersion
+
+            from components.java
+        }
+    }
 }
