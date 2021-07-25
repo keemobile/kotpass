@@ -58,7 +58,7 @@ fun KeePassDatabase.Companion.decode(
                 if (validateHashes && headerHash != null && headerHash != rawHeaderData.sha256()) {
                     throw FormatError.InvalidHeader("HeaderHash value does not match Sha256 of the header.")
                 }
-                KeePassDatabase(credentials, header, null, content)
+                KeePassDatabase.Ver3x(credentials, header, content)
             }
             is DatabaseHeader.Ver4x -> {
                 val expectedSha256 = source.readByteString(32)
@@ -93,8 +93,7 @@ fun KeePassDatabase.Companion.decode(
                     context = context,
                     source = contentSource.inputStream()
                 )
-
-                KeePassDatabase(credentials, header, innerHeader, content)
+                KeePassDatabase.Ver4x(credentials, header, content, innerHeader)
             }
         }
     }

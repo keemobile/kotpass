@@ -29,8 +29,8 @@ fun KeePassDatabase.encode(
     }
     val headerHash = headerBuffer.sha256()
 
-    var rawContent = when (header) {
-        is DatabaseHeader.Ver3x -> {
+    var rawContent = when (this) {
+        is KeePassDatabase.Ver3x -> {
             val newMeta = content.meta.copy(headerHash = headerHash.toByteArray())
             val saltGenerator = with(header) {
                 EncryptionSaltGenerator.create(innerRandomStreamId, innerRandomStreamKey)
@@ -41,9 +41,7 @@ fun KeePassDatabase.encode(
                 .marshalContent(context, content.copy(meta = newMeta))
                 .toByteArray(Charsets.UTF_8)
         }
-        is DatabaseHeader.Ver4x -> {
-            requireNotNull(innerHeader) { "Inner header is required for version 4.x." }
-
+        is KeePassDatabase.Ver4x -> {
             val hmacKey = KeyTransform.hmacKey(
                 masterSeed = header.masterSeed.toByteArray(),
                 transformedKey = transformedKey
