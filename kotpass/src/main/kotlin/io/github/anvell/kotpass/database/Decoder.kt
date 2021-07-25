@@ -1,7 +1,6 @@
 package io.github.anvell.kotpass.database
 
-import io.github.anvell.kotpass.cryptography.AesEngine
-import io.github.anvell.kotpass.cryptography.ChaCha7539Engine
+import io.github.anvell.kotpass.cryptography.ContentEncryption
 import io.github.anvell.kotpass.cryptography.EncryptionSaltGenerator
 import io.github.anvell.kotpass.cryptography.KeyTransform
 import io.github.anvell.kotpass.database.header.DatabaseHeader
@@ -23,9 +22,6 @@ import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream
 import java.util.zip.GZIPInputStream
-
-private const val ChaChaIVLen = 12
-private const val AesIVLen = 16
 
 fun KeePassDatabase.Companion.decode(
     inputStream: InputStream,
@@ -111,34 +107,21 @@ private fun decryptRawContent(
     transformedKey: ByteArray
 ): ByteArray {
     val masterSeed = header.fileHeaders.masterSeed.toByteArray()
-    val encryptedContent = if (header.version.major >= 4) {
-        ContentBlocks.readContentBlocksVer4x(
+    val encryptedContent = when (header.fileHeaders) {
+        is FileHeaders.Ver3x -> source.readByteArray()
+        is FileHeaders.Ver4x -> ContentBlocks.readContentBlocksVer4x(
             source = source,
             masterSeed = masterSeed,
             transformedKey = transformedKey
         )
-    } else {
-        source.readByteArray()
     }
 
-    var decryptedContent = when (val length = header.fileHeaders.encryptionIV.size) {
-        ChaChaIVLen -> {
-            ChaCha7539Engine().apply {
-                init(
-                    key = KeyTransform.masterKey(masterSeed, transformedKey),
-                    iv = header.fileHeaders.encryptionIV.toByteArray()
-                )
-            }.processBytes(encryptedContent)
-        }
-        AesIVLen -> {
-            AesEngine.decrypt(
-                key = KeyTransform.masterKey(masterSeed, transformedKey),
-                iv = header.fileHeaders.encryptionIV.toByteArray(),
-                data = encryptedContent
-            )
-        }
-        else -> throw FormatError.InvalidHeader("Invalid IV length: $length.")
-    }
+    var decryptedContent = ContentEncryption.decrypt(
+        cipherId = header.fileHeaders.cipherId,
+        key = KeyTransform.masterKey(masterSeed, transformedKey),
+        iv = header.fileHeaders.encryptionIV.toByteArray(),
+        data = encryptedContent
+    )
 
     if (header.fileHeaders is FileHeaders.Ver3x) {
         val streamStartBytes = header.fileHeaders.streamStartBytes
