@@ -1,18 +1,20 @@
-@file:Suppress("unused")
-
 package io.github.anvell.kotpass.database.header
 
 import io.github.anvell.kotpass.constants.CrsAlgorithm
 import io.github.anvell.kotpass.constants.HeaderFieldId
+import io.github.anvell.kotpass.constants.KdfConst
+import io.github.anvell.kotpass.cryptography.Argon2Engine
 import io.github.anvell.kotpass.errors.FormatError
 import io.github.anvell.kotpass.extensions.asIntLe
 import io.github.anvell.kotpass.extensions.asLongLe
 import io.github.anvell.kotpass.extensions.asUuid
+import io.github.anvell.kotpass.extensions.nextByteString
 import io.github.anvell.kotpass.models.FormatVersion
 import okio.BufferedSink
 import okio.BufferedSource
 import okio.ByteString
 import java.nio.ByteBuffer
+import java.security.SecureRandom
 import java.util.*
 
 private val EndOfHeaderBytes = ByteString.of(0x0D, 0x0A, 0x0D, 0x0A)
@@ -39,7 +41,27 @@ sealed class DatabaseHeader {
         val innerRandomStreamId: CrsAlgorithm,
         val innerRandomStreamKey: ByteString,
         val streamStartBytes: ByteString,
-    ) : DatabaseHeader()
+    ) : DatabaseHeader() {
+
+        companion object {
+            fun create() = with(SecureRandom()) {
+                Ver3x(
+                    signature = Signature.Default,
+                    version = FormatVersion(3, 1),
+                    comment = ByteString.EMPTY,
+                    cipherId = CipherId.Aes,
+                    compression = Compression.GZip,
+                    masterSeed = nextByteString(32),
+                    encryptionIV = nextByteString(16),
+                    transformSeed = nextByteString(32),
+                    transformRounds = 6000U,
+                    innerRandomStreamId = CrsAlgorithm.Salsa20,
+                    innerRandomStreamKey = nextByteString(32),
+                    streamStartBytes = nextByteString(32),
+                )
+            }
+        }
+    }
 
     data class Ver4x(
         override val signature: Signature,
@@ -51,7 +73,33 @@ sealed class DatabaseHeader {
         override val encryptionIV: ByteString,
         val kdfParameters: KdfParameters,
         val publicCustomData: Map<String, VariantItem>
-    ) : DatabaseHeader()
+    ) : DatabaseHeader() {
+
+        companion object {
+            fun create() = with(SecureRandom()) {
+                Ver4x(
+                    signature = Signature.Default,
+                    version = FormatVersion(4, 1),
+                    comment = ByteString.EMPTY,
+                    cipherId = CipherId.Aes,
+                    compression = Compression.GZip,
+                    masterSeed = nextByteString(32),
+                    encryptionIV = nextByteString(16),
+                    kdfParameters = KdfParameters.Argon2(
+                        uuid = KdfConst.KdfArgon2d,
+                        salt = nextByteString(32),
+                        parallelism = 2U,
+                        memory = 1024UL * 1024UL,
+                        iterations = 2U,
+                        version = Argon2Engine.Version.Ver13.id.toUInt(),
+                        secretKey = null,
+                        associatedData = null,
+                    ),
+                    publicCustomData = mapOf()
+                )
+            }
+        }
+    }
 
     enum class CipherId(val uuid: UUID) {
         Aes(UUID.fromString("31c1f2e6-bf71-4350-be58-05216afc5aff")),

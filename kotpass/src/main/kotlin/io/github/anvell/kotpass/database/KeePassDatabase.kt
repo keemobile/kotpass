@@ -3,6 +3,9 @@ package io.github.anvell.kotpass.database
 import io.github.anvell.kotpass.database.header.DatabaseHeader
 import io.github.anvell.kotpass.database.header.DatabaseInnerHeader
 import io.github.anvell.kotpass.models.DatabaseContent
+import io.github.anvell.kotpass.models.Group
+import io.github.anvell.kotpass.models.Meta
+import java.util.*
 
 sealed class KeePassDatabase {
     abstract val credentials: Credentials
@@ -13,14 +16,59 @@ sealed class KeePassDatabase {
         override val credentials: Credentials,
         override val header: DatabaseHeader.Ver3x,
         override val content: DatabaseContent
-    ) : KeePassDatabase()
+    ) : KeePassDatabase() {
+
+        companion object {
+            fun create(
+                databaseName: String,
+                rootName: String,
+                credentials: Credentials
+            ) = Ver3x(
+                credentials = credentials,
+                header = DatabaseHeader.Ver3x.create(),
+                content = DatabaseContent(
+                    meta = Meta(name = databaseName),
+                    group = Group(
+                        uuid = UUID.randomUUID(),
+                        name = rootName,
+                        enableAutoType = true,
+                        enableSearching = true
+                    ),
+                    deletedObjects = listOf()
+                )
+            )
+        }
+    }
 
     data class Ver4x(
         override val credentials: Credentials,
         override val header: DatabaseHeader.Ver4x,
         override val content: DatabaseContent,
         internal val innerHeader: DatabaseInnerHeader
-    ) : KeePassDatabase()
+    ) : KeePassDatabase() {
+
+        companion object {
+            fun create(
+                databaseName: String,
+                rootName: String,
+                credentials: Credentials
+            ) = Ver4x(
+                credentials = credentials,
+                header = DatabaseHeader.Ver4x.create(),
+                content = DatabaseContent(
+                    meta = Meta(name = databaseName),
+                    group = Group(
+                        uuid = UUID.randomUUID(),
+                        name = rootName,
+                        enableAutoType = true,
+                        enableSearching = true
+                    ),
+                    deletedObjects = listOf()
+                ),
+                innerHeader = DatabaseInnerHeader.create()
+            )
+        }
+    }
 
     companion object {
         const val MinSupportedVersion = 3

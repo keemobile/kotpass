@@ -1,6 +1,7 @@
 package io.github.anvell.kotpass.xml
 
 import io.github.anvell.kotpass.constants.Const
+import io.github.anvell.kotpass.constants.PredefinedIcon
 import io.github.anvell.kotpass.errors.FormatError
 import io.github.anvell.kotpass.extensions.addBoolean
 import io.github.anvell.kotpass.extensions.addOptionalBoolean
@@ -28,11 +29,12 @@ internal fun unmarshalGroup(context: FormatContext, node: Node): Group {
             .firstOrNull(Tags.Group.Notes)
             ?.getText()
             ?: "",
-        iconId = node
+        icon = node
             .firstOrNull(Tags.Group.IconId)
             ?.getText()
             ?.toInt()
-            ?: Group.DefaultIconId,
+            ?.let(PredefinedIcon.values()::getOrNull)
+            ?: PredefinedIcon.Folder,
         customIconUuid = node
             .firstOrNull(Tags.Group.CustomIconId)
             ?.getUuid(),
@@ -89,7 +91,7 @@ internal fun Group.marshal(context: FormatContext): Node {
         Tags.Uuid { addUuid(uuid) }
         Tags.Group.Name { text(name) }
         Tags.Group.Notes { text(notes) }
-        Tags.Group.IconId { text(iconId.toString()) }
+        Tags.Group.IconId { text(icon.ordinal.toString()) }
         if (customIconUuid != null) {
             Tags.Group.CustomIconId { addUuid(customIconUuid) }
         }

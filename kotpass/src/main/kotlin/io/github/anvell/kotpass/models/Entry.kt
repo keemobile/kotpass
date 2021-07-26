@@ -1,15 +1,16 @@
 package io.github.anvell.kotpass.models
 
+import io.github.anvell.kotpass.constants.PredefinedIcon
 import java.util.*
 
 data class Entry(
     val uuid: UUID,
-    val iconId: Int = 0,
+    val icon: PredefinedIcon = PredefinedIcon.Key,
     val customIconUuid: UUID? = null,
     val foregroundColor: String? = null,
     val backgroundColor: String? = null,
     val overrideUrl: String = "",
-    val times: TimeData? = null,
+    val times: TimeData? = TimeData.create(),
     val autoType: AutoTypeData? = null,
     val fields: Map<String, EntryValue> = mapOf(),
     val tags: List<String> = listOf(),

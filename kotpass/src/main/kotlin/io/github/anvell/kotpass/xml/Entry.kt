@@ -1,6 +1,7 @@
 package io.github.anvell.kotpass.xml
 
 import io.github.anvell.kotpass.constants.Const
+import io.github.anvell.kotpass.constants.PredefinedIcon
 import io.github.anvell.kotpass.cryptography.EncryptedValue
 import io.github.anvell.kotpass.errors.FormatError
 import io.github.anvell.kotpass.extensions.addBoolean
@@ -22,11 +23,12 @@ internal fun unmarshalEntry(context: FormatContext, node: Node): Entry {
             .firstOrNull(Tags.Uuid)
             ?.getUuid()
             ?: throw FormatError.InvalidXml("Invalid entry without Uuid."),
-        iconId = node
+        icon = node
             .firstOrNull(Tags.Entry.IconId)
             ?.getText()
             ?.toInt()
-            ?: 0,
+            ?.let(PredefinedIcon.values()::getOrNull)
+            ?: PredefinedIcon.Key,
         customIconUuid = node
             .firstOrNull(Tags.Entry.CustomIconId)
             ?.getUuid(),
@@ -112,7 +114,7 @@ private fun unmarshalFields(
 internal fun Entry.marshal(context: FormatContext): Node {
     return node(Tags.Entry.TagName) {
         Tags.Uuid { addUuid(uuid) }
-        Tags.Entry.IconId { text(iconId.toString()) }
+        Tags.Entry.IconId { text(icon.ordinal.toString()) }
         if (customIconUuid != null) {
             Tags.Entry.CustomIconId { addUuid(customIconUuid) }
         }

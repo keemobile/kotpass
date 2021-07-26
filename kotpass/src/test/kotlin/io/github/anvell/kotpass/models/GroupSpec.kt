@@ -1,5 +1,6 @@
 package io.github.anvell.kotpass.models
 
+import io.github.anvell.kotpass.constants.PredefinedIcon
 import io.github.anvell.kotpass.cryptography.EncryptionSaltGenerator
 import io.github.anvell.kotpass.extensions.parseAsXml
 import io.github.anvell.kotpass.resources.GroupRes
@@ -20,7 +21,7 @@ class GroupSpec : DescribeSpec({
             val group = unmarshalGroup(context, GroupRes.BasicXml.parseAsXml())
 
             group.name shouldBe "Lorem"
-            group.iconId shouldBe Group.DefaultIconId
+            group.icon shouldBe PredefinedIcon.Folder
             group.enableAutoType shouldBe null
             group.enableSearching shouldBe null
             group.lastTopVisibleEntry shouldNotBe null

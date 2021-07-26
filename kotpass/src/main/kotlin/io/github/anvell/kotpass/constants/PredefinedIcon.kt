@@ -2,7 +2,7 @@
 
 package io.github.anvell.kotpass.constants
 
-enum class Icons {
+enum class PredefinedIcon {
     Key,
     World,
     Warning,
@@ -22,13 +22,13 @@ enum class Icons {
     WorldStar,
     CDRom,
     Monitor,
-    EMail,
+    Email,
     Configuration,
     ClipboardReady,
     PaperNew,
     Screen,
     EnergyCareful,
-    EMailBox,
+    EmailBox,
     Disk,
     Drive,
     PaperQ,
@@ -43,7 +43,7 @@ enum class Icons {
     HomeBanking,
     DriveWindows,
     Clock,
-    EMailSearch,
+    EmailSearch,
     PaperFlag,
     Memory,
     TrashBin,

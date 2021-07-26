@@ -3,11 +3,14 @@ package io.github.anvell.kotpass.database.header
 import io.github.anvell.kotpass.constants.CrsAlgorithm
 import io.github.anvell.kotpass.errors.FormatError
 import io.github.anvell.kotpass.extensions.b
+import io.github.anvell.kotpass.extensions.nextByteString
 import io.github.anvell.kotpass.models.Binary
 import io.github.anvell.kotpass.models.BinaryData
 import okio.BufferedSink
 import okio.BufferedSource
 import okio.ByteString
+import java.security.SecureRandom
+import java.util.*
 
 private object InnerHeaderFieldId {
     const val Terminator = 0x00
@@ -44,6 +47,14 @@ data class DatabaseInnerHeader(
     }
 
     companion object {
+        fun create() = with(SecureRandom()) {
+            DatabaseInnerHeader(
+                randomStreamId = CrsAlgorithm.ChaCha20,
+                randomStreamKey = nextByteString(64),
+                binaries = listOf()
+            )
+        }
+
         internal fun readFrom(source: BufferedSource): DatabaseInnerHeader {
             val binaries = mutableListOf<Binary>()
             var randomStreamId: CrsAlgorithm? = null
