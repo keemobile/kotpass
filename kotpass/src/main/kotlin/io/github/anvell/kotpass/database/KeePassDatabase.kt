@@ -2,6 +2,7 @@ package io.github.anvell.kotpass.database
 
 import io.github.anvell.kotpass.database.header.DatabaseHeader
 import io.github.anvell.kotpass.database.header.DatabaseInnerHeader
+import io.github.anvell.kotpass.models.Binary
 import io.github.anvell.kotpass.models.DatabaseContent
 import io.github.anvell.kotpass.models.Entry
 import io.github.anvell.kotpass.models.Group
@@ -13,11 +14,17 @@ sealed class KeePassDatabase {
     abstract val header: DatabaseHeader
     abstract val content: DatabaseContent
 
+    abstract fun findBinaryById(id: Int): Binary?
+
     data class Ver3x(
         override val credentials: Credentials,
         override val header: DatabaseHeader.Ver3x,
         override val content: DatabaseContent
     ) : KeePassDatabase() {
+
+        override fun findBinaryById(id: Int): Binary? {
+            return content.meta.binaries.find { it.id == id }
+        }
 
         companion object {
             fun create(
@@ -47,6 +54,10 @@ sealed class KeePassDatabase {
         override val content: DatabaseContent,
         internal val innerHeader: DatabaseInnerHeader
     ) : KeePassDatabase() {
+
+        override fun findBinaryById(id: Int): Binary? {
+            return innerHeader.binaries.find { it.id == id }
+        }
 
         companion object {
             fun create(
