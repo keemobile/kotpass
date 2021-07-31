@@ -3,6 +3,7 @@ package io.github.anvell.kotpass.database
 import io.github.anvell.kotpass.database.header.DatabaseHeader
 import io.github.anvell.kotpass.database.header.DatabaseInnerHeader
 import io.github.anvell.kotpass.models.DatabaseContent
+import io.github.anvell.kotpass.models.Entry
 import io.github.anvell.kotpass.models.Group
 import io.github.anvell.kotpass.models.Meta
 import java.util.*
@@ -74,4 +75,42 @@ sealed class KeePassDatabase {
         const val MinSupportedVersion = 3
         const val MaxSupportedVersion = 4
     }
+}
+
+fun KeePassDatabase.findGroup(
+    predicate: (Group) -> Boolean
+): Group? = with(Stack<Group>()) {
+    push(content.group)
+
+    while (!empty()) {
+        val group = pop()
+
+        if (predicate(group)) {
+            return group
+        }
+
+        group.groups.forEach(this::push)
+    }
+
+    return null
+}
+
+fun KeePassDatabase.findEntry(
+    predicate: (Entry) -> Boolean
+): Entry? = with(Stack<Group>()) {
+    push(content.group)
+
+    while (!empty()) {
+        val group = pop()
+
+        for (entry in group.entries) {
+            if (predicate(entry)) {
+                return entry
+            }
+        }
+
+        group.groups.forEach(::push)
+    }
+
+    return null
 }
