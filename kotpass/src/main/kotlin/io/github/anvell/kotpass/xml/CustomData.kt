@@ -4,7 +4,7 @@ import io.github.anvell.kotpass.extensions.addDateTime
 import io.github.anvell.kotpass.extensions.childNodes
 import io.github.anvell.kotpass.extensions.getText
 import io.github.anvell.kotpass.models.CustomDataValue
-import io.github.anvell.kotpass.models.FormatContext
+import io.github.anvell.kotpass.models.XmlContext
 import org.redundent.kotlin.xml.Node
 import org.redundent.kotlin.xml.node
 
@@ -35,7 +35,7 @@ internal object CustomData {
     }
 
     fun marshal(
-        context: FormatContext,
+        context: XmlContext.Encode,
         customData: Map<String, CustomDataValue>
     ): Node = node(FormatXml.Tags.CustomData.TagName) {
         for ((key, item) in customData) {

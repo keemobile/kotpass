@@ -9,13 +9,13 @@ import io.github.anvell.kotpass.extensions.addUuid
 import io.github.anvell.kotpass.extensions.childNodes
 import io.github.anvell.kotpass.extensions.getText
 import io.github.anvell.kotpass.extensions.getUuid
-import io.github.anvell.kotpass.models.FormatContext
 import io.github.anvell.kotpass.models.Group
+import io.github.anvell.kotpass.models.XmlContext
 import io.github.anvell.kotpass.xml.FormatXml.Tags
 import org.redundent.kotlin.xml.Node
 import org.redundent.kotlin.xml.node
 
-internal fun unmarshalGroup(context: FormatContext, node: Node): Group {
+internal fun unmarshalGroup(context: XmlContext.Decode, node: Node): Group {
     return Group(
         uuid = node
             .firstOrNull(Tags.Uuid)
@@ -79,14 +79,14 @@ internal fun unmarshalGroup(context: FormatContext, node: Node): Group {
 }
 
 internal fun unmarshalGroups(
-    context: FormatContext,
+    context: XmlContext.Decode,
     node: Node
 ): List<Group> = node
     .childNodes()
     .filter { it.nodeName == Tags.Group.TagName }
     .map { unmarshalGroup(context, it) }
 
-internal fun Group.marshal(context: FormatContext): Node {
+internal fun Group.marshal(context: XmlContext.Encode): Node {
     return node(Tags.Group.TagName) {
         Tags.Uuid { addUuid(uuid) }
         Tags.Group.Name { text(name) }

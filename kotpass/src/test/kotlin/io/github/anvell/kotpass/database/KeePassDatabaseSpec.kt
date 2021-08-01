@@ -4,7 +4,6 @@ import io.github.anvell.kotpass.constants.BasicFields
 import io.github.anvell.kotpass.cryptography.EncryptedValue
 import io.github.anvell.kotpass.database.modifiers.modifyEntry
 import io.github.anvell.kotpass.database.modifiers.modifyGroup
-import io.github.anvell.kotpass.database.modifiers.modifyParentGroup
 import io.github.anvell.kotpass.database.modifiers.moveEntry
 import io.github.anvell.kotpass.database.modifiers.moveGroup
 import io.github.anvell.kotpass.database.modifiers.withHistory

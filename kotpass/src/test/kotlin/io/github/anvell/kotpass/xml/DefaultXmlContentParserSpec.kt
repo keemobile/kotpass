@@ -1,8 +1,8 @@
 package io.github.anvell.kotpass.xml
 
 import io.github.anvell.kotpass.cryptography.EncryptionSaltGenerator
-import io.github.anvell.kotpass.models.FormatContext
 import io.github.anvell.kotpass.models.FormatVersion
+import io.github.anvell.kotpass.models.XmlContext
 import io.github.anvell.kotpass.resources.DefaultXmlContentParserRes
 import io.github.anvell.kotpass.resources.MetaRes
 import io.github.anvell.kotpass.resources.TimeDataRes
@@ -13,7 +13,7 @@ class DefaultXmlContentParserSpec : DescribeSpec({
 
     describe("Default Xml content parser") {
         it("Is able to deserialize xml database") {
-            val context = FormatContext(
+            val context = XmlContext.Decode(
                 version = FormatVersion(4, 1),
                 encryption = EncryptionSaltGenerator.ChaCha20(byteArrayOf())
             )

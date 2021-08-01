@@ -1,10 +1,9 @@
 package io.github.anvell.kotpass.database
 
 import io.github.anvell.kotpass.cryptography.ContentEncryption
-import io.github.anvell.kotpass.cryptography.EncryptionSaltGenerator
 import io.github.anvell.kotpass.cryptography.KeyTransform
 import io.github.anvell.kotpass.database.header.DatabaseHeader
-import io.github.anvell.kotpass.models.FormatContext
+import io.github.anvell.kotpass.models.XmlContext
 import io.github.anvell.kotpass.xml.DefaultXmlContentParser
 import io.github.anvell.kotpass.xml.XmlContentParser
 import okio.Buffer
@@ -32,10 +31,7 @@ fun KeePassDatabase.encode(
     var rawContent = when (this) {
         is KeePassDatabase.Ver3x -> {
             val newMeta = content.meta.copy(headerHash = headerHash.toByteArray())
-            val saltGenerator = with(header) {
-                EncryptionSaltGenerator.create(innerRandomStreamId, innerRandomStreamKey)
-            }
-            val context = FormatContext(header.version, saltGenerator)
+            val context = XmlContext.Encode(header.version)
 
             contentParser
                 .marshalContent(context, content.copy(meta = newMeta))
@@ -50,11 +46,7 @@ fun KeePassDatabase.encode(
             headerBuffer.write(headerHash)
             headerBuffer.write(hmacSha256)
 
-            val saltGenerator = EncryptionSaltGenerator.create(
-                id = innerHeader.randomStreamId,
-                key = innerHeader.randomStreamKey
-            )
-            val context = FormatContext(header.version, saltGenerator)
+            val context = XmlContext.Encode(header.version)
             val rawContent = contentParser
                 .marshalContent(context, content)
                 .toByteArray(Charsets.UTF_8)

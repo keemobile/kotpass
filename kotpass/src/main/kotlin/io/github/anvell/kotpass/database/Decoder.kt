@@ -9,7 +9,7 @@ import io.github.anvell.kotpass.database.header.Signature
 import io.github.anvell.kotpass.errors.CryptoError
 import io.github.anvell.kotpass.errors.FormatError
 import io.github.anvell.kotpass.extensions.teeBuffer
-import io.github.anvell.kotpass.models.FormatContext
+import io.github.anvell.kotpass.models.XmlContext
 import io.github.anvell.kotpass.xml.DefaultXmlContentParser
 import io.github.anvell.kotpass.xml.XmlContentParser
 import okio.Buffer
@@ -50,7 +50,7 @@ fun KeePassDatabase.Companion.decode(
                 val saltGenerator = with(header) {
                     EncryptionSaltGenerator.create(innerRandomStreamId, innerRandomStreamKey)
                 }
-                val context = FormatContext(header.version, saltGenerator)
+                val context = XmlContext.Decode(header.version, saltGenerator)
                 val rawContent = decryptRawContent(header, source, transformedKey)
                 val content = contentParser.unmarshalContent(context, rawContent)
                 val headerHash = content.meta.headerHash?.toByteString()
@@ -88,7 +88,7 @@ fun KeePassDatabase.Companion.decode(
                     id = innerHeader.randomStreamId,
                     key = innerHeader.randomStreamKey
                 )
-                val context = FormatContext(header.version, saltGenerator)
+                val context = XmlContext.Decode(header.version, saltGenerator)
                 val content = contentParser.unmarshalContent(
                     context = context,
                     source = contentSource.inputStream()

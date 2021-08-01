@@ -12,12 +12,12 @@ import io.github.anvell.kotpass.extensions.getText
 import io.github.anvell.kotpass.extensions.getUuid
 import io.github.anvell.kotpass.models.Entry
 import io.github.anvell.kotpass.models.EntryValue
-import io.github.anvell.kotpass.models.FormatContext
+import io.github.anvell.kotpass.models.XmlContext
 import io.github.anvell.kotpass.xml.FormatXml.Tags
 import org.redundent.kotlin.xml.Node
 import org.redundent.kotlin.xml.node
 
-internal fun unmarshalEntry(context: FormatContext, node: Node): Entry {
+internal fun unmarshalEntry(context: XmlContext.Decode, node: Node): Entry {
     return Entry(
         uuid = node
             .firstOrNull(Tags.Uuid)
@@ -75,7 +75,7 @@ internal fun unmarshalEntry(context: FormatContext, node: Node): Entry {
 }
 
 internal fun unmarshalEntries(
-    context: FormatContext,
+    context: XmlContext.Decode,
     node: Node
 ): List<Entry> = node
     .childNodes()
@@ -83,7 +83,7 @@ internal fun unmarshalEntries(
     .map { unmarshalEntry(context, it) }
 
 private fun unmarshalFields(
-    context: FormatContext,
+    context: XmlContext.Decode,
     node: Node
 ): Map<String, EntryValue> = node
     .childNodes()
@@ -111,7 +111,7 @@ private fun unmarshalFields(
         }
     }
 
-internal fun Entry.marshal(context: FormatContext): Node {
+internal fun Entry.marshal(context: XmlContext.Encode): Node {
     return node(Tags.Entry.TagName) {
         Tags.Uuid { addUuid(uuid) }
         Tags.Entry.IconId { text(icon.ordinal.toString()) }

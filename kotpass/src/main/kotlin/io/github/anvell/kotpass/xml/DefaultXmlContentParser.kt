@@ -3,7 +3,7 @@ package io.github.anvell.kotpass.xml
 import io.github.anvell.kotpass.errors.FormatError
 import io.github.anvell.kotpass.extensions.childNodes
 import io.github.anvell.kotpass.models.DatabaseContent
-import io.github.anvell.kotpass.models.FormatContext
+import io.github.anvell.kotpass.models.XmlContext
 import io.github.anvell.kotpass.xml.FormatXml.Tags
 import org.redundent.kotlin.xml.PrintOptions
 import org.redundent.kotlin.xml.XmlVersion
@@ -16,12 +16,12 @@ object DefaultXmlContentParser : XmlContentParser {
     private const val XmlEncoding = "utf-8"
 
     override fun unmarshalContent(
-        context: FormatContext,
+        context: XmlContext.Decode,
         xmlData: ByteArray
     ) = unmarshalContent(context, ByteArrayInputStream(xmlData))
 
     override fun unmarshalContent(
-        context: FormatContext,
+        context: XmlContext.Decode,
         source: InputStream
     ): DatabaseContent {
         val documentNode = parse(source)
@@ -47,7 +47,7 @@ object DefaultXmlContentParser : XmlContentParser {
     }
 
     override fun marshalContent(
-        context: FormatContext,
+        context: XmlContext.Encode,
         content: DatabaseContent
     ): String {
         return xml(Tags.Document, XmlEncoding, XmlVersion.V10) {

@@ -1,6 +1,5 @@
 package io.github.anvell.kotpass.models
 
-import io.github.anvell.kotpass.cryptography.EncryptionSaltGenerator
 import io.github.anvell.kotpass.extensions.parseAsXml
 import io.github.anvell.kotpass.resources.CustomDataRes
 import io.github.anvell.kotpass.xml.CustomData
@@ -43,9 +42,8 @@ class CustomDataSpec : DescribeSpec({
 
     describe("Writing CustomData to Xml string") {
         it("Basic custom data") {
-            val context = FormatContext(
-                version = FormatVersion(4, 1),
-                encryption = EncryptionSaltGenerator.ChaCha20(byteArrayOf())
+            val context = XmlContext.Encode(
+                version = FormatVersion(4, 1)
             )
             val customData = mapOf(
                 "k1" to CustomDataValue("v1"),

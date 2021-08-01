@@ -8,13 +8,12 @@ import io.github.anvell.kotpass.xml.unmarshalEntry
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import java.util.*
 
 class EntrySpec : DescribeSpec({
 
     describe("Entry") {
         it("Properly deserialized from Xml") {
-            val context = FormatContext(
+            val context = XmlContext.Decode(
                 version = FormatVersion(4, 1),
                 encryption = EncryptionSaltGenerator.ChaCha20(byteArrayOf())
             )

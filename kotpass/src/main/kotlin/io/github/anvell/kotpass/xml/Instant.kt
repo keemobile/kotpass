@@ -5,7 +5,7 @@ import io.github.anvell.kotpass.extensions.getText
 import io.github.anvell.kotpass.extensions.toByteArray
 import io.github.anvell.kotpass.io.decodeBase64ToArray
 import io.github.anvell.kotpass.io.encodeBase64
-import io.github.anvell.kotpass.models.FormatContext
+import io.github.anvell.kotpass.models.XmlContext
 import org.redundent.kotlin.xml.Node
 import java.time.Instant
 
@@ -21,7 +21,7 @@ internal fun Node.getInstant(): Instant? = getText()?.let { text ->
     }
 }
 
-internal fun Instant.marshal(context: FormatContext): String {
+internal fun Instant.marshal(context: XmlContext.Encode): String {
     val binary = context.version.major >= 4 && !context.isXmlExport
 
     return if (binary) {

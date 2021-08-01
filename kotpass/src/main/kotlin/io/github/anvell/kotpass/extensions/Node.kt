@@ -2,7 +2,7 @@ package io.github.anvell.kotpass.extensions
 
 import io.github.anvell.kotpass.io.decodeBase64ToArray
 import io.github.anvell.kotpass.io.encodeBase64
-import io.github.anvell.kotpass.models.FormatContext
+import io.github.anvell.kotpass.models.XmlContext
 import io.github.anvell.kotpass.xml.FormatXml
 import io.github.anvell.kotpass.xml.marshal
 import org.redundent.kotlin.xml.Node
@@ -28,7 +28,7 @@ internal fun Node.getBytes(): ByteArray? {
 }
 
 internal fun Node.addDateTime(
-    context: FormatContext,
+    context: XmlContext.Encode,
     instant: Instant?
 ) {
     if (instant != null) {

@@ -3,8 +3,8 @@ package io.github.anvell.kotpass.xml
 import io.github.anvell.kotpass.extensions.addBoolean
 import io.github.anvell.kotpass.extensions.addDateTime
 import io.github.anvell.kotpass.extensions.getText
-import io.github.anvell.kotpass.models.FormatContext
 import io.github.anvell.kotpass.models.TimeData
+import io.github.anvell.kotpass.models.XmlContext
 import org.redundent.kotlin.xml.Node
 import org.redundent.kotlin.xml.node
 
@@ -20,7 +20,7 @@ internal fun unmarshalTimeData(node: Node): TimeData = with(node) {
     )
 }
 
-internal fun TimeData.marshal(context: FormatContext): Node {
+internal fun TimeData.marshal(context: XmlContext.Encode): Node {
     return node(FormatXml.Tags.TimeData.TagName) {
         FormatXml.Tags.TimeData.CreationTime { addDateTime(context, creationTime) }
         FormatXml.Tags.TimeData.LastAccessTime { addDateTime(context, lastAccessTime) }

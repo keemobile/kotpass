@@ -9,8 +9,8 @@ import io.github.anvell.kotpass.extensions.addUuid
 import io.github.anvell.kotpass.extensions.getBytes
 import io.github.anvell.kotpass.extensions.getText
 import io.github.anvell.kotpass.extensions.getUuid
-import io.github.anvell.kotpass.models.FormatContext
 import io.github.anvell.kotpass.models.Meta
+import io.github.anvell.kotpass.models.XmlContext
 import io.github.anvell.kotpass.xml.FormatXml.Tags
 import org.redundent.kotlin.xml.Node
 import org.redundent.kotlin.xml.node
@@ -127,7 +127,7 @@ private fun unmarshalMemoryProtection(node: Node): Set<BasicFields> =
         }
     }
 
-internal fun Meta.marshal(context: FormatContext): Node {
+internal fun Meta.marshal(context: XmlContext.Encode): Node {
     return node(Tags.Meta.TagName) {
         Tags.Meta.Generator { text(generator) }
         if (context.version.major < 4 && headerHash != null) {

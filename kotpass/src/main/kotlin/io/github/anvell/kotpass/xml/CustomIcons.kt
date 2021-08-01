@@ -8,7 +8,7 @@ import io.github.anvell.kotpass.extensions.getBytes
 import io.github.anvell.kotpass.extensions.getText
 import io.github.anvell.kotpass.extensions.getUuid
 import io.github.anvell.kotpass.models.CustomIcon
-import io.github.anvell.kotpass.models.FormatContext
+import io.github.anvell.kotpass.models.XmlContext
 import io.github.anvell.kotpass.xml.FormatXml.Tags
 import org.redundent.kotlin.xml.Node
 import org.redundent.kotlin.xml.node
@@ -44,7 +44,7 @@ internal object CustomIcons {
     }
 
     fun marshal(
-        context: FormatContext,
+        context: XmlContext.Encode,
         customIcons: Map<UUID, CustomIcon>
     ): Node = node(Tags.Meta.CustomIcons.TagName) {
         for ((key, item) in customIcons) {

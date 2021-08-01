@@ -6,7 +6,7 @@ import io.github.anvell.kotpass.extensions.addDateTime
 import io.github.anvell.kotpass.extensions.addUuid
 import io.github.anvell.kotpass.extensions.getUuid
 import io.github.anvell.kotpass.models.DeletedObject
-import io.github.anvell.kotpass.models.FormatContext
+import io.github.anvell.kotpass.models.XmlContext
 import org.redundent.kotlin.xml.Node
 import org.redundent.kotlin.xml.node
 
@@ -21,7 +21,7 @@ internal fun unmarshalDeletedObject(node: Node): DeletedObject? {
     }
 }
 
-internal fun DeletedObject.marshal(context: FormatContext): Node {
+internal fun DeletedObject.marshal(context: XmlContext.Encode): Node {
     return node(FormatXml.Tags.DeletedObjects.TagName) {
         FormatXml.Tags.Uuid { addUuid(id) }
         FormatXml.Tags.DeletedObjects.Time { addDateTime(context, deletionTime) }
