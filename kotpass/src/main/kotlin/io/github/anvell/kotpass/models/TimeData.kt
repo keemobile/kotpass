@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package io.github.anvell.kotpass.models
 
 import java.time.Instant
@@ -14,8 +12,8 @@ data class TimeData(
     val usageCount: Int = 0
 ) {
     companion object {
-        fun create() = Instant.now()
-            ?.let { now ->
+        fun create() = requireNotNull(Instant.now())
+            .let { now ->
                 TimeData(
                     creationTime = now,
                     lastAccessTime = now,
