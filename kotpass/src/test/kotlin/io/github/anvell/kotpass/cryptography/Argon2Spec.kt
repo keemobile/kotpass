@@ -1,7 +1,6 @@
 package io.github.anvell.kotpass.cryptography
 
 import io.github.anvell.kotpass.io.decodeHexToArray
-import io.github.anvell.kotpass.io.encodeHex
 import io.github.anvell.kotpass.resources.Argon2Res
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
@@ -9,22 +8,6 @@ import io.kotest.matchers.shouldBe
 class Argon2Spec : DescribeSpec({
 
     describe("Argon2") {
-        it("Test cases") {
-            Argon2Res.TestCases.forEach {
-                val result = ByteArray(32)
-                Argon2Engine(
-                    type = Argon2Engine.Type.Argon2I,
-                    version = it.version,
-                    salt = it.salt.toByteArray(),
-                    iterations = it.iterations,
-                    parallelism = it.parallelism,
-                    memory = 1 shl it.memory
-                ).generateBytes(it.password.toByteArray(), result)
-
-                result.encodeHex() shouldBe it.output
-            }
-        }
-
         it("Type D") {
             val expected = "512b391b6f1162975371d30919734294f868e3be3984f3c1a13a4db9fabe4acb"
             val result = ByteArray(32)
