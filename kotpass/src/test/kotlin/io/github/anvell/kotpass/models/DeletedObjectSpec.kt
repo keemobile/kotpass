@@ -23,7 +23,8 @@ class DeletedObjectSpec : DescribeSpec({
 
         it("Uuid is encoded as Base64") {
             val context = XmlContext.Encode(
-                version = FormatVersion(4, 0)
+                version = FormatVersion(4, 0),
+                binaries = linkedMapOf()
             )
 
             DeletedObjectRes

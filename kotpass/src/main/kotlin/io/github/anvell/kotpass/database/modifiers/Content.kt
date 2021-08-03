@@ -8,15 +8,15 @@ import io.github.anvell.kotpass.models.Group
 import java.time.Instant
 import java.util.*
 
-fun KeePassDatabase.modifyContent(
-    block: DatabaseContent.() -> DatabaseContent
+inline fun KeePassDatabase.modifyContent(
+    crossinline block: DatabaseContent.() -> DatabaseContent
 ) = when (this) {
     is KeePassDatabase.Ver3x -> copy(content = block(content))
     is KeePassDatabase.Ver4x -> copy(content = block(content))
 }
 
-fun KeePassDatabase.withRecycleBin(
-    block: KeePassDatabase.(recycleBinUuid: UUID) -> KeePassDatabase
+inline fun KeePassDatabase.withRecycleBin(
+    crossinline block: KeePassDatabase.(recycleBinUuid: UUID) -> KeePassDatabase
 ): KeePassDatabase {
     return if (content.meta.recycleBinUuid != null) {
         block(this, content.meta.recycleBinUuid!!)

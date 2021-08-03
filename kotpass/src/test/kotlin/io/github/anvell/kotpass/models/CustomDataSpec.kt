@@ -43,7 +43,8 @@ class CustomDataSpec : DescribeSpec({
     describe("Writing CustomData to Xml string") {
         it("Basic custom data") {
             val context = XmlContext.Encode(
-                version = FormatVersion(4, 1)
+                version = FormatVersion(4, 1),
+                binaries = linkedMapOf()
             )
             val customData = mapOf(
                 "k1" to CustomDataValue("v1"),

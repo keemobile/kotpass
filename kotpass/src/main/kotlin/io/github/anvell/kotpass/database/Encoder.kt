@@ -3,6 +3,7 @@ package io.github.anvell.kotpass.database
 import io.github.anvell.kotpass.cryptography.ContentEncryption
 import io.github.anvell.kotpass.cryptography.KeyTransform
 import io.github.anvell.kotpass.database.header.DatabaseHeader
+import io.github.anvell.kotpass.database.modifiers.binaries
 import io.github.anvell.kotpass.models.XmlContext
 import io.github.anvell.kotpass.xml.DefaultXmlContentParser
 import io.github.anvell.kotpass.xml.XmlContentParser
@@ -27,12 +28,11 @@ fun KeePassDatabase.encode(
         header.writeTo(this)
     }
     val headerHash = headerBuffer.sha256()
+    val context = XmlContext.Encode(header.version, false, binaries)
 
     var rawContent = when (this) {
         is KeePassDatabase.Ver3x -> {
             val newMeta = content.meta.copy(headerHash = headerHash.toByteArray())
-            val context = XmlContext.Encode(header.version)
-
             contentParser
                 .marshalContent(context, content.copy(meta = newMeta))
                 .toByteArray(Charsets.UTF_8)
@@ -46,7 +46,6 @@ fun KeePassDatabase.encode(
             headerBuffer.write(headerHash)
             headerBuffer.write(hmacSha256)
 
-            val context = XmlContext.Encode(header.version)
             val rawContent = contentParser
                 .marshalContent(context, content)
                 .toByteArray(Charsets.UTF_8)

@@ -17,7 +17,10 @@ import io.github.anvell.kotpass.xml.FormatXml.Tags
 import org.redundent.kotlin.xml.Node
 import org.redundent.kotlin.xml.node
 
-internal fun unmarshalEntry(context: XmlContext.Decode, node: Node): Entry {
+internal fun unmarshalEntry(
+    context: XmlContext.Decode,
+    node: Node
+): Entry {
     return Entry(
         uuid = node
             .firstOrNull(Tags.Uuid)
@@ -54,7 +57,7 @@ internal fun unmarshalEntry(context: XmlContext.Decode, node: Node): Entry {
             ?.getText()
             ?.split(Const.TagsSeparatorsRegex)
             ?: listOf(),
-        binaries = unmarshalBinaryReferences(node),
+        binaries = unmarshalBinaryReferences(context, node),
         history = node
             .firstOrNull(Tags.Entry.History)
             ?.let { unmarshalEntries(context, it) }
@@ -132,7 +135,9 @@ internal fun Entry.marshal(context: XmlContext.Encode): Node {
             addNode(times.marshal(context))
         }
         marshalFields(fields).forEach(this::addNode)
-        binaries.forEach { addNode(it.marshal()) }
+        binaries.forEach {
+            addNode(it.marshal(context))
+        }
         if (customData.isNotEmpty()) {
             addNode(CustomData.marshal(context, customData))
         }

@@ -4,13 +4,11 @@ import io.github.anvell.kotpass.constants.CrsAlgorithm
 import io.github.anvell.kotpass.errors.FormatError
 import io.github.anvell.kotpass.extensions.b
 import io.github.anvell.kotpass.extensions.nextByteString
-import io.github.anvell.kotpass.models.Binary
 import io.github.anvell.kotpass.models.BinaryData
 import okio.BufferedSink
 import okio.BufferedSource
 import okio.ByteString
 import java.security.SecureRandom
-import java.util.*
 
 private object InnerHeaderFieldId {
     const val Terminator = 0x00
@@ -19,10 +17,13 @@ private object InnerHeaderFieldId {
     const val Binary = 0x03
 }
 
+private const val BinaryFlagsSize = 1
+
 data class DatabaseInnerHeader(
     val randomStreamId: CrsAlgorithm,
     val randomStreamKey: ByteString,
-    val binaries: List<Binary>
+    @PublishedApi
+    internal val binaries: Map<ByteString, BinaryData> = linkedMapOf()
 ) {
 
     internal fun writeTo(sink: BufferedSink) = with(sink) {
@@ -34,10 +35,10 @@ data class DatabaseInnerHeader(
         writeIntLe(randomStreamKey.size)
         write(randomStreamKey)
 
-        for (binary in binaries) {
-            val data = binary.data.getContent()
+        for ((_, binary) in binaries) {
+            val data = binary.getContent()
             writeByte(InnerHeaderFieldId.Binary)
-            writeIntLe(data.size + 1)
+            writeIntLe(data.size + BinaryFlagsSize)
             writeByte(if (binary.memoryProtection) 0x1 else 0x0)
             write(data)
         }
@@ -51,15 +52,14 @@ data class DatabaseInnerHeader(
             DatabaseInnerHeader(
                 randomStreamId = CrsAlgorithm.ChaCha20,
                 randomStreamKey = nextByteString(64),
-                binaries = listOf()
+                binaries = linkedMapOf()
             )
         }
 
         internal fun readFrom(source: BufferedSource): DatabaseInnerHeader {
-            val binaries = mutableListOf<Binary>()
+            val binaries = linkedMapOf<ByteString, BinaryData>()
             var randomStreamId: CrsAlgorithm? = null
             var randomStreamKey: ByteString? = null
-            var binaryCount = 0
 
             while (true) {
                 val id = source.readByte()
@@ -77,15 +77,10 @@ data class DatabaseInnerHeader(
                         randomStreamKey = source.readByteString(length)
                     }
                     InnerHeaderFieldId.Binary -> {
-                        val protection = source.readByte() != 0x0.b
-                        val content = source.readByteArray(length - 1)
-                        val binary = Binary(
-                            id = binaryCount,
-                            memoryProtection = protection,
-                            data = BinaryData.Uncompressed(content)
-                        )
-                        binaries.add(binary)
-                        binaryCount++
+                        val memoryProtection = source.readByte() != 0x0.b
+                        val content = source.readByteArray(length - BinaryFlagsSize)
+                        val binary = BinaryData.Uncompressed(memoryProtection, content)
+                        binaries[binary.hash] = binary
                     }
                     else -> throw FormatError.InvalidContent("Unknown inner header id: $id.")
                 }

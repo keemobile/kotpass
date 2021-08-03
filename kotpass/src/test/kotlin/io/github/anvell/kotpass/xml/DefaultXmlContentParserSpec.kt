@@ -13,14 +13,15 @@ class DefaultXmlContentParserSpec : DescribeSpec({
 
     describe("Default Xml content parser") {
         it("Is able to deserialize xml database") {
-            val context = XmlContext.Decode(
-                version = FormatVersion(4, 1),
-                encryption = EncryptionSaltGenerator.ChaCha20(byteArrayOf())
-            )
             val content = DefaultXmlContentParser.unmarshalContent(
-                context = context,
                 xmlData = DefaultXmlContentParserRes.BasicXml.toByteArray()
-            )
+            ) {
+                XmlContext.Decode(
+                    version = FormatVersion(4, 1),
+                    encryption = EncryptionSaltGenerator.ChaCha20(byteArrayOf()),
+                    binaries = linkedMapOf()
+                )
+            }
             content.meta.generator shouldBe MetaRes.DummyText
             content.meta.description shouldBe MetaRes.DummyText
             content.meta.nameChanged shouldBe TimeDataRes.ParsedDateTime

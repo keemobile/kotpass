@@ -1,6 +1,8 @@
 package io.github.anvell.kotpass.models
 
+import okio.ByteString
+
 data class BinaryReference(
-    val id: Int,
+    val hash: ByteString,
     val name: String
 )

@@ -15,7 +15,8 @@ class GroupSpec : DescribeSpec({
         it("Properly deserialized from Xml") {
             val context = XmlContext.Decode(
                 version = FormatVersion(4, 1),
-                encryption = EncryptionSaltGenerator.ChaCha20(byteArrayOf())
+                encryption = EncryptionSaltGenerator.ChaCha20(byteArrayOf()),
+                binaries = linkedMapOf()
             )
             val group = unmarshalGroup(context, GroupRes.BasicXml.parseAsXml())
 

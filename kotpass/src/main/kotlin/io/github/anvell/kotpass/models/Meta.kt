@@ -2,6 +2,7 @@ package io.github.anvell.kotpass.models
 
 import io.github.anvell.kotpass.constants.BasicFields
 import io.github.anvell.kotpass.constants.Defaults
+import okio.ByteString
 import java.time.Instant
 import java.util.*
 
@@ -30,9 +31,10 @@ data class Meta(
     val lastSelectedGroup: UUID? = null,
     val lastTopVisibleGroup: UUID? = null,
     val memoryProtection: Set<BasicFields> = setOf(BasicFields.Password),
-    val binaries: List<Binary> = listOf(),
     val customIcons: Map<UUID, CustomIcon> = mapOf(),
-    val customData: Map<String, CustomDataValue> = mapOf()
+    val customData: Map<String, CustomDataValue> = mapOf(),
+    @PublishedApi
+    internal val binaries: Map<ByteString, BinaryData> = linkedMapOf()
 ) {
 
     override fun equals(other: Any?): Boolean {

@@ -50,9 +50,14 @@ fun KeePassDatabase.Companion.decode(
                 val saltGenerator = with(header) {
                     EncryptionSaltGenerator.create(innerRandomStreamId, innerRandomStreamKey)
                 }
-                val context = XmlContext.Decode(header.version, saltGenerator)
                 val rawContent = decryptRawContent(header, source, transformedKey)
-                val content = contentParser.unmarshalContent(context, rawContent)
+                val content = contentParser.unmarshalContent(rawContent) { meta ->
+                    XmlContext.Decode(
+                        version = header.version,
+                        encryption = saltGenerator,
+                        binaries = meta.binaries
+                    )
+                }
                 val headerHash = content.meta.headerHash?.toByteString()
 
                 if (validateHashes && headerHash != null && headerHash != rawHeaderData.sha256()) {
@@ -88,11 +93,15 @@ fun KeePassDatabase.Companion.decode(
                     id = innerHeader.randomStreamId,
                     key = innerHeader.randomStreamKey
                 )
-                val context = XmlContext.Decode(header.version, saltGenerator)
                 val content = contentParser.unmarshalContent(
-                    context = context,
                     source = contentSource.inputStream()
-                )
+                ) {
+                    XmlContext.Decode(
+                        version = header.version,
+                        encryption = saltGenerator,
+                        binaries = innerHeader.binaries
+                    )
+                }
                 KeePassDatabase.Ver4x(credentials, header, content, innerHeader)
             }
         }

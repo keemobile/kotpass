@@ -1,5 +1,6 @@
 package io.github.anvell.kotpass.constants
 
+@PublishedApi
 internal object Defaults {
     const val Generator = "Kotpass"
     const val MaintenanceHistoryDays = 365

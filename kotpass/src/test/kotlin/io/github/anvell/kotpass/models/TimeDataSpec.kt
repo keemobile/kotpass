@@ -38,7 +38,8 @@ class TimeDataSpec : DescribeSpec({
     describe("Writing DateTime to Xml string") {
         it("Using text format") {
             val context = XmlContext.Encode(
-                version = FormatVersion(3, 1)
+                version = FormatVersion(3, 1),
+                binaries = linkedMapOf()
             )
             val times = TimeData(
                 creationTime = TimeDataRes.ParsedDateTime,
@@ -55,7 +56,8 @@ class TimeDataSpec : DescribeSpec({
 
         it("Using binary format") {
             val context = XmlContext.Encode(
-                version = FormatVersion(4, 0)
+                version = FormatVersion(4, 0),
+                binaries = linkedMapOf()
             )
             val times = TimeData(
                 creationTime = TimeDataRes.ParsedDateTime,

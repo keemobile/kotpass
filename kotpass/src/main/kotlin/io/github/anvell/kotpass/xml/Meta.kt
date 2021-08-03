@@ -29,19 +29,22 @@ internal fun unmarshalMeta(node: Node): Meta {
             ?.getInstant(),
         name = node
             .firstOrNull(Tags.Meta.DatabaseName)
-            ?.getText() ?: "",
+            ?.getText()
+            ?: "",
         nameChanged = node
             .firstOrNull(Tags.Meta.DatabaseNameChanged)
             ?.getInstant(),
         description = node
             .firstOrNull(Tags.Meta.DatabaseDescription)
-            ?.getText() ?: "",
+            ?.getText()
+            ?: "",
         descriptionChanged = node
             .firstOrNull(Tags.Meta.DatabaseDescriptionChanged)
             ?.getInstant(),
         defaultUser = node
             .firstOrNull(Tags.Meta.DefaultUserName)
-            ?.getText() ?: "",
+            ?.getText()
+            ?: "",
         defaultUserChanged = node
             .firstOrNull(Tags.Meta.DefaultUserNameChanged)
             ?.getInstant(),
@@ -59,11 +62,13 @@ internal fun unmarshalMeta(node: Node): Meta {
         masterKeyChangeRec = node
             .firstOrNull(Tags.Meta.MasterKeyChangeRec)
             ?.getText()
-            ?.toInt() ?: -1,
+            ?.toInt()
+            ?: -1,
         masterKeyChangeForce = node
             .firstOrNull(Tags.Meta.MasterKeyChangeForce)
             ?.getText()
-            ?.toInt() ?: -1,
+            ?.toInt()
+            ?: -1,
         recycleBinEnabled = node
             .firstOrNull(Tags.Meta.RecycleBinEnabled)
             ?.getText().toBoolean(),
@@ -95,13 +100,17 @@ internal fun unmarshalMeta(node: Node): Meta {
             ?.getUuid(),
         memoryProtection = node
             .firstOrNull(Tags.Meta.MemoryProtection.TagName)
-            ?.let(::unmarshalMemoryProtection) ?: setOf(),
+            ?.let(::unmarshalMemoryProtection)
+            ?: setOf(),
         binaries = node.firstOrNull(Tags.Meta.Binaries.TagName)
-            ?.let(::unmarshalBinaries) ?: listOf(),
+            ?.let(::unmarshalBinaries)
+            ?: linkedMapOf(),
         customIcons = node.firstOrNull(Tags.Meta.CustomIcons.TagName)
-            ?.let(CustomIcons::unmarshal) ?: mapOf(),
+            ?.let(CustomIcons::unmarshal)
+            ?: mapOf(),
         customData = node.firstOrNull(Tags.CustomData.TagName)
-            ?.let(CustomData::unmarshal) ?: mapOf()
+            ?.let(CustomData::unmarshal)
+            ?: mapOf()
     )
 }
 
@@ -163,7 +172,11 @@ internal fun Meta.marshal(context: XmlContext.Encode): Node {
         // In version 4.x files are stored in binary inner header
         if (context.version.major < 4) {
             Tags.Meta.Binaries.TagName {
-                for (item in binaries) addNode(item.marshal())
+                var binaryCount = 0
+                for ((_, binary) in binaries) {
+                    addNode(binary.marshal(binaryCount))
+                    binaryCount++
+                }
             }
         }
     }

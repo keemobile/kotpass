@@ -3,6 +3,7 @@ package io.github.anvell.kotpass.xml
 import io.github.anvell.kotpass.errors.FormatError
 import io.github.anvell.kotpass.extensions.childNodes
 import io.github.anvell.kotpass.models.DatabaseContent
+import io.github.anvell.kotpass.models.Meta
 import io.github.anvell.kotpass.models.XmlContext
 import io.github.anvell.kotpass.xml.FormatXml.Tags
 import org.redundent.kotlin.xml.PrintOptions
@@ -16,13 +17,13 @@ object DefaultXmlContentParser : XmlContentParser {
     private const val XmlEncoding = "utf-8"
 
     override fun unmarshalContent(
-        context: XmlContext.Decode,
-        xmlData: ByteArray
-    ) = unmarshalContent(context, ByteArrayInputStream(xmlData))
+        xmlData: ByteArray,
+        contextBlock: (Meta) -> XmlContext.Decode
+    ) = unmarshalContent(ByteArrayInputStream(xmlData), contextBlock)
 
     override fun unmarshalContent(
-        context: XmlContext.Decode,
-        source: InputStream
+        source: InputStream,
+        contextBlock: (Meta) -> XmlContext.Decode
     ): DatabaseContent {
         val documentNode = parse(source)
         val rootNode = documentNode
@@ -34,7 +35,7 @@ object DefaultXmlContentParser : XmlContentParser {
             ?: throw FormatError.InvalidXml("No metadata found.")
         val rootGroup = rootNode
             .firstOrNull(Tags.Group.TagName)
-            ?.let { unmarshalGroup(context, it) }
+            ?.let { unmarshalGroup(contextBlock(meta), it) }
             ?: throw FormatError.InvalidXml("No root group.")
         val deletedObjects = rootNode
             .firstOrNull(Tags.DeletedObjects.TagName)

@@ -20,8 +20,8 @@ class MetaSpec : DescribeSpec({
             meta.nameChanged shouldBe TimeDataRes.ParsedDateTime
             meta.memoryProtection.containsAll(BasicFields.values().toList()) shouldBe true
             meta.recycleBinEnabled shouldBe false
-            meta.binaries.first().data.shouldBeInstanceOf<BinaryData.Uncompressed>()
-            meta.binaries.first().data.getContent() shouldBe MetaRes.DummyText.toByteArray()
+            meta.binaries.values.first().shouldBeInstanceOf<BinaryData.Uncompressed>()
+            meta.binaries.values.first().getContent() shouldBe MetaRes.DummyText.toByteArray()
         }
     }
 })

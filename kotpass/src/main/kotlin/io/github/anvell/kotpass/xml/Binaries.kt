@@ -4,42 +4,42 @@ import io.github.anvell.kotpass.errors.FormatError
 import io.github.anvell.kotpass.extensions.addBytes
 import io.github.anvell.kotpass.extensions.childNodes
 import io.github.anvell.kotpass.extensions.getBytes
-import io.github.anvell.kotpass.models.Binary
 import io.github.anvell.kotpass.models.BinaryData
+import okio.ByteString
 import org.redundent.kotlin.xml.Node
 import org.redundent.kotlin.xml.node
 
-/*
-* Note: memory protection applies only to binaries stored in inner header (KDBX 4.x)
-* */
-internal fun unmarshalBinaries(node: Node): List<Binary> {
+/**
+ * Note: memory protection applies only to binaries stored in inner header (KDBX 4.x)
+ */
+internal fun unmarshalBinaries(node: Node): Map<ByteString, BinaryData> {
     return node
         .childNodes()
         .filter { it.nodeName == FormatXml.Tags.Meta.Binaries.Item }
-        .map(::unmarshalBinary)
+        .map(::unmarshalBinaryData)
+        .sortedBy { it.first }
+        .associate { (_, binary) -> binary.hash to binary }
 }
 
-private fun unmarshalBinary(node: Node): Binary = with(node) {
+private fun unmarshalBinaryData(node: Node) = with(node) {
     val id = get<String?>(FormatXml.Attributes.Id)?.toInt()
         ?: throw FormatError.InvalidXml("Binary node has no id.")
     val bytes = getBytes()
         ?: throw FormatError.InvalidXml("Empty body of binary node with id: $id.")
     val compressed = get<String?>(FormatXml.Attributes.Compressed).toBoolean()
+    val binary = when {
+        compressed -> BinaryData.Compressed(false, bytes)
+        else -> BinaryData.Uncompressed(false, bytes)
+    }
 
-    return Binary(
-        id = id,
-        memoryProtection = false,
-        data = when {
-            compressed -> BinaryData.Compressed(bytes)
-            else -> BinaryData.Uncompressed(bytes)
-        }
-    )
+    id to binary
 }
 
-internal fun Binary.marshal(): Node {
+internal fun BinaryData.marshal(id: Int): Node {
+    val compressed = this is BinaryData.Compressed
     return node(FormatXml.Tags.Meta.Binaries.Item) {
         set(FormatXml.Attributes.Id, id)
-        set(FormatXml.Attributes.Compressed, data is BinaryData.Compressed)
-        addBytes(data.rawContent)
+        set(FormatXml.Attributes.Compressed, compressed)
+        addBytes(rawContent)
     }
 }

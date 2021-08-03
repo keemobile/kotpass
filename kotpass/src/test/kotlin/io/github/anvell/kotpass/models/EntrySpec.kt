@@ -15,7 +15,8 @@ class EntrySpec : DescribeSpec({
         it("Properly deserialized from Xml") {
             val context = XmlContext.Decode(
                 version = FormatVersion(4, 1),
-                encryption = EncryptionSaltGenerator.ChaCha20(byteArrayOf())
+                encryption = EncryptionSaltGenerator.ChaCha20(byteArrayOf()),
+                binaries = linkedMapOf()
             )
             val entry = unmarshalEntry(context, EntryRes.BasicXml.parseAsXml())
 
@@ -26,7 +27,7 @@ class EntrySpec : DescribeSpec({
             entry.times shouldNotBe null
             entry.times?.creationTime shouldBe TimeDataRes.ParsedDateTime
             entry.history.size shouldBe 1
-            entry.binaries.size shouldBe 1
+            entry.binaries.size shouldBe 0
         }
     }
 })

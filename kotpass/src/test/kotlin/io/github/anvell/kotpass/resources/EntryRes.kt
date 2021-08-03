@@ -45,10 +45,6 @@ internal object EntryRes {
             <Key>UserName</Key>
             <Value>User</Value>
         </String>
-        <Binary>
-            <Key>some</Key>
-            <Value Ref="0" />
-        </Binary>
         <AutoType>
             <Enabled>True</Enabled>
             <DataTransferObfuscation>0</DataTransferObfuscation>
@@ -73,10 +69,6 @@ internal object EntryRes {
                     <Key>custom3</Key>
                     <Value>dummy</Value>
                 </String>
-                <Binary>
-                    <Key>some</Key>
-                    <Value Ref="0" />
-                </Binary>
                 <AutoType>
                     <Enabled>True</Enabled>
                     <DataTransferObfuscation>0</DataTransferObfuscation>
