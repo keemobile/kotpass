@@ -2,6 +2,8 @@ package io.github.anvell.kotpass.database.modifiers
 
 import io.github.anvell.kotpass.database.KeePassDatabase
 import io.github.anvell.kotpass.database.findGroup
+import io.github.anvell.kotpass.models.DeletedObject
+import io.github.anvell.kotpass.models.Entry
 import io.github.anvell.kotpass.models.Group
 import io.github.anvell.kotpass.models.TimeData
 import java.time.Instant
@@ -16,17 +18,17 @@ fun KeePassDatabase.moveGroup(
     }
     val (previousParent, item) = findGroup { it.uuid == uuid } ?: return this
 
-    return with(removeGroup(uuid)) {
-        modifyGroup(parentGroup) {
-            copy(
-                groups = groups + item.copy(
-                    times = item.times
-                        ?.copy(locationChanged = Instant.now())
-                        ?: TimeData.create(),
-                    previousParentGroup = previousParent?.uuid
-                )
+    return modifyParentGroup {
+        removeChildGroup(uuid)
+    }.modifyGroup(parentGroup) {
+        copy(
+            groups = groups + item.copy(
+                times = item.times
+                    ?.copy(locationChanged = Instant.now())
+                    ?: TimeData.create(),
+                previousParentGroup = previousParent?.uuid
             )
-        }
+        )
     }
 }
 
@@ -45,8 +47,38 @@ fun KeePassDatabase.modifyGroup(
 
 fun KeePassDatabase.removeGroup(
     uuid: UUID,
-) = modifyContent {
-    copy(group = group.removeChildGroup(uuid))
+): KeePassDatabase {
+    val now = Instant.now()
+    val deletedUuids = (findGroupChildIds(uuid) + uuid)
+        .map { DeletedObject(it, now) }
+    return modifyContent {
+        copy(
+            group = group.removeChildGroup(uuid),
+            deletedObjects = deletedUuids
+        )
+    }
+}
+
+private fun KeePassDatabase.findGroupChildIds(
+    uuid: UUID
+): List<UUID> {
+    val uuids = mutableListOf<UUID>()
+
+    findGroup { it.uuid == uuid }?.let { (_, foundGroup) ->
+        with(Stack<Group>()) {
+            foundGroup.groups.forEach(::push)
+            uuids.addAll(foundGroup.entries.map(Entry::uuid))
+
+            while (!empty()) {
+                val currentGroup = pop()
+                uuids.add(currentGroup.uuid)
+                uuids.addAll(currentGroup.entries.map(Entry::uuid))
+                currentGroup.groups.forEach(::push)
+            }
+        }
+    }
+
+    return uuids
 }
 
 private fun Group.removeChildGroup(

@@ -6,11 +6,16 @@ import io.github.anvell.kotpass.database.modifiers.modifyEntry
 import io.github.anvell.kotpass.database.modifiers.modifyGroup
 import io.github.anvell.kotpass.database.modifiers.moveEntry
 import io.github.anvell.kotpass.database.modifiers.moveGroup
+import io.github.anvell.kotpass.database.modifiers.removeEntry
+import io.github.anvell.kotpass.database.modifiers.removeGroup
 import io.github.anvell.kotpass.database.modifiers.withHistory
 import io.github.anvell.kotpass.database.modifiers.withRecycleBin
 import io.github.anvell.kotpass.io.decodeBase64ToArray
+import io.github.anvell.kotpass.models.DeletedObject
 import io.github.anvell.kotpass.resources.DatabaseRes
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import java.io.ByteArrayInputStream
@@ -125,6 +130,26 @@ class KeePassDatabaseSpec : DescribeSpec({
             parent?.uuid shouldBe database.content.meta.recycleBinUuid
         }
 
+        it("Removed Group and it's children UUIDs are added to deleted objects") {
+            val database = loadDatabase(
+                rawData = DatabaseRes.GroupsAndEntries.DbGroupsAndEntries,
+                passphrase = "1"
+            ).removeGroup(
+                DatabaseRes.GroupsAndEntries.Group2
+            )
+            val deletedObjects = database
+                .content
+                .deletedObjects
+                .map(DeletedObject::id)
+
+            deletedObjects shouldContainAll listOf(
+                DatabaseRes.GroupsAndEntries.Group2,
+                DatabaseRes.GroupsAndEntries.Group3,
+                DatabaseRes.GroupsAndEntries.Entry2,
+                DatabaseRes.GroupsAndEntries.Entry3
+            )
+        }
+
         it("Group modification") {
             val (_, group) = loadDatabase(
                 rawData = DatabaseRes.GroupsAndEntries.DbGroupsAndEntries,
@@ -166,6 +191,21 @@ class KeePassDatabaseSpec : DescribeSpec({
 
             database.content.meta.recycleBinEnabled shouldBe true
             parent.uuid shouldBe database.content.meta.recycleBinUuid
+        }
+
+        it("Removed Entry UUID is added to deleted objects") {
+            val database = loadDatabase(
+                rawData = DatabaseRes.GroupsAndEntries.DbGroupsAndEntries,
+                passphrase = "1"
+            ).removeEntry(
+                DatabaseRes.GroupsAndEntries.Entry1
+            )
+            val deletedObjects = database
+                .content
+                .deletedObjects
+                .map(DeletedObject::id)
+
+            deletedObjects shouldContain DatabaseRes.GroupsAndEntries.Entry1
         }
     }
 })

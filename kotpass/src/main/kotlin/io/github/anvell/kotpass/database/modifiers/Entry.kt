@@ -2,6 +2,7 @@ package io.github.anvell.kotpass.database.modifiers
 
 import io.github.anvell.kotpass.database.KeePassDatabase
 import io.github.anvell.kotpass.database.findEntry
+import io.github.anvell.kotpass.models.DeletedObject
 import io.github.anvell.kotpass.models.Entry
 import io.github.anvell.kotpass.models.Group
 import io.github.anvell.kotpass.models.TimeData
@@ -14,17 +15,17 @@ fun KeePassDatabase.moveEntry(
 ): KeePassDatabase {
     val (parent, item) = findEntry { it.uuid == uuid } ?: return this
 
-    return with(removeEntry(uuid)) {
-        modifyGroup(parentGroup) {
-            copy(
-                entries = entries + item.copy(
-                    times = item.times
-                        ?.copy(locationChanged = Instant.now())
-                        ?: TimeData.create(),
-                    previousParentGroup = parent.uuid
-                )
+    return modifyParentGroup {
+        removeChildEntry(uuid)
+    }.modifyGroup(parentGroup) {
+        copy(
+            entries = entries + item.copy(
+                times = item.times
+                    ?.copy(locationChanged = Instant.now())
+                    ?: TimeData.create(),
+                previousParentGroup = parent.uuid
             )
-        }
+        )
     }
 }
 
@@ -38,7 +39,10 @@ fun KeePassDatabase.modifyEntry(
 fun KeePassDatabase.removeEntry(
     uuid: UUID
 ) = modifyContent {
-    copy(group = group.removeChildEntry(uuid))
+    copy(
+        group = group.removeChildEntry(uuid),
+        deletedObjects = deletedObjects + DeletedObject(uuid, Instant.now())
+    )
 }
 
 fun Entry.withHistory(
