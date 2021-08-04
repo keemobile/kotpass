@@ -108,6 +108,34 @@ fun KeePassDatabase.Companion.decode(
     }
 }
 
+fun KeePassDatabase.Companion.decodeFromXml(
+    inputStream: InputStream,
+    credentials: Credentials,
+    contentParser: XmlContentParser = DefaultXmlContentParser
+): KeePassDatabase {
+    val header = DatabaseHeader.Ver4x.create()
+    var innerHeader = DatabaseInnerHeader.create()
+    val saltGenerator = EncryptionSaltGenerator.create(
+        id = innerHeader.randomStreamId,
+        key = innerHeader.randomStreamKey
+    )
+    var content = contentParser.unmarshalContent(inputStream) { meta ->
+        XmlContext.Decode(
+            version = header.version,
+            encryption = saltGenerator,
+            binaries = meta.binaries
+        )
+    }
+    innerHeader = innerHeader.copy(
+        binaries = content.meta.binaries
+    )
+    content = content.copy(
+        meta = content.meta.copy(binaries = linkedMapOf())
+    )
+
+    return KeePassDatabase.Ver4x(credentials, header, content, innerHeader)
+}
+
 private fun decryptRawContent(
     header: DatabaseHeader,
     source: BufferedSource,

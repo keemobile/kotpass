@@ -70,6 +70,13 @@ fun KeePassDatabase.encode(
     }
 }
 
+fun KeePassDatabase.encodeAsXml(
+    contentParser: XmlContentParser = DefaultXmlContentParser
+) = contentParser.marshalContent(
+    context = XmlContext.Encode(header.version, true, binaries),
+    content = content
+)
+
 private fun BufferedSink.writeEncryptedContent(
     header: DatabaseHeader,
     rawContent: ByteArray,
