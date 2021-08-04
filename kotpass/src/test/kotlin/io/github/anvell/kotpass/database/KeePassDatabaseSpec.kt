@@ -2,6 +2,7 @@ package io.github.anvell.kotpass.database
 
 import io.github.anvell.kotpass.constants.BasicFields
 import io.github.anvell.kotpass.cryptography.EncryptedValue
+import io.github.anvell.kotpass.database.modifiers.cleanupHistory
 import io.github.anvell.kotpass.database.modifiers.modifyEntry
 import io.github.anvell.kotpass.database.modifiers.modifyGroup
 import io.github.anvell.kotpass.database.modifiers.moveEntry
@@ -12,6 +13,7 @@ import io.github.anvell.kotpass.database.modifiers.withHistory
 import io.github.anvell.kotpass.database.modifiers.withRecycleBin
 import io.github.anvell.kotpass.io.decodeBase64ToArray
 import io.github.anvell.kotpass.models.DeletedObject
+import io.github.anvell.kotpass.models.TimeData
 import io.github.anvell.kotpass.resources.DatabaseRes
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldContain
@@ -20,6 +22,8 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.time.Instant
+import java.time.Period
 import java.util.*
 
 class KeePassDatabaseSpec : DescribeSpec({
@@ -206,6 +210,32 @@ class KeePassDatabaseSpec : DescribeSpec({
                 .map(DeletedObject::id)
 
             deletedObjects shouldContain DatabaseRes.GroupsAndEntries.Entry1
+        }
+
+        it("Old entries are removed from history when performing cleanup") {
+            val database = loadDatabase(
+                rawData = DatabaseRes.GroupsAndEntries.DbGroupsAndEntries,
+                passphrase = "1"
+            )
+            val outdated = Instant
+                .now()
+                .minus(Period.ofDays(database.content.meta.maintenanceHistoryDays + 1))
+            val (_, entry) = database
+                .modifyEntry(DatabaseRes.GroupsAndEntries.Entry1) {
+                    copy(
+                        history = listOf(
+                            copy(
+                                times = TimeData
+                                    .create()
+                                    .copy(lastModificationTime = outdated)
+                            )
+                        )
+                    )
+                }
+                .cleanupHistory()
+                .findEntry { it.uuid == DatabaseRes.GroupsAndEntries.Entry1 }!!
+
+            entry.history.size shouldBe 0
         }
     }
 })
