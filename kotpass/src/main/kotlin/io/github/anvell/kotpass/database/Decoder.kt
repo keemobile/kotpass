@@ -58,7 +58,7 @@ fun KeePassDatabase.Companion.decode(
                         binaries = meta.binaries
                     )
                 }
-                val headerHash = content.meta.headerHash?.toByteString()
+                val headerHash = content.meta.headerHash
 
                 if (validateHashes && headerHash != null && headerHash != rawHeaderData.sha256()) {
                     throw FormatError.InvalidHeader("HeaderHash value does not match Sha256 of the header.")

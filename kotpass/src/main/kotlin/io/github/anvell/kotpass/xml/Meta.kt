@@ -12,6 +12,7 @@ import io.github.anvell.kotpass.extensions.getUuid
 import io.github.anvell.kotpass.models.Meta
 import io.github.anvell.kotpass.models.XmlContext
 import io.github.anvell.kotpass.xml.FormatXml.Tags
+import okio.ByteString.Companion.toByteString
 import org.redundent.kotlin.xml.Node
 import org.redundent.kotlin.xml.node
 
@@ -23,7 +24,8 @@ internal fun unmarshalMeta(node: Node): Meta {
             ?: Defaults.Generator,
         headerHash = node
             .firstOrNull(Tags.Meta.HeaderHash)
-            ?.getBytes(),
+            ?.getBytes()
+            ?.toByteString(),
         settingsChanged = node
             .firstOrNull(Tags.Meta.SettingsChanged)
             ?.getInstant(),
@@ -140,7 +142,7 @@ internal fun Meta.marshal(context: XmlContext.Encode): Node {
     return node(Tags.Meta.TagName) {
         Tags.Meta.Generator { text(generator) }
         if (context.version.major < 4 && headerHash != null) {
-            Tags.Meta.HeaderHash { addBytes(headerHash) }
+            Tags.Meta.HeaderHash { addBytes(headerHash.toByteArray()) }
         }
         if (settingsChanged != null) {
             Tags.Meta.SettingsChanged { addDateTime(context, settingsChanged) }

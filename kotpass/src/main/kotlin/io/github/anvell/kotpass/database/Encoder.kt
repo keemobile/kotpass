@@ -32,7 +32,7 @@ fun KeePassDatabase.encode(
 
     var rawContent = when (this) {
         is KeePassDatabase.Ver3x -> {
-            val newMeta = content.meta.copy(headerHash = headerHash.toByteArray())
+            val newMeta = content.meta.copy(headerHash = headerHash)
             contentParser
                 .marshalContent(context, content.copy(meta = newMeta))
                 .toByteArray(Charsets.UTF_8)
