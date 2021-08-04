@@ -1,4 +1,5 @@
-# Kotpass
+# Kotpass 
+![Build & Test](https://github.com/anvell/kotpass/actions/workflows/gradle.yml/badge.svg)
 
 Library provides reading/writing support for KDBX files in Kotlin.
 
