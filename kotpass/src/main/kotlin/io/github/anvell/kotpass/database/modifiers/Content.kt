@@ -52,8 +52,8 @@ fun KeePassDatabase.cleanupHistory() = modifyContent {
 private fun Group.cleanupChildHistory(
     meta: Meta
 ): Group = copy(
-    groups = groups.map { it.cleanupChildHistory(meta) },
-    entries = entries.map { it.cleanupHistory(meta) }
+    entries = entries.map { it.cleanupHistory(meta) },
+    groups = groups.map { it.cleanupChildHistory(meta) }
 )
 
 private fun Entry.cleanupHistory(

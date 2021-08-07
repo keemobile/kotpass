@@ -25,9 +25,9 @@ class GroupSpec : DescribeSpec({
             group.enableAutoType shouldBe null
             group.enableSearching shouldBe null
             group.lastTopVisibleEntry shouldNotBe null
+            group.entries.size shouldBe 1
             group.groups.size shouldBe 1
             group.groups.first().name shouldBe "Ipsum"
-            group.entries.size shouldBe 1
         }
     }
 })

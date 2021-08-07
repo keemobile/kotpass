@@ -69,8 +69,8 @@ internal fun unmarshalGroup(context: XmlContext.Decode, node: Node): Group {
             ?.getText()
             ?.split(Const.TagsSeparatorsRegex)
             ?: listOf(),
-        groups = unmarshalGroups(context, node),
         entries = unmarshalEntries(context, node),
+        groups = unmarshalGroups(context, node),
         customData = node
             .firstOrNull(Tags.CustomData.TagName)
             ?.let(CustomData::unmarshal)
@@ -114,7 +114,7 @@ internal fun Group.marshal(context: XmlContext.Encode): Node {
         if (customData.isNotEmpty()) {
             addNode(CustomData.marshal(context, customData))
         }
-        groups.forEach { group -> addNode(group.marshal(context)) }
         entries.forEach { entry -> addNode(entry.marshal(context)) }
+        groups.forEach { group -> addNode(group.marshal(context)) }
     }
 }

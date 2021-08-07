@@ -17,7 +17,7 @@ data class Group(
     val lastTopVisibleEntry: UUID? = null,
     val previousParentGroup: UUID? = null,
     val tags: List<String> = listOf(),
-    val groups: List<Group> = listOf(),
     val entries: List<Entry> = listOf(),
+    val groups: List<Group> = listOf(),
     val customData: Map<String, CustomDataValue> = mapOf()
 )

@@ -66,8 +66,8 @@ private fun KeePassDatabase.findGroupChildIds(
 
     findGroup { it.uuid == uuid }?.let { (_, foundGroup) ->
         with(Stack<Group>()) {
-            foundGroup.groups.forEach(::push)
             uuids.addAll(foundGroup.entries.map(Entry::uuid))
+            foundGroup.groups.forEach(::push)
 
             while (!empty()) {
                 val currentGroup = pop()
