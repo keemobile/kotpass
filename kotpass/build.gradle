@@ -34,16 +34,9 @@ tasks.named('jar') {
     }
 }
 
-test {
-    useJUnitPlatform()
-}
-
-dependencies {
-    testImplementation libs.testing.kotest
-    testImplementation libs.kotlin.reflect
-
-    implementation libs.kotlin.xml.builder
-    implementation libs.okio
+task sourceJar(type: Jar) {
+    classifier 'sources'
+    from sourceSets.main.allSource
 }
 
 publishing {
@@ -54,6 +47,19 @@ publishing {
             version = ArtifactVersion
 
             from components.java
+            artifact tasks.sourceJar
         }
     }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+dependencies {
+    testImplementation libs.testing.kotest
+    testImplementation libs.kotlin.reflect
+
+    implementation libs.kotlin.xml.builder
+    implementation libs.okio
 }
