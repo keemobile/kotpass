@@ -1,5 +1,6 @@
 package io.github.anvell.kotpass.models
 
+import io.github.anvell.kotpass.constants.BasicFields
 import io.github.anvell.kotpass.constants.PredefinedIcon
 import io.github.anvell.kotpass.cryptography.EncryptionSaltGenerator
 import io.github.anvell.kotpass.extensions.parseAsXml
@@ -28,6 +29,30 @@ class GroupSpec : DescribeSpec({
             group.entries.size shouldBe 1
             group.groups.size shouldBe 1
             group.groups.first().name shouldBe "Ipsum"
+        }
+
+        it("Finds child Group") {
+            val context = XmlContext.Decode(
+                version = FormatVersion(4, 1),
+                encryption = EncryptionSaltGenerator.ChaCha20(byteArrayOf()),
+                binaries = linkedMapOf()
+            )
+            val group = unmarshalGroup(context, GroupRes.BasicXml.parseAsXml())
+
+            group.findChildGroup { it.name == "Ipsum" } shouldNotBe null
+        }
+
+        it("Finds child Entry") {
+            val context = XmlContext.Decode(
+                version = FormatVersion(4, 1),
+                encryption = EncryptionSaltGenerator.ChaCha20(byteArrayOf()),
+                binaries = linkedMapOf()
+            )
+            val group = unmarshalGroup(context, GroupRes.BasicXml.parseAsXml())
+
+            group.findChildEntry {
+                it.fields[BasicFields.Title.value]?.content == "Lorem"
+            } shouldNotBe null
         }
     }
 })

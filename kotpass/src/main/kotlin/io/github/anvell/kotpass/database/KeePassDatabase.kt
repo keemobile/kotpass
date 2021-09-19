@@ -79,63 +79,26 @@ sealed class KeePassDatabase {
 
 fun KeePassDatabase.findGroup(
     predicate: (Group) -> Boolean
-): Pair<Group?, Group>? = with(Stack<Pair<Group?, Group>>()) {
-    push(null to content.group)
-
-    while (!empty()) {
-        val (parent, group) = pop()
-
-        if (predicate(group)) {
-            return parent to group
-        }
-        group.groups.forEach {
-            push(group to it)
-        }
+): Pair<Group?, Group>? {
+    return if (predicate(content.group)) {
+        null to content.group
+    } else {
+        content.group.findChildGroup(predicate)
     }
-
-    return null
 }
 
 fun KeePassDatabase.findEntry(
     predicate: (Entry) -> Boolean
-): Pair<Group, Entry>? = with(Stack<Group>()) {
-    push(content.group)
-
-    while (!empty()) {
-        val group = pop()
-
-        for (entry in group.entries) {
-            if (predicate(entry)) {
-                return group to entry
-            }
-        }
-        group.groups.forEach(::push)
-    }
-
-    return null
+): Pair<Group, Entry>? {
+    return content
+        .group
+        .findChildEntry(predicate)
 }
 
 fun KeePassDatabase.findEntries(
     predicate: (Entry) -> Boolean
-): List<Pair<Group, List<Entry>>> = with(Stack<Group>()) {
-    val result = mutableListOf<Pair<Group, List<Entry>>>()
-    push(content.group)
-
-    while (!empty()) {
-        val group = pop()
-        val found = group.entries.filter { predicate(it) }
-
-        if (found.isNotEmpty()) {
-            result.add(group to found)
-        }
-        group.groups.forEach {
-            if (content.meta.recycleBinUuid == null ||
-                it.uuid.compareTo(content.meta.recycleBinUuid) != 0
-            ) {
-                push(it)
-            }
-        }
-    }
-
-    return result
+): List<Pair<Group, List<Entry>>> {
+    return content
+        .group
+        .findChildEntries(content.meta.recycleBinUuid, predicate)
 }

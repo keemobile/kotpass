@@ -20,4 +20,74 @@ data class Group(
     val entries: List<Entry> = listOf(),
     val groups: List<Group> = listOf(),
     val customData: Map<String, CustomDataValue> = mapOf()
-) : DatabaseElement
+) : DatabaseElement {
+
+    fun findChildGroup(
+        predicate: (Group) -> Boolean
+    ): Pair<Group, Group>? {
+        val stack = Stack<Pair<Group, Group>>()
+        groups.forEach {
+            stack.push(this to it)
+        }
+
+        while (!stack.empty()) {
+            val (parent, current) = stack.pop()
+
+            if (predicate(current)) {
+                return parent to current
+            }
+            current.groups.forEach {
+                stack.push(current to it)
+            }
+        }
+
+        return null
+    }
+
+    fun findChildEntry(
+        predicate: (Entry) -> Boolean
+    ): Pair<Group, Entry>? {
+        val stack = Stack<Group>()
+        stack.push(this)
+
+        while (!stack.empty()) {
+            val current = stack.pop()
+
+            for (entry in current.entries) {
+                if (predicate(entry)) {
+                    return current to entry
+                }
+            }
+            current.groups.forEach(stack::push)
+        }
+
+        return null
+    }
+
+    fun findChildEntries(
+        recycleBinUuid: UUID?,
+        predicate: (Entry) -> Boolean
+    ): List<Pair<Group, List<Entry>>> {
+        val result = mutableListOf<Pair<Group, List<Entry>>>()
+        val stack = Stack<Group>()
+        stack.push(this)
+
+        while (!stack.empty()) {
+            val current = stack.pop()
+            val found = current.entries.filter { predicate(it) }
+
+            if (found.isNotEmpty()) {
+                result.add(current to found)
+            }
+            current.groups.forEach {
+                if (recycleBinUuid == null ||
+                    it.uuid.compareTo(recycleBinUuid) != 0
+                ) {
+                    stack.push(it)
+                }
+            }
+        }
+
+        return result
+    }
+}
