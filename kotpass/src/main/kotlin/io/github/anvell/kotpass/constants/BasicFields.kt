@@ -5,5 +5,7 @@ enum class BasicFields(val value: String) {
     UserName("UserName"),
     Password("Password"),
     Url("URL"),
-    Notes("Notes"),
+    Notes("Notes");
+
+    operator fun invoke() = this.value
 }
