@@ -22,7 +22,7 @@ internal fun unmarshalDeletedObject(node: Node): DeletedObject? {
 }
 
 internal fun DeletedObject.marshal(context: XmlContext.Encode): Node {
-    return node(FormatXml.Tags.DeletedObjects.TagName) {
+    return node(FormatXml.Tags.DeletedObjects.Object) {
         FormatXml.Tags.Uuid { addUuid(id) }
         FormatXml.Tags.DeletedObjects.Time { addDateTime(context, deletionTime) }
     }
