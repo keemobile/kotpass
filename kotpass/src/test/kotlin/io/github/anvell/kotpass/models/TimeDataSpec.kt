@@ -1,5 +1,6 @@
 package io.github.anvell.kotpass.models
 
+import io.github.anvell.kotpass.cryptography.EncryptionSaltGenerator
 import io.github.anvell.kotpass.extensions.parseAsXml
 import io.github.anvell.kotpass.resources.TimeDataRes
 import io.github.anvell.kotpass.xml.marshal
@@ -39,6 +40,7 @@ class TimeDataSpec : DescribeSpec({
         it("Using text format") {
             val context = XmlContext.Encode(
                 version = FormatVersion(3, 1),
+                encryption = EncryptionSaltGenerator.ChaCha20(byteArrayOf()),
                 binaries = linkedMapOf()
             )
             val times = TimeData(
@@ -57,6 +59,7 @@ class TimeDataSpec : DescribeSpec({
         it("Using binary format") {
             val context = XmlContext.Encode(
                 version = FormatVersion(4, 0),
+                encryption = EncryptionSaltGenerator.ChaCha20(byteArrayOf()),
                 binaries = linkedMapOf()
             )
             val times = TimeData(

@@ -1,6 +1,7 @@
 package io.github.anvell.kotpass.database
 
 import io.github.anvell.kotpass.cryptography.ContentEncryption
+import io.github.anvell.kotpass.cryptography.EncryptionSaltGenerator
 import io.github.anvell.kotpass.cryptography.KeyTransform
 import io.github.anvell.kotpass.database.header.DatabaseHeader
 import io.github.anvell.kotpass.database.modifiers.binaries
@@ -28,16 +29,36 @@ fun KeePassDatabase.encode(
         header.writeTo(this)
     }
     val headerHash = headerBuffer.sha256()
-    val context = XmlContext.Encode(header.version, false, binaries)
 
     var rawContent = when (this) {
         is KeePassDatabase.Ver3x -> {
+            val saltGenerator = EncryptionSaltGenerator.create(
+                id = header.innerRandomStreamId,
+                key = header.innerRandomStreamKey
+            )
+            val context = XmlContext.Encode(
+                version = header.version,
+                encryption = saltGenerator,
+                binaries = binaries,
+                isXmlExport = false
+            )
             val newMeta = content.meta.copy(headerHash = headerHash)
+
             contentParser
                 .marshalContent(context, content.copy(meta = newMeta))
                 .toByteArray(Charsets.UTF_8)
         }
         is KeePassDatabase.Ver4x -> {
+            val saltGenerator = EncryptionSaltGenerator.create(
+                id = innerHeader.randomStreamId,
+                key = innerHeader.randomStreamKey
+            )
+            val context = XmlContext.Encode(
+                version = header.version,
+                encryption = saltGenerator,
+                binaries = binaries,
+                isXmlExport = false
+            )
             val hmacKey = KeyTransform.hmacKey(
                 masterSeed = header.masterSeed.toByteArray(),
                 transformedKey = transformedKey
@@ -72,10 +93,32 @@ fun KeePassDatabase.encode(
 
 fun KeePassDatabase.encodeAsXml(
     contentParser: XmlContentParser = DefaultXmlContentParser
-) = contentParser.marshalContent(
-    context = XmlContext.Encode(header.version, true, binaries),
-    content = content
-)
+): String {
+    val saltGenerator = when (this) {
+        is KeePassDatabase.Ver3x -> {
+            EncryptionSaltGenerator.create(
+                id = header.innerRandomStreamId,
+                key = header.innerRandomStreamKey
+            )
+        }
+        is KeePassDatabase.Ver4x -> {
+            EncryptionSaltGenerator.create(
+                id = innerHeader.randomStreamId,
+                key = innerHeader.randomStreamKey
+            )
+        }
+    }
+
+    return contentParser.marshalContent(
+        context = XmlContext.Encode(
+            version = header.version,
+            encryption = saltGenerator,
+            binaries = binaries,
+            isXmlExport = true
+        ),
+        content = content
+    )
+}
 
 private fun BufferedSink.writeEncryptedContent(
     header: DatabaseHeader,

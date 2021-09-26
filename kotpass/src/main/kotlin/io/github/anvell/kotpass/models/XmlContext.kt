@@ -8,8 +8,9 @@ sealed class XmlContext {
 
     class Encode(
         override val version: FormatVersion,
-        val isXmlExport: Boolean = false,
-        val binaries: Map<ByteString, BinaryData>
+        val encryption: EncryptionSaltGenerator,
+        val binaries: Map<ByteString, BinaryData>,
+        val isXmlExport: Boolean = false
     ) : XmlContext()
 
     class Decode(

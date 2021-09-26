@@ -4,6 +4,7 @@ import io.github.anvell.kotpass.errors.FormatError
 import io.github.anvell.kotpass.extensions.addBytes
 import io.github.anvell.kotpass.extensions.childNodes
 import io.github.anvell.kotpass.extensions.getBytes
+import io.github.anvell.kotpass.extensions.toXmlString
 import io.github.anvell.kotpass.models.BinaryData
 import okio.ByteString
 import org.redundent.kotlin.xml.Node
@@ -38,8 +39,8 @@ private fun unmarshalBinaryData(node: Node) = with(node) {
 internal fun BinaryData.marshal(id: Int): Node {
     val compressed = this is BinaryData.Compressed
     return node(FormatXml.Tags.Meta.Binaries.Item) {
-        set(FormatXml.Attributes.Id, id)
-        set(FormatXml.Attributes.Compressed, compressed)
+        attribute(FormatXml.Attributes.Id, id)
+        attribute(FormatXml.Attributes.Compressed, compressed.toXmlString())
         addBytes(rawContent)
     }
 }

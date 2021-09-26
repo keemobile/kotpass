@@ -37,7 +37,7 @@ internal fun Node.addDateTime(
 }
 
 internal fun Node.addBoolean(value: Boolean) {
-    text(if (value) FormatXml.Values.True else FormatXml.Values.False)
+    text(value.toXmlString())
 }
 
 internal fun Node.addOptionalBoolean(value: Boolean?) {

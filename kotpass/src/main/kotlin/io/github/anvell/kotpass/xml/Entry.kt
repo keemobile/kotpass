@@ -4,12 +4,7 @@ import io.github.anvell.kotpass.constants.Const
 import io.github.anvell.kotpass.constants.PredefinedIcon
 import io.github.anvell.kotpass.cryptography.EncryptedValue
 import io.github.anvell.kotpass.errors.FormatError
-import io.github.anvell.kotpass.extensions.addBoolean
-import io.github.anvell.kotpass.extensions.addUuid
-import io.github.anvell.kotpass.extensions.childNodes
-import io.github.anvell.kotpass.extensions.getBytes
-import io.github.anvell.kotpass.extensions.getText
-import io.github.anvell.kotpass.extensions.getUuid
+import io.github.anvell.kotpass.extensions.*
 import io.github.anvell.kotpass.models.Entry
 import io.github.anvell.kotpass.models.EntryValue
 import io.github.anvell.kotpass.models.XmlContext
@@ -92,7 +87,8 @@ private fun unmarshalFields(
     .childNodes()
     .filter { it.nodeName == Tags.Entry.Fields.TagName }
     .associate { fieldNode ->
-        val key = fieldNode.firstOrNull(Tags.Entry.Fields.ItemKey)
+        val key = fieldNode
+            .firstOrNull(Tags.Entry.Fields.ItemKey)
             ?.getText()
             ?: throw FormatError.InvalidXml("Invalid entry field without id.")
         val protected = fieldNode
@@ -101,15 +97,19 @@ private fun unmarshalFields(
             .toBoolean()
 
         if (protected) {
-            val bytes = fieldNode.firstOrNull(Tags.Entry.Fields.ItemValue)
+            val bytes = fieldNode
+                .firstOrNull(Tags.Entry.Fields.ItemValue)
                 ?.getBytes()
                 ?: ByteArray(0)
             val salt = context.encryption.getSalt(bytes.size)
+
             key to EntryValue.Encrypted(EncryptedValue(bytes, salt))
         } else {
-            val text = fieldNode.firstOrNull(Tags.Entry.Fields.ItemValue)
+            val text = fieldNode
+                .firstOrNull(Tags.Entry.Fields.ItemValue)
                 ?.getText()
                 ?: ""
+
             key to EntryValue.Plain(text)
         }
     }
@@ -134,7 +134,9 @@ internal fun Entry.marshal(context: XmlContext.Encode): Node {
         if (times != null) {
             addNode(times.marshal(context))
         }
-        marshalFields(fields).forEach(this::addNode)
+        marshalFields(context, fields).forEach {
+            addNode(it)
+        }
         binaries.forEach {
             addNode(it.marshal(context))
         }
@@ -152,13 +154,29 @@ internal fun Entry.marshal(context: XmlContext.Encode): Node {
     }
 }
 
-private fun marshalFields(fields: Map<String, EntryValue>): List<Node> {
+private fun marshalFields(
+    context: XmlContext.Encode,
+    fields: Map<String, EntryValue>
+): List<Node> {
     return fields.map { (key, value) ->
         node(Tags.Entry.Fields.TagName) {
             Tags.Entry.Fields.ItemKey { text(key) }
             Tags.Entry.Fields.ItemValue {
-                set(FormatXml.Attributes.Protected, value is EntryValue.Encrypted)
-                text(value.content)
+                val isProtected = value is EntryValue.Encrypted
+
+                if (isProtected && !context.isXmlExport) {
+                    val encryptedContent = context
+                        .encryption
+                        .processBytes(value.content.toByteArray())
+
+                    attribute(
+                        FormatXml.Attributes.Protected,
+                        isProtected.toXmlString()
+                    )
+                    addBytes(encryptedContent)
+                } else {
+                    text(value.content)
+                }
             }
         }
     }

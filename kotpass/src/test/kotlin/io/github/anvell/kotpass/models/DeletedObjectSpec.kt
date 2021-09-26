@@ -1,5 +1,6 @@
 package io.github.anvell.kotpass.models
 
+import io.github.anvell.kotpass.cryptography.EncryptionSaltGenerator
 import io.github.anvell.kotpass.extensions.parseAsXml
 import io.github.anvell.kotpass.resources.DeletedObjectRes
 import io.github.anvell.kotpass.xml.marshal
@@ -24,6 +25,7 @@ class DeletedObjectSpec : DescribeSpec({
         it("Uuid is encoded as Base64") {
             val context = XmlContext.Encode(
                 version = FormatVersion(4, 0),
+                encryption = EncryptionSaltGenerator.ChaCha20(byteArrayOf()),
                 binaries = linkedMapOf()
             )
 
