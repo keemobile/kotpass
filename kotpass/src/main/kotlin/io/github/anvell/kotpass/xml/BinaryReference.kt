@@ -34,15 +34,17 @@ internal fun unmarshalBinaryReferences(
 internal fun BinaryReference.marshal(
     context: XmlContext.Encode
 ): Node {
-    val id = context.binaries[hash]
-        ?: throw FormatError.InvalidContent("No binary with hash: ${hash.hex()}.")
+    val id = context.binaries.keys.indexOf(hash)
+    if (id == -1) {
+        throw FormatError.InvalidContent("No binary with hash: ${hash.hex()}.")
+    }
 
     return node(Tags.Entry.BinaryReferences.TagName) {
         Tags.Entry.BinaryReferences.ItemKey {
             text(name)
         }
         Tags.Entry.BinaryReferences.ItemValue {
-            set(FormatXml.Attributes.Ref, id)
+            attribute(FormatXml.Attributes.Ref, id.toString())
         }
     }
 }
