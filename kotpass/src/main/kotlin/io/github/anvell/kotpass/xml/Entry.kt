@@ -164,18 +164,28 @@ private fun marshalFields(
             Tags.Entry.Fields.ItemValue {
                 val isProtected = value is EntryValue.Encrypted
 
-                if (isProtected && !context.isXmlExport) {
-                    val encryptedContent = context
-                        .encryption
-                        .processBytes(value.content.toByteArray())
+                when {
+                    isProtected && context.isXmlExport -> {
+                        attribute(
+                            FormatXml.Attributes.ProtectedInMemPlainXml,
+                            isProtected.toXmlString()
+                        )
+                        text(value.content)
+                    }
+                    isProtected -> {
+                        val encryptedContent = context
+                            .encryption
+                            .processBytes(value.content.toByteArray())
 
-                    attribute(
-                        FormatXml.Attributes.Protected,
-                        isProtected.toXmlString()
-                    )
-                    addBytes(encryptedContent)
-                } else {
-                    text(value.content)
+                        attribute(
+                            FormatXml.Attributes.Protected,
+                            isProtected.toXmlString()
+                        )
+                        addBytes(encryptedContent)
+                    }
+                    else -> {
+                        text(value.content)
+                    }
                 }
             }
         }
