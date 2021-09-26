@@ -10,8 +10,21 @@ private val SalsaNonce = intArrayOf(0xe8, 0x30, 0x09, 0x4b, 0x97, 0x20, 0x5d, 0x
     .map(Int::toByte)
     .toByteArray()
 
+/**
+ * Used to encrypt/decrypt values marked with 'Protected' flag
+ * during XML content encoding/decoding.
+ */
 sealed class EncryptionSaltGenerator {
+    /**
+     * Get salt using underlying algorithm and advance the counter.
+     */
     abstract fun getSalt(length: Int): ByteArray
+
+    /**
+     * Encrypt/decrypt [input] with salt supplied by underlying
+     * algorithm and advance the counter.
+     */
+    abstract fun processBytes(input: ByteArray): ByteArray
 
     class Salsa20(key: ByteArray) : EncryptionSaltGenerator() {
         private val engine = Salsa20Engine().apply {
@@ -19,6 +32,8 @@ sealed class EncryptionSaltGenerator {
         }
 
         override fun getSalt(length: Int) = engine.getBytes(length)
+
+        override fun processBytes(input: ByteArray) = engine.processBytes(input)
     }
 
     class ChaCha20(key: ByteArray) : EncryptionSaltGenerator() {
@@ -31,6 +46,8 @@ sealed class EncryptionSaltGenerator {
         }
 
         override fun getSalt(length: Int) = engine.getBytes(length)
+
+        override fun processBytes(input: ByteArray) = engine.processBytes(input)
     }
 
     companion object {
