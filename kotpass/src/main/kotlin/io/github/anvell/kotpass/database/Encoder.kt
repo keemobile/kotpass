@@ -116,7 +116,8 @@ fun KeePassDatabase.encodeAsXml(
             binaries = binaries,
             isXmlExport = true
         ),
-        content = content
+        content = content,
+        pretty = true
     )
 }
 

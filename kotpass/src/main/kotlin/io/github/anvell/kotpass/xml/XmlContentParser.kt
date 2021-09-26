@@ -19,6 +19,7 @@ interface XmlContentParser {
 
     fun marshalContent(
         context: XmlContext.Encode,
-        content: DatabaseContent
+        content: DatabaseContent,
+        pretty: Boolean = false
     ): String
 }

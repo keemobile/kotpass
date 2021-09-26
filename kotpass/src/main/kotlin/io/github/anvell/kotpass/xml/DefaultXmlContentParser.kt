@@ -49,7 +49,8 @@ object DefaultXmlContentParser : XmlContentParser {
 
     override fun marshalContent(
         context: XmlContext.Encode,
-        content: DatabaseContent
+        content: DatabaseContent,
+        pretty: Boolean
     ): String {
         return xml(Tags.Document, XmlEncoding, XmlVersion.V10) {
             addNode(content.meta.marshal(context))
@@ -61,6 +62,11 @@ object DefaultXmlContentParser : XmlContentParser {
                     }
                 }
             }
-        }.toString(PrintOptions(singleLineTextElements = true))
+        }.toString(
+            PrintOptions(
+                pretty = pretty,
+                singleLineTextElements = true
+            )
+        )
     }
 }
