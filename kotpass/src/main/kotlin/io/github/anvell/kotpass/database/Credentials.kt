@@ -55,7 +55,7 @@ class Credentials private constructor(
                 }
                 KeyfileXml.Tags.Key {
                     KeyfileXml.Tags.Data {
-                        set(KeyfileXml.Attributes.Hash, hash)
+                        attribute(KeyfileXml.Attributes.Hash, hash)
                         text(key.encodeHex().uppercase())
                     }
                 }
