@@ -37,7 +37,7 @@ private const val M32L = 0xFFFFFFFFL
 
 private val ZeroBytes = ByteArray(4)
 
-class Argon2Engine(
+internal class Argon2Engine(
     private val type: Type = Type.Argon2D,
     private val version: Version = Version.Ver13,
     private val salt: ByteArray,
