@@ -1,14 +1,8 @@
 package io.github.anvell.kotpass.xml
 
-import io.github.anvell.kotpass.constants.BasicFields
 import io.github.anvell.kotpass.constants.Defaults
-import io.github.anvell.kotpass.extensions.addBoolean
-import io.github.anvell.kotpass.extensions.addBytes
-import io.github.anvell.kotpass.extensions.addDateTime
-import io.github.anvell.kotpass.extensions.addUuid
-import io.github.anvell.kotpass.extensions.getBytes
-import io.github.anvell.kotpass.extensions.getText
-import io.github.anvell.kotpass.extensions.getUuid
+import io.github.anvell.kotpass.constants.MemoryProtectionFlags
+import io.github.anvell.kotpass.extensions.*
 import io.github.anvell.kotpass.models.Meta
 import io.github.anvell.kotpass.models.XmlContext
 import io.github.anvell.kotpass.xml.FormatXml.Tags
@@ -117,23 +111,23 @@ internal fun unmarshalMeta(node: Node): Meta {
 }
 
 @OptIn(ExperimentalStdlibApi::class)
-private fun unmarshalMemoryProtection(node: Node): Set<BasicFields> =
+private fun unmarshalMemoryProtection(node: Node): Set<MemoryProtectionFlags> =
     with(Tags.Meta.MemoryProtection) {
         return buildSet {
             if (node.firstOrNull(ProtectTitle)?.getText().toBoolean()) {
-                add(BasicFields.Title)
+                add(MemoryProtectionFlags.Title)
             }
             if (node.firstOrNull(ProtectUserName)?.getText().toBoolean()) {
-                add(BasicFields.UserName)
+                add(MemoryProtectionFlags.UserName)
             }
             if (node.firstOrNull(ProtectPassword)?.getText().toBoolean()) {
-                add(BasicFields.Password)
+                add(MemoryProtectionFlags.Password)
             }
             if (node.firstOrNull(ProtectUrl)?.getText().toBoolean()) {
-                add(BasicFields.Url)
+                add(MemoryProtectionFlags.Url)
             }
             if (node.firstOrNull(ProtectNotes)?.getText().toBoolean()) {
-                add(BasicFields.Notes)
+                add(MemoryProtectionFlags.Notes)
             }
         }
     }
@@ -185,11 +179,11 @@ internal fun Meta.marshal(context: XmlContext.Encode): Node {
 }
 
 private fun marshalMemoryProtection(
-    memoryProtection: Set<BasicFields>
+    memoryProtection: Set<MemoryProtectionFlags>
 ): Node = node(Tags.Meta.MemoryProtection.TagName) {
-    BasicFields
-        .values()
-        .forEach {
-            it.value { addBoolean(memoryProtection.contains(it)) }
+    for (field in MemoryProtectionFlags.values()) {
+        field.value {
+            addBoolean(memoryProtection.contains(field))
         }
+    }
 }
