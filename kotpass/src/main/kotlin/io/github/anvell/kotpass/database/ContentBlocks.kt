@@ -75,7 +75,11 @@ internal object ContentBlocks {
         sink: BufferedSink,
         contentData: ByteArray
     ) = writeContentBlocks(sink, contentData, true) {
-        data.sha256()
+        if (data.isNotEmpty()) {
+            data.sha256()
+        } else {
+            ByteArray(32) { 0x0 }
+        }
     }
 
     internal fun writeContentBlocksVer4x(
