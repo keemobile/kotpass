@@ -2,10 +2,7 @@ package io.github.anvell.kotpass.database
 
 import io.github.anvell.kotpass.database.header.DatabaseHeader
 import io.github.anvell.kotpass.database.header.DatabaseInnerHeader
-import io.github.anvell.kotpass.models.DatabaseContent
-import io.github.anvell.kotpass.models.Entry
-import io.github.anvell.kotpass.models.Group
-import io.github.anvell.kotpass.models.Meta
+import io.github.anvell.kotpass.models.*
 import java.util.*
 
 sealed class KeePassDatabase {
@@ -76,6 +73,10 @@ sealed class KeePassDatabase {
         const val MaxSupportedVersion = 4
     }
 }
+
+fun KeePassDatabase.traverse(
+    block: (DatabaseElement) -> Unit
+) = content.group.traverse(block)
 
 fun KeePassDatabase.findGroup(
     predicate: (Group) -> Boolean

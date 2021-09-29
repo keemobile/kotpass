@@ -2,16 +2,9 @@ package io.github.anvell.kotpass.database
 
 import io.github.anvell.kotpass.constants.BasicFields
 import io.github.anvell.kotpass.cryptography.EncryptedValue
-import io.github.anvell.kotpass.database.modifiers.cleanupHistory
-import io.github.anvell.kotpass.database.modifiers.modifyEntry
-import io.github.anvell.kotpass.database.modifiers.modifyGroup
-import io.github.anvell.kotpass.database.modifiers.moveEntry
-import io.github.anvell.kotpass.database.modifiers.moveGroup
-import io.github.anvell.kotpass.database.modifiers.removeEntry
-import io.github.anvell.kotpass.database.modifiers.removeGroup
-import io.github.anvell.kotpass.database.modifiers.withHistory
-import io.github.anvell.kotpass.database.modifiers.withRecycleBin
+import io.github.anvell.kotpass.database.modifiers.*
 import io.github.anvell.kotpass.io.decodeBase64ToArray
+import io.github.anvell.kotpass.models.DatabaseElement
 import io.github.anvell.kotpass.models.DeletedObject
 import io.github.anvell.kotpass.models.TimeData
 import io.github.anvell.kotpass.resources.DatabaseRes
@@ -24,7 +17,6 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.time.Instant
 import java.time.Period
-import java.util.*
 
 class KeePassDatabaseSpec : DescribeSpec({
 
@@ -79,6 +71,24 @@ class KeePassDatabaseSpec : DescribeSpec({
     }
 
     describe("Database search") {
+        it("Traverse database") {
+            val database = loadDatabase(
+                rawData = DatabaseRes.GroupsAndEntries.DbGroupsAndEntries,
+                passphrase = "1"
+            )
+            val result = mutableSetOf<DatabaseElement>()
+            database.traverse { result += it }
+
+            result.map { it.uuid } shouldContainAll setOf(
+                DatabaseRes.GroupsAndEntries.Group1,
+                DatabaseRes.GroupsAndEntries.Group2,
+                DatabaseRes.GroupsAndEntries.Group3,
+                DatabaseRes.GroupsAndEntries.Entry1,
+                DatabaseRes.GroupsAndEntries.Entry2,
+                DatabaseRes.GroupsAndEntries.Entry3
+            )
+        }
+
         it("Finds entries with specific title") {
             val database = loadDatabase(
                 rawData = DatabaseRes.GroupsAndEntries.DbGroupsAndEntries,

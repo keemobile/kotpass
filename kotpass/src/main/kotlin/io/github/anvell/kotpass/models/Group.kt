@@ -22,6 +22,25 @@ data class Group(
     val customData: Map<String, CustomDataValue> = mapOf()
 ) : DatabaseElement {
 
+    fun traverse(
+        block: (DatabaseElement) -> Unit
+    ) {
+        val stack = Stack<Group>()
+        stack.push(this)
+
+        while (!stack.empty()) {
+            val current = stack.pop()
+            block(current)
+
+            for (entry in current.entries) {
+                block(entry)
+            }
+            for (group in current.groups) {
+                stack.push(group)
+            }
+        }
+    }
+
     fun findChildGroup(
         predicate: (Group) -> Boolean
     ): Pair<Group, Group>? {
