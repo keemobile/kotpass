@@ -1,5 +1,6 @@
 package io.github.anvell.kotpass.xml
 
+import io.github.anvell.kotpass.builders.buildEntry
 import io.github.anvell.kotpass.constants.Const
 import io.github.anvell.kotpass.constants.PredefinedIcon
 import io.github.anvell.kotpass.cryptography.EncryptedValue
@@ -16,60 +17,67 @@ internal fun unmarshalEntry(
     context: XmlContext.Decode,
     node: Node
 ): Entry {
-    return Entry(
-        uuid = node
-            .firstOrNull(Tags.Uuid)
-            ?.getUuid()
-            ?: throw FormatError.InvalidXml("Invalid entry without Uuid."),
-        icon = node
-            .firstOrNull(Tags.Entry.IconId)
-            ?.getText()
-            ?.toInt()
-            ?.let(PredefinedIcon.values()::getOrNull)
-            ?: PredefinedIcon.Key,
-        customIconUuid = node
-            .firstOrNull(Tags.Entry.CustomIconId)
-            ?.getUuid(),
-        foregroundColor = node
-            .firstOrNull(Tags.Entry.ForegroundColor)
-            ?.getText(),
-        backgroundColor = node
-            .firstOrNull(Tags.Entry.BackgroundColor)
-            ?.getText(),
-        overrideUrl = node
-            .firstOrNull(Tags.Entry.OverrideUrl)
-            ?.getText()
-            ?: "",
-        times = node
-            .firstOrNull(Tags.TimeData.TagName)
-            ?.let(::unmarshalTimeData),
-        autoType = node
-            .firstOrNull(Tags.Entry.AutoType.TagName)
-            ?.let(::unmarshalAutoTypeData),
-        fields = unmarshalFields(context, node),
-        tags = node
-            .firstOrNull(Tags.Entry.Tags)
-            ?.getText()
-            ?.split(Const.TagsSeparatorsRegex)
-            ?: listOf(),
-        binaries = unmarshalBinaryReferences(context, node),
-        history = node
-            .firstOrNull(Tags.Entry.History)
-            ?.let { unmarshalEntries(context, it) }
-            ?: listOf(),
-        customData = node
-            .firstOrNull(Tags.CustomData.TagName)
-            ?.let(CustomData::unmarshal)
-            ?: mapOf(),
-        previousParentGroup = node
-            .firstOrNull(Tags.Entry.PreviousParentGroup)
-            ?.getUuid(),
-        qualityCheck = node
-            .firstOrNull(Tags.Entry.QualityCheck)
-            ?.getText()
-            ?.toBoolean()
-            ?: true,
-    )
+    val uuid = node
+        .firstOrNull(Tags.Uuid)
+        ?.getUuid()
+        ?: throw FormatError.InvalidXml("Invalid entry without Uuid.")
+
+    return buildEntry(uuid) {
+        for (childNode in node.childNodes()) {
+            when (childNode.nodeName) {
+                Tags.Entry.IconId -> {
+                    icon = childNode
+                        .getText()
+                        ?.toInt()
+                        ?.let(PredefinedIcon.values()::getOrNull)
+                        ?: PredefinedIcon.Key
+                }
+                Tags.Entry.CustomIconId -> {
+                    customIconUuid = childNode.getUuid()
+                }
+                Tags.Entry.ForegroundColor -> {
+                    foregroundColor = childNode.getText()
+                }
+                Tags.Entry.BackgroundColor -> {
+                    backgroundColor = childNode.getText()
+                }
+                Tags.Entry.OverrideUrl -> {
+                    overrideUrl = childNode.getText() ?: ""
+                }
+                Tags.TimeData.TagName -> {
+                    times = unmarshalTimeData(childNode)
+                }
+                Tags.Entry.AutoType.TagName -> {
+                    autoType = unmarshalAutoTypeData(childNode)
+                }
+                Tags.Entry.Fields.TagName -> {
+                    val (name, value) = unmarshalField(context, childNode)
+                    fields[name] = value
+                }
+                Tags.Entry.Tags -> {
+                    childNode
+                        .getText()
+                        ?.split(Const.TagsSeparatorsRegex)
+                        ?.forEach(tags::add)
+                }
+                Tags.Entry.BinaryReferences.TagName -> {
+                    binaries.add(unmarshalBinaryReference(context, childNode))
+                }
+                Tags.Entry.History -> {
+                    history = unmarshalEntries(context, childNode).toMutableList()
+                }
+                Tags.CustomData.TagName -> {
+                    customData = CustomData.unmarshal(childNode).toMutableMap()
+                }
+                Tags.Entry.PreviousParentGroup -> {
+                    previousParentGroup = childNode.getUuid()
+                }
+                Tags.Entry.QualityCheck -> {
+                    qualityCheck = childNode.getText()?.toBoolean() ?: true
+                }
+            }
+        }
+    }
 }
 
 internal fun unmarshalEntries(
@@ -80,76 +88,73 @@ internal fun unmarshalEntries(
     .filter { it.nodeName == Tags.Entry.TagName }
     .map { unmarshalEntry(context, it) }
 
-private fun unmarshalFields(
+private fun unmarshalField(
     context: XmlContext.Decode,
     node: Node
-): Map<String, EntryValue> = node
-    .childNodes()
-    .filter { it.nodeName == Tags.Entry.Fields.TagName }
-    .associate { fieldNode ->
-        val key = fieldNode
-            .firstOrNull(Tags.Entry.Fields.ItemKey)
-            ?.getText()
-            ?: throw FormatError.InvalidXml("Invalid entry field without id.")
-        val protected = fieldNode
+): Pair<String, EntryValue> {
+    val key = node
+        .firstOrNull(Tags.Entry.Fields.ItemKey)
+        ?.getText()
+        ?: throw FormatError.InvalidXml("Invalid entry field without id.")
+    val protected = node
+        .firstOrNull(Tags.Entry.Fields.ItemValue)
+        ?.get<String?>(FormatXml.Attributes.Protected)
+        .toBoolean()
+
+    return if (protected) {
+        val bytes = node
             .firstOrNull(Tags.Entry.Fields.ItemValue)
-            ?.get<String?>(FormatXml.Attributes.Protected)
-            .toBoolean()
+            ?.getBytes()
+            ?: ByteArray(0)
+        val salt = context.encryption.getSalt(bytes.size)
 
-        if (protected) {
-            val bytes = fieldNode
-                .firstOrNull(Tags.Entry.Fields.ItemValue)
-                ?.getBytes()
-                ?: ByteArray(0)
-            val salt = context.encryption.getSalt(bytes.size)
+        key to EntryValue.Encrypted(EncryptedValue(bytes, salt))
+    } else {
+        val text = node
+            .firstOrNull(Tags.Entry.Fields.ItemValue)
+            ?.getText()
+            ?: ""
 
-            key to EntryValue.Encrypted(EncryptedValue(bytes, salt))
-        } else {
-            val text = fieldNode
-                .firstOrNull(Tags.Entry.Fields.ItemValue)
-                ?.getText()
-                ?: ""
-
-            key to EntryValue.Plain(text)
-        }
+        key to EntryValue.Plain(text)
     }
+}
 
-internal fun Entry.marshal(context: XmlContext.Encode): Node {
-    return node(Tags.Entry.TagName) {
-        Tags.Uuid { addUuid(uuid) }
-        Tags.Entry.IconId { text(icon.ordinal.toString()) }
-        if (customIconUuid != null) {
-            Tags.Entry.CustomIconId { addUuid(customIconUuid) }
-        }
-        Tags.Entry.ForegroundColor { foregroundColor?.let(::text) }
-        Tags.Entry.BackgroundColor { backgroundColor?.let(::text) }
-        Tags.Entry.OverrideUrl { text(overrideUrl) }
-        Tags.Entry.Tags { text(tags.joinToString(Const.TagsSeparator)) }
-        if (context.version.isAtLeast(4, 1)) {
-            Tags.Entry.QualityCheck { addBoolean(qualityCheck) }
-        }
-        if (context.version.isAtLeast(4, 1) && previousParentGroup != null) {
-            Tags.Entry.PreviousParentGroup { addUuid(previousParentGroup) }
-        }
-        if (times != null) {
-            addNode(times.marshal(context))
-        }
-        marshalFields(context, fields).forEach {
-            addNode(it)
-        }
-        binaries.forEach {
-            addNode(it.marshal(context))
-        }
-        if (customData.isNotEmpty()) {
-            addNode(CustomData.marshal(context, customData))
-        }
-        if (autoType != null) {
-            addNode(autoType.marshal())
-        }
-        if (history.isNotEmpty()) {
-            Tags.Entry.History {
-                history.forEach { addNode(it.marshal(context)) }
-            }
+internal fun Entry.marshal(
+    context: XmlContext.Encode
+): Node = node(Tags.Entry.TagName) {
+    Tags.Uuid { addUuid(uuid) }
+    Tags.Entry.IconId { text(icon.ordinal.toString()) }
+    if (customIconUuid != null) {
+        Tags.Entry.CustomIconId { addUuid(customIconUuid) }
+    }
+    Tags.Entry.ForegroundColor { foregroundColor?.let(::text) }
+    Tags.Entry.BackgroundColor { backgroundColor?.let(::text) }
+    Tags.Entry.OverrideUrl { text(overrideUrl) }
+    Tags.Entry.Tags { text(tags.joinToString(Const.TagsSeparator)) }
+    if (context.version.isAtLeast(4, 1)) {
+        Tags.Entry.QualityCheck { addBoolean(qualityCheck) }
+    }
+    if (context.version.isAtLeast(4, 1) && previousParentGroup != null) {
+        Tags.Entry.PreviousParentGroup { addUuid(previousParentGroup) }
+    }
+    if (times != null) {
+        addNode(times.marshal(context))
+    }
+    marshalFields(context, fields).forEach {
+        addNode(it)
+    }
+    binaries.forEach {
+        addNode(it.marshal(context))
+    }
+    if (customData.isNotEmpty()) {
+        addNode(CustomData.marshal(context, customData))
+    }
+    if (autoType != null) {
+        addNode(autoType.marshal())
+    }
+    if (history.isNotEmpty()) {
+        Tags.Entry.History {
+            history.forEach { addNode(it.marshal(context)) }
         }
     }
 }
