@@ -127,33 +127,28 @@ private fun BufferedSink.writeEncryptedContent(
     transformedKey: ByteArray
 ) {
     val masterSeed = header.masterSeed.toByteArray()
-    val contentBuffer = Buffer()
 
     when (header) {
         is DatabaseHeader.Ver3x -> {
+            val contentBuffer = Buffer()
             contentBuffer.write(header.streamStartBytes)
             ContentBlocks.writeContentBlocksVer3x(contentBuffer, rawContent)
-        }
-        is DatabaseHeader.Ver4x -> contentBuffer.write(rawContent)
-    }
 
-    if (contentBuffer.size % 16 != 0L) {
-        val padding = (16 - (contentBuffer.size % 16)).toInt()
-        contentBuffer.write(ByteArray(padding) { padding.toByte() })
-    }
-
-    val encryptedContent = ContentEncryption.encrypt(
-        cipherId = header.cipherId,
-        key = KeyTransform.masterKey(masterSeed, transformedKey),
-        iv = header.encryptionIV.toByteArray(),
-        data = contentBuffer.readByteArray()
-    )
-
-    when (header) {
-        is DatabaseHeader.Ver3x -> {
+            val encryptedContent = ContentEncryption.encrypt(
+                cipherId = header.cipherId,
+                key = KeyTransform.masterKey(masterSeed, transformedKey),
+                iv = header.encryptionIV.toByteArray(),
+                data = contentBuffer.readByteArray()
+            )
             write(encryptedContent)
         }
         is DatabaseHeader.Ver4x -> {
+            val encryptedContent = ContentEncryption.encrypt(
+                cipherId = header.cipherId,
+                key = KeyTransform.masterKey(masterSeed, transformedKey),
+                iv = header.encryptionIV.toByteArray(),
+                data = rawContent
+            )
             ContentBlocks.writeContentBlocksVer4x(
                 sink = this,
                 contentData = encryptedContent,
