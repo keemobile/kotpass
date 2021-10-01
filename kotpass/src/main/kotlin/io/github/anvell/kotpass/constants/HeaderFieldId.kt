@@ -2,6 +2,7 @@ package io.github.anvell.kotpass.constants
 
 internal enum class HeaderFieldId {
     EndOfHeader,
+    @Deprecated("No longer supported.")
     Comment,
     CipherId,
     Compression,

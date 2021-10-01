@@ -22,7 +22,6 @@ private val EndOfHeaderBytes = ByteString.of(0x0D, 0x0A, 0x0D, 0x0A)
 sealed class DatabaseHeader {
     abstract val signature: Signature
     abstract val version: FormatVersion
-    abstract val comment: ByteString
     abstract val cipherId: CipherId
     abstract val compression: Compression
     abstract val masterSeed: ByteString
@@ -31,7 +30,6 @@ sealed class DatabaseHeader {
     data class Ver3x(
         override val signature: Signature,
         override val version: FormatVersion,
-        override val comment: ByteString,
         override val cipherId: CipherId,
         override val compression: Compression,
         override val masterSeed: ByteString,
@@ -48,7 +46,6 @@ sealed class DatabaseHeader {
                 Ver3x(
                     signature = Signature.Default,
                     version = FormatVersion(3, 1),
-                    comment = ByteString.EMPTY,
                     cipherId = CipherId.Aes,
                     compression = Compression.GZip,
                     masterSeed = nextByteString(32),
@@ -66,7 +63,6 @@ sealed class DatabaseHeader {
     data class Ver4x(
         override val signature: Signature,
         override val version: FormatVersion,
-        override val comment: ByteString,
         override val cipherId: CipherId,
         override val compression: Compression,
         override val masterSeed: ByteString,
@@ -80,7 +76,6 @@ sealed class DatabaseHeader {
                 Ver4x(
                     signature = Signature.Default,
                     version = FormatVersion(4, 1),
-                    comment = ByteString.EMPTY,
                     cipherId = CipherId.Aes,
                     compression = Compression.GZip,
                     masterSeed = nextByteString(32),
@@ -115,9 +110,6 @@ sealed class DatabaseHeader {
         signature.writeTo(sink)
         version.writeTo(sink)
 
-        writeHeaderValue(sink, HeaderFieldId.Comment, comment.size) {
-            write(comment)
-        }
         writeHeaderValue(sink, HeaderFieldId.CipherId, 16) {
             val buffer = ByteBuffer.allocate(16).apply {
                 putLong(cipherId.uuid.mostSignificantBits)
@@ -191,7 +183,6 @@ sealed class DatabaseHeader {
 
     companion object {
         internal fun readFrom(source: BufferedSource): DatabaseHeader {
-            var comment: ByteString? = null
             var cipherId: CipherId? = null
             var compression: Compression? = null
             var masterSeed: ByteString? = null
@@ -216,7 +207,7 @@ sealed class DatabaseHeader {
 
                 when (fieldId) {
                     HeaderFieldId.EndOfHeader -> break
-                    HeaderFieldId.Comment -> comment = data
+                    HeaderFieldId.Comment -> Unit
                     HeaderFieldId.CipherId -> {
                         cipherId = data.asUuid().let { cipherUuid ->
                             CipherId.values().firstOrNull { it.uuid == cipherUuid }
@@ -247,7 +238,6 @@ sealed class DatabaseHeader {
                 Ver3x(
                     signature = signature,
                     version = version,
-                    comment = comment ?: ByteString.EMPTY,
                     cipherId = cipherId
                         ?: throw FormatError.InvalidHeader("No cipher ID."),
                     compression = compression
@@ -271,7 +261,6 @@ sealed class DatabaseHeader {
                 Ver4x(
                     signature = signature,
                     version = version,
-                    comment = comment ?: ByteString.EMPTY,
                     cipherId = cipherId
                         ?: throw FormatError.InvalidHeader("No cipher ID."),
                     compression = compression
