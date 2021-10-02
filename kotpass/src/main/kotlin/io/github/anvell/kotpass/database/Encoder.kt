@@ -5,6 +5,7 @@ import io.github.anvell.kotpass.cryptography.EncryptionSaltGenerator
 import io.github.anvell.kotpass.cryptography.KeyTransform
 import io.github.anvell.kotpass.database.header.DatabaseHeader
 import io.github.anvell.kotpass.database.modifiers.binaries
+import io.github.anvell.kotpass.database.modifiers.regenerateVectors
 import io.github.anvell.kotpass.models.XmlContext
 import io.github.anvell.kotpass.xml.DefaultXmlContentParser
 import io.github.anvell.kotpass.xml.XmlContentParser
@@ -15,12 +16,20 @@ import okio.buffer
 import okio.sink
 import java.io.ByteArrayOutputStream
 import java.io.OutputStream
+import java.security.SecureRandom
 import java.util.zip.GZIPOutputStream
 
 fun KeePassDatabase.encode(
     outputStream: OutputStream,
+    contentParser: XmlContentParser = DefaultXmlContentParser,
+    random: SecureRandom = SecureRandom()
+) = regenerateVectors(random)
+    .encodeAsBinary(outputStream, contentParser)
+
+private fun KeePassDatabase.encodeAsBinary(
+    outputStream: OutputStream,
     contentParser: XmlContentParser = DefaultXmlContentParser
-) {
+) = apply {
     val transformedKey = KeyTransform.transformedKey(
         header = header,
         credentials = credentials

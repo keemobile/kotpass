@@ -49,7 +49,7 @@ sealed class DatabaseHeader {
                     cipherId = CipherId.Aes,
                     compression = Compression.GZip,
                     masterSeed = nextByteString(32),
-                    encryptionIV = nextByteString(16),
+                    encryptionIV = nextByteString(CipherId.Aes.ivLength),
                     transformSeed = nextByteString(32),
                     transformRounds = 6000U,
                     innerRandomStreamId = CrsAlgorithm.Salsa20,
@@ -79,7 +79,7 @@ sealed class DatabaseHeader {
                     cipherId = CipherId.Aes,
                     compression = Compression.GZip,
                     masterSeed = nextByteString(32),
-                    encryptionIV = nextByteString(16),
+                    encryptionIV = nextByteString(CipherId.Aes.ivLength),
                     kdfParameters = KdfParameters.Argon2(
                         uuid = KdfConst.KdfArgon2d,
                         salt = nextByteString(32),
@@ -96,9 +96,15 @@ sealed class DatabaseHeader {
         }
     }
 
-    enum class CipherId(val uuid: UUID) {
-        Aes(UUID.fromString("31c1f2e6-bf71-4350-be58-05216afc5aff")),
-        ChaCha20(UUID.fromString("d6038a2b-8b6f-4cb5-a524-339a31dbb59a"))
+    enum class CipherId(val uuid: UUID, val ivLength: Int) {
+        Aes(
+            uuid = UUID.fromString("31c1f2e6-bf71-4350-be58-05216afc5aff"),
+            ivLength = 16
+        ),
+        ChaCha20(
+            uuid = UUID.fromString("d6038a2b-8b6f-4cb5-a524-339a31dbb59a"),
+            ivLength = 12
+        )
     }
 
     enum class Compression {
