@@ -48,16 +48,10 @@ internal fun unmarshalGroup(
                     defaultAutoTypeSequence = childNode.getText()
                 }
                 Tags.Group.EnableAutoType -> {
-                    enableAutoType = childNode
-                        .getText()
-                        ?.lowercase()
-                        ?.toBooleanStrictOrNull()
+                    enableAutoType = childNode.getGroupOverride()
                 }
                 Tags.Group.EnableSearching -> {
-                    enableSearching = childNode
-                        .getText()
-                        ?.lowercase()
-                        ?.toBooleanStrictOrNull()
+                    enableSearching = childNode.getGroupOverride()
                 }
                 Tags.Group.LastTopVisibleEntry -> {
                     lastTopVisibleEntry = childNode.getUuid()
@@ -100,8 +94,8 @@ internal fun Group.marshal(
     }
     Tags.Group.IsExpanded { addBoolean(expanded) }
     Tags.Group.DefaultAutoTypeSequence { text(defaultAutoTypeSequence ?: "") }
-    Tags.Group.EnableAutoType { addOptionalBoolean(enableAutoType) }
-    Tags.Group.EnableSearching { addOptionalBoolean(enableSearching) }
+    Tags.Group.EnableAutoType { addGroupOverride(enableAutoType) }
+    Tags.Group.EnableSearching { addGroupOverride(enableSearching) }
     if (lastTopVisibleEntry != null) {
         Tags.Group.LastTopVisibleEntry { addUuid(lastTopVisibleEntry) }
     }

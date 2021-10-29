@@ -1,5 +1,6 @@
 package io.github.anvell.kotpass.database
 
+import io.github.anvell.kotpass.constants.GroupOverride
 import io.github.anvell.kotpass.database.header.DatabaseHeader
 import io.github.anvell.kotpass.database.header.DatabaseInnerHeader
 import io.github.anvell.kotpass.models.*
@@ -29,8 +30,8 @@ sealed class KeePassDatabase {
                     group = Group(
                         uuid = UUID.randomUUID(),
                         name = rootName,
-                        enableAutoType = true,
-                        enableSearching = true
+                        enableAutoType = GroupOverride.Enabled,
+                        enableSearching = GroupOverride.Enabled
                     ),
                     deletedObjects = listOf()
                 )
@@ -58,8 +59,8 @@ sealed class KeePassDatabase {
                     group = Group(
                         uuid = UUID.randomUUID(),
                         name = rootName,
-                        enableAutoType = true,
-                        enableSearching = true
+                        enableAutoType = GroupOverride.Enabled,
+                        enableSearching = GroupOverride.Enabled
                     ),
                     deletedObjects = listOf()
                 ),

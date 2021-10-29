@@ -1,5 +1,6 @@
 package io.github.anvell.kotpass.models
 
+import io.github.anvell.kotpass.constants.GroupOverride
 import io.github.anvell.kotpass.constants.PredefinedIcon
 import java.util.*
 
@@ -12,8 +13,8 @@ data class Group(
     override val times: TimeData? = TimeData.create(),
     val expanded: Boolean = true,
     val defaultAutoTypeSequence: String? = null,
-    val enableAutoType: Boolean? = null,
-    val enableSearching: Boolean? = null,
+    val enableAutoType: GroupOverride = GroupOverride.Inherit,
+    val enableSearching: GroupOverride = GroupOverride.Inherit,
     val lastTopVisibleEntry: UUID? = null,
     val previousParentGroup: UUID? = null,
     override val tags: List<String> = listOf(),

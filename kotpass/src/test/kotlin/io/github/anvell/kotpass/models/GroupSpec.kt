@@ -1,6 +1,7 @@
 package io.github.anvell.kotpass.models
 
 import io.github.anvell.kotpass.constants.BasicFields
+import io.github.anvell.kotpass.constants.GroupOverride
 import io.github.anvell.kotpass.constants.PredefinedIcon
 import io.github.anvell.kotpass.cryptography.EncryptionSaltGenerator
 import io.github.anvell.kotpass.extensions.parseAsXml
@@ -23,8 +24,8 @@ class GroupSpec : DescribeSpec({
 
             group.name shouldBe "Lorem"
             group.icon shouldBe PredefinedIcon.Folder
-            group.enableAutoType shouldBe null
-            group.enableSearching shouldBe null
+            group.enableAutoType shouldBe GroupOverride.Inherit
+            group.enableSearching shouldBe GroupOverride.Inherit
             group.lastTopVisibleEntry shouldNotBe null
             group.groups.size shouldBe 1
             group.groups.first().name shouldBe "Ipsum"

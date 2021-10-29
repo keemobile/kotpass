@@ -1,5 +1,6 @@
 package io.github.anvell.kotpass.builders
 
+import io.github.anvell.kotpass.constants.GroupOverride
 import io.github.anvell.kotpass.constants.PredefinedIcon
 import io.github.anvell.kotpass.models.CustomDataValue
 import io.github.anvell.kotpass.models.Entry
@@ -16,8 +17,8 @@ internal class MutableGroup(
     var times: TimeData? = null,
     var expanded: Boolean = true,
     var defaultAutoTypeSequence: String? = null,
-    var enableAutoType: Boolean? = null,
-    var enableSearching: Boolean? = null,
+    var enableAutoType: GroupOverride = GroupOverride.Inherit,
+    var enableSearching: GroupOverride = GroupOverride.Inherit,
     var lastTopVisibleEntry: UUID? = null,
     var previousParentGroup: UUID? = null,
     var tags: MutableList<String> = mutableListOf(),
