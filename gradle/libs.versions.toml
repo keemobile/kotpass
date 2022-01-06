@@ -1,11 +1,11 @@
 [versions]
 kotlin = "1.6.0"
 ktlint = "0.42.1"
-kotest = "4.6.3"
+kotest = "5.0.3"
 
 [libraries]
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 testing-kotest = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 
-kotlin-xml-builder = "org.redundent:kotlin-xml-builder:1.7.3"
+kotlin-xml-builder = "org.redundent:kotlin-xml-builder:1.7.4"
 okio = "com.squareup.okio:okio:2.10.0"
