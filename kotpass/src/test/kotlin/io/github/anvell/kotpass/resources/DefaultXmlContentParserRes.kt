@@ -35,7 +35,7 @@ object DefaultXmlContentParserRes {
                 <Binary ID="0" Compressed="False">${MetaRes.DummyText.toByteArray().encodeBase64()}</Binary>
             </Binaries>
             <CustomData />
-	    </Meta>
+        </Meta>
         <Root>
             <Group>
                 <UUID>tbwabsUKQEu3LmJ/wwKMpA==</UUID>
