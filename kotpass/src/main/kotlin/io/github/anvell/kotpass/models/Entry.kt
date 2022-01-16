@@ -1,6 +1,8 @@
 package io.github.anvell.kotpass.models
 
+import io.github.anvell.kotpass.constants.BasicFields
 import io.github.anvell.kotpass.constants.PredefinedIcon
+import io.github.anvell.kotpass.cryptography.EncryptedValue
 import java.util.*
 
 data class Entry(
@@ -23,7 +25,18 @@ data class Entry(
     companion object {
         fun create() = Entry(
             uuid = UUID.randomUUID(),
-            times = TimeData.create()
+            times = TimeData.create(),
+            fields = emptyBasicFields()
         )
+
+        private fun emptyBasicFields() = buildMap {
+            BasicFields
+                .values()
+                .filter { it != BasicFields.Password }
+                .forEach { field -> put(field(), EntryValue.Plain("")) }
+
+            val password = EncryptedValue.fromString("")
+            put(BasicFields.Password(), EntryValue.Encrypted(password))
+        }
     }
 }

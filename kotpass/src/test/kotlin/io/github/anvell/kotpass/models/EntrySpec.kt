@@ -1,11 +1,14 @@
 package io.github.anvell.kotpass.models
 
+import io.github.anvell.kotpass.constants.BasicFields
 import io.github.anvell.kotpass.cryptography.EncryptionSaltGenerator
 import io.github.anvell.kotpass.extensions.parseAsXml
 import io.github.anvell.kotpass.resources.EntryRes
 import io.github.anvell.kotpass.resources.TimeDataRes
 import io.github.anvell.kotpass.xml.unmarshalEntry
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.collections.shouldContainAll
+import io.kotest.matchers.maps.shouldContainKeys
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 
@@ -28,6 +31,15 @@ class EntrySpec : DescribeSpec({
             entry.times?.creationTime shouldBe TimeDataRes.ParsedDateTime
             entry.history.size shouldBe 1
             entry.binaries.size shouldBe 0
+        }
+
+        it("New instance should have basic fields") {
+            val basicFieldsKeys = BasicFields
+                .values()
+                .map(BasicFields::value)
+            val entry = Entry.create()
+
+            entry.fields.keys.shouldContainAll(basicFieldsKeys)
         }
     }
 })
