@@ -3,6 +3,7 @@
 package io.github.anvell.kotpass.models
 
 import io.github.anvell.kotpass.errors.FormatError
+import io.github.anvell.kotpass.extensions.sha256
 import okio.ByteString
 import okio.ByteString.Companion.toByteString
 import java.io.ByteArrayInputStream
@@ -20,7 +21,8 @@ sealed class BinaryData(val hash: ByteString) {
     class Uncompressed(
         override val memoryProtection: Boolean,
         override val rawContent: ByteArray
-    ) : BinaryData(rawContent.toByteString().sha256()) {
+    ) : BinaryData(rawContent.sha256().toByteString()) {
+
         override fun getContent(): ByteArray = rawContent
 
         fun toCompressed() = try {
@@ -35,7 +37,8 @@ sealed class BinaryData(val hash: ByteString) {
     class Compressed(
         override val memoryProtection: Boolean,
         override val rawContent: ByteArray
-    ) : BinaryData(rawContent.toByteString().sha256()) {
+    ) : BinaryData(rawContent.sha256().toByteString()) {
+
         override fun getContent(): ByteArray = try {
             GZIPInputStream(ByteArrayInputStream(rawContent))
                 .use(GZIPInputStream::readBytes)
