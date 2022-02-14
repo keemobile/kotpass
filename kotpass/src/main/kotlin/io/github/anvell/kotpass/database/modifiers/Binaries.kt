@@ -34,8 +34,11 @@ fun KeePassDatabase.removeUnusedBinaries(): KeePassDatabase {
 
         while (!empty()) {
             val group = pop()
+            val combinedEntries = group
+                .entries
+                .flatMap { entry -> entry.history + entry }
 
-            for (entry in group.entries) {
+            for (entry in combinedEntries) {
                 cleanupList.removeAll(
                     entry.binaries.map(BinaryReference::hash)
                 )
