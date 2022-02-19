@@ -89,12 +89,33 @@ fun KeePassDatabase.findGroup(
     }
 }
 
+fun KeePassDatabase.findGroupBy(
+    predicate: Group.() -> Boolean
+): Group? {
+    return if (predicate(content.group)) {
+        content.group
+    } else {
+        content.group
+            .findChildGroup(predicate)
+            ?.let { (_, group) -> group }
+    }
+}
+
 fun KeePassDatabase.findEntry(
     predicate: (Entry) -> Boolean
 ): Pair<Group, Entry>? {
     return content
         .group
         .findChildEntry(predicate)
+}
+
+fun KeePassDatabase.findEntryBy(
+    predicate: Entry.() -> Boolean
+): Entry? {
+    return content
+        .group
+        .findChildEntry(predicate)
+        ?.let { (_, entry) -> entry }
 }
 
 fun KeePassDatabase.findEntries(
