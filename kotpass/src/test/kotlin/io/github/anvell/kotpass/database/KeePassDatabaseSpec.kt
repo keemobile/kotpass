@@ -1,6 +1,6 @@
 package io.github.anvell.kotpass.database
 
-import io.github.anvell.kotpass.constants.BasicFields
+import io.github.anvell.kotpass.constants.BasicField
 import io.github.anvell.kotpass.cryptography.EncryptedValue
 import io.github.anvell.kotpass.database.modifiers.*
 import io.github.anvell.kotpass.io.decodeBase64ToArray
@@ -95,7 +95,7 @@ class KeePassDatabaseSpec : DescribeSpec({
                 passphrase = "1"
             )
             val entries = database.findEntries {
-                it[BasicFields.Title]
+                it[BasicField.Title]
                     ?.content
                     ?.contains("Entry") == true
             }
@@ -109,7 +109,7 @@ class KeePassDatabaseSpec : DescribeSpec({
                 passphrase = "1"
             )
             val result = database.findEntry {
-                it[BasicFields.Title]
+                it[BasicField.Title]
                     ?.content
                     ?.contains("Entry 2") == true
             }

@@ -1,6 +1,6 @@
 package io.github.anvell.kotpass.models
 
-import io.github.anvell.kotpass.constants.BasicFields
+import io.github.anvell.kotpass.constants.BasicField
 import io.github.anvell.kotpass.constants.GroupOverride
 import io.github.anvell.kotpass.constants.PredefinedIcon
 import io.github.anvell.kotpass.cryptography.EncryptionSaltGenerator
@@ -52,7 +52,7 @@ class GroupSpec : DescribeSpec({
             val group = unmarshalGroup(context, GroupRes.BasicXml.parseAsXml())
 
             group.findChildEntry {
-                it.fields[BasicFields.Title.key]?.content == "Lorem"
+                it.fields[BasicField.Title.key]?.content == "Lorem"
             } shouldNotBe null
         }
     }

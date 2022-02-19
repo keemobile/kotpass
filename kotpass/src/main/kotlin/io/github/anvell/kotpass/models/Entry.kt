@@ -1,6 +1,6 @@
 package io.github.anvell.kotpass.models
 
-import io.github.anvell.kotpass.constants.BasicFields
+import io.github.anvell.kotpass.constants.BasicField
 import io.github.anvell.kotpass.constants.PredefinedIcon
 import io.github.anvell.kotpass.cryptography.EncryptedValue
 import java.util.*
@@ -23,7 +23,7 @@ data class Entry(
     val qualityCheck: Boolean = true
 ) : DatabaseElement {
 
-    operator fun get(field: BasicFields): EntryValue? = fields[field()]
+    operator fun get(field: BasicField): EntryValue? = fields[field()]
 
     companion object {
         fun create() = Entry(
@@ -33,13 +33,13 @@ data class Entry(
         )
 
         private fun emptyBasicFields() = buildMap {
-            BasicFields
+            BasicField
                 .values()
-                .filter { it != BasicFields.Password }
+                .filter { it != BasicField.Password }
                 .forEach { field -> put(field(), EntryValue.Plain("")) }
 
             val password = EncryptedValue.fromString("")
-            put(BasicFields.Password(), EntryValue.Encrypted(password))
+            put(BasicField.Password(), EntryValue.Encrypted(password))
         }
     }
 }

@@ -1,7 +1,7 @@
 package io.github.anvell.kotpass.models
 
 import io.github.anvell.kotpass.constants.Defaults
-import io.github.anvell.kotpass.constants.MemoryProtectionFlags
+import io.github.anvell.kotpass.constants.MemoryProtectionFlag
 import okio.ByteString
 import java.time.Instant
 import java.util.*
@@ -30,7 +30,7 @@ data class Meta(
     val historyMaxSize: Int = Defaults.HistoryMaxSize,
     val lastSelectedGroup: UUID? = null,
     val lastTopVisibleGroup: UUID? = null,
-    val memoryProtection: Set<MemoryProtectionFlags> = setOf(MemoryProtectionFlags.Password),
+    val memoryProtection: Set<MemoryProtectionFlag> = setOf(MemoryProtectionFlag.Password),
     val customIcons: Map<UUID, CustomIcon> = mapOf(),
     val customData: Map<String, CustomDataValue> = mapOf(),
     @PublishedApi

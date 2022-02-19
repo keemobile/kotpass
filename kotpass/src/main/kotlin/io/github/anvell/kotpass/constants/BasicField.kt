@@ -1,6 +1,6 @@
 package io.github.anvell.kotpass.constants
 
-enum class BasicFields(val key: String) {
+enum class BasicField(val key: String) {
     Title("Title"),
     UserName("UserName"),
     Password("Password"),
@@ -11,7 +11,7 @@ enum class BasicFields(val key: String) {
 
     companion object {
         val keys = values()
-            .map(BasicFields::key)
+            .map(BasicField::key)
             .toSet()
     }
 }

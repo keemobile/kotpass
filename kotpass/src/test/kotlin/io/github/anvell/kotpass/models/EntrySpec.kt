@@ -1,6 +1,6 @@
 package io.github.anvell.kotpass.models
 
-import io.github.anvell.kotpass.constants.BasicFields
+import io.github.anvell.kotpass.constants.BasicField
 import io.github.anvell.kotpass.cryptography.EncryptionSaltGenerator
 import io.github.anvell.kotpass.extensions.parseAsXml
 import io.github.anvell.kotpass.resources.EntryRes
@@ -35,7 +35,7 @@ class EntrySpec : DescribeSpec({
         it("New instance should have basic fields") {
             val entry = Entry.create()
 
-            entry.fields.keys.shouldContainAll(BasicFields.keys)
+            entry.fields.keys.shouldContainAll(BasicField.keys)
         }
     }
 })

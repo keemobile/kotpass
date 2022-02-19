@@ -1,7 +1,7 @@
 package io.github.anvell.kotpass.xml
 
 import io.github.anvell.kotpass.constants.Defaults
-import io.github.anvell.kotpass.constants.MemoryProtectionFlags
+import io.github.anvell.kotpass.constants.MemoryProtectionFlag
 import io.github.anvell.kotpass.extensions.*
 import io.github.anvell.kotpass.models.Meta
 import io.github.anvell.kotpass.models.XmlContext
@@ -111,23 +111,23 @@ internal fun unmarshalMeta(node: Node): Meta {
 }
 
 @OptIn(ExperimentalStdlibApi::class)
-private fun unmarshalMemoryProtection(node: Node): Set<MemoryProtectionFlags> =
+private fun unmarshalMemoryProtection(node: Node): Set<MemoryProtectionFlag> =
     with(Tags.Meta.MemoryProtection) {
         return buildSet {
             if (node.firstOrNull(ProtectTitle)?.getText().toBoolean()) {
-                add(MemoryProtectionFlags.Title)
+                add(MemoryProtectionFlag.Title)
             }
             if (node.firstOrNull(ProtectUserName)?.getText().toBoolean()) {
-                add(MemoryProtectionFlags.UserName)
+                add(MemoryProtectionFlag.UserName)
             }
             if (node.firstOrNull(ProtectPassword)?.getText().toBoolean()) {
-                add(MemoryProtectionFlags.Password)
+                add(MemoryProtectionFlag.Password)
             }
             if (node.firstOrNull(ProtectUrl)?.getText().toBoolean()) {
-                add(MemoryProtectionFlags.Url)
+                add(MemoryProtectionFlag.Url)
             }
             if (node.firstOrNull(ProtectNotes)?.getText().toBoolean()) {
-                add(MemoryProtectionFlags.Notes)
+                add(MemoryProtectionFlag.Notes)
             }
         }
     }
@@ -179,9 +179,9 @@ internal fun Meta.marshal(context: XmlContext.Encode): Node {
 }
 
 private fun marshalMemoryProtection(
-    memoryProtection: Set<MemoryProtectionFlags>
+    memoryProtection: Set<MemoryProtectionFlag>
 ): Node = node(Tags.Meta.MemoryProtection.TagName) {
-    for (field in MemoryProtectionFlags.values()) {
+    for (field in MemoryProtectionFlag.values()) {
         field.value {
             addBoolean(memoryProtection.contains(field))
         }

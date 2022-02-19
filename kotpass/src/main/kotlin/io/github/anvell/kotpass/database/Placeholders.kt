@@ -2,7 +2,7 @@
 
 package io.github.anvell.kotpass.database
 
-import io.github.anvell.kotpass.constants.BasicFields
+import io.github.anvell.kotpass.constants.BasicField
 import io.github.anvell.kotpass.constants.Defaults
 import io.github.anvell.kotpass.constants.FieldReference
 import io.github.anvell.kotpass.constants.Placeholder
@@ -72,11 +72,11 @@ fun KeePassDatabase.resolvePlaceholder(
     val fieldKey = when {
         pattern.startsWith(Placeholder.CustomField(), true) -> pattern
             .drop(Placeholder.CustomField().length)
-        pattern.equals(Placeholder.Title(), true) -> BasicFields.Title()
-        pattern.equals(Placeholder.UserName(), true) -> BasicFields.UserName()
-        pattern.equals(Placeholder.Password(), true) -> BasicFields.Password()
-        pattern.equals(Placeholder.Url(), true) -> BasicFields.Url()
-        pattern.equals(Placeholder.Notes(), true) -> BasicFields.Notes()
+        pattern.equals(Placeholder.Title(), true) -> BasicField.Title()
+        pattern.equals(Placeholder.UserName(), true) -> BasicField.UserName()
+        pattern.equals(Placeholder.Password(), true) -> BasicField.Password()
+        pattern.equals(Placeholder.Url(), true) -> BasicField.Url()
+        pattern.equals(Placeholder.Notes(), true) -> BasicField.Notes()
         else -> return placeholder
     }
     val content = entry.fields[fieldKey]?.content ?: ""
@@ -108,23 +108,23 @@ fun KeePassDatabase.resolveReference(
                 .getOrNull()
         }
         FieldReference.SearchIn.Title -> {
-            findEntryBy { findInField(BasicFields.Title(), searchText) }
+            findEntryBy { findInField(BasicField.Title(), searchText) }
         }
         FieldReference.SearchIn.UserName -> {
-            findEntryBy { findInField(BasicFields.UserName(), searchText) }
+            findEntryBy { findInField(BasicField.UserName(), searchText) }
         }
         FieldReference.SearchIn.Password -> {
-            findEntryBy { findInField(BasicFields.Password(), searchText) }
+            findEntryBy { findInField(BasicField.Password(), searchText) }
         }
         FieldReference.SearchIn.Url -> {
-            findEntryBy { findInField(BasicFields.Url(), searchText) }
+            findEntryBy { findInField(BasicField.Url(), searchText) }
         }
         FieldReference.SearchIn.Notes -> {
-            findEntryBy { findInField(BasicFields.Notes(), searchText) }
+            findEntryBy { findInField(BasicField.Notes(), searchText) }
         }
         FieldReference.SearchIn.Other -> {
             findEntryBy {
-                val customFieldKeys = fields.keys - BasicFields.keys
+                val customFieldKeys = fields.keys - BasicField.keys
                 customFieldKeys
                     .any { k -> findInField(k, searchText) }
             }
@@ -132,11 +132,11 @@ fun KeePassDatabase.resolveReference(
     } ?: return reference
 
     val rawText = when (wanted) {
-        FieldReference.WantedField.Title -> foundEntry[BasicFields.Title]?.content
-        FieldReference.WantedField.UserName -> foundEntry[BasicFields.UserName]?.content
-        FieldReference.WantedField.Password -> foundEntry[BasicFields.Password]?.content
-        FieldReference.WantedField.Url -> foundEntry[BasicFields.Url]?.content
-        FieldReference.WantedField.Notes -> foundEntry[BasicFields.Notes]?.content
+        FieldReference.WantedField.Title -> foundEntry[BasicField.Title]?.content
+        FieldReference.WantedField.UserName -> foundEntry[BasicField.UserName]?.content
+        FieldReference.WantedField.Password -> foundEntry[BasicField.Password]?.content
+        FieldReference.WantedField.Url -> foundEntry[BasicField.Url]?.content
+        FieldReference.WantedField.Notes -> foundEntry[BasicField.Notes]?.content
         FieldReference.WantedField.Uuid -> foundEntry.uuid.toHexString()
     } ?: return reference
 
