@@ -70,8 +70,8 @@ fun KeePassDatabase.resolvePlaceholder(
     }
 
     val fieldKey = when {
-        pattern.startsWith(Placeholder.CustomField(), true) -> pattern
-            .drop(Placeholder.CustomField().length)
+        pattern.startsWith(Placeholder.CustomField(), true) ->
+            pattern.drop(Placeholder.CustomField().length)
         pattern.equals(Placeholder.Title(), true) -> BasicField.Title()
         pattern.equals(Placeholder.UserName(), true) -> BasicField.UserName()
         pattern.equals(Placeholder.Password(), true) -> BasicField.Password()
