@@ -22,6 +22,9 @@ data class Entry(
     val previousParentGroup: UUID? = null,
     val qualityCheck: Boolean = true
 ) : DatabaseElement {
+
+    operator fun get(field: BasicFields): EntryValue? = fields[field()]
+
     companion object {
         fun create() = Entry(
             uuid = UUID.randomUUID(),
