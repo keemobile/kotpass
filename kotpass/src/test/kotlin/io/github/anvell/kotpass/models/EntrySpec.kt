@@ -33,12 +33,9 @@ class EntrySpec : DescribeSpec({
         }
 
         it("New instance should have basic fields") {
-            val basicFieldsKeys = BasicFields
-                .values()
-                .map(BasicFields::value)
             val entry = Entry.create()
 
-            entry.fields.keys.shouldContainAll(basicFieldsKeys)
+            entry.fields.keys.shouldContainAll(BasicFields.keys)
         }
     }
 })

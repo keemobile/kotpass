@@ -52,7 +52,7 @@ class GroupSpec : DescribeSpec({
             val group = unmarshalGroup(context, GroupRes.BasicXml.parseAsXml())
 
             group.findChildEntry {
-                it.fields[BasicFields.Title.value]?.content == "Lorem"
+                it.fields[BasicFields.Title.key]?.content == "Lorem"
             } shouldNotBe null
         }
     }

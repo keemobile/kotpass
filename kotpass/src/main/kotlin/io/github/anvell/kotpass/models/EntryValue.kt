@@ -14,4 +14,9 @@ sealed class EntryValue {
     ) : EntryValue() {
         override val content: String get() = value.text
     }
+
+    inline fun map(block: (String) -> String) = when (this) {
+        is Plain -> Plain(block(content))
+        is Encrypted -> Encrypted(EncryptedValue.fromString(block(content)))
+    }
 }

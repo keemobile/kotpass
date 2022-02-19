@@ -95,7 +95,7 @@ class KeePassDatabaseSpec : DescribeSpec({
                 passphrase = "1"
             )
             val entries = database.findEntries {
-                it.fields[BasicFields.Title.value]
+                it[BasicFields.Title]
                     ?.content
                     ?.contains("Entry") == true
             }
@@ -109,7 +109,7 @@ class KeePassDatabaseSpec : DescribeSpec({
                 passphrase = "1"
             )
             val result = database.findEntry {
-                it.fields[BasicFields.Title.value]
+                it[BasicFields.Title]
                     ?.content
                     ?.contains("Entry 2") == true
             }
