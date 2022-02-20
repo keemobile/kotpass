@@ -1,4 +1,4 @@
-@file:Suppress("SpellCheckingInspection")
+@file:Suppress("SpellCheckingInspection", "RegExpRedundantEscape")
 
 package io.github.anvell.kotpass.database
 
@@ -13,10 +13,10 @@ import io.github.anvell.kotpass.models.EntryValue
 import okio.ByteString.Companion.decodeHex
 
 private val PlaceholderRegex = Regex(
-    pattern = """\{([ \t\d\p{L}:@]+)}"""
+    pattern = """\{([ \t\d\p{L}:@]+)\}"""
 )
 private val ReferenceRegex = Regex(
-    pattern = """\{REF:([TUPANI])@([TUPANIO]):([ \t\d\p{L}]+)}""",
+    pattern = """\{REF:([TUPANI])@([TUPANIO]):([ \t\d\p{L}]+)\}""",
     option = RegexOption.IGNORE_CASE
 )
 
