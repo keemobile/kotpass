@@ -3,8 +3,8 @@ package io.github.anvell.kotpass.constants
 internal enum class Placeholder(val value: String) {
     Title("TITLE"),
     UserName("USERNAME"),
-    Password("URL"),
-    Url("PASSWORD"),
+    Password("PASSWORD"),
+    Url("URL"),
     Notes("NOTES"),
     Uuid("UUID"),
     Reference("REF:"),
