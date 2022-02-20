@@ -5,11 +5,21 @@ Library provides reading/writing support for KDBX files in Kotlin.
 
 ## Installation
 
-`Kotpass` has not yet been published to any public repository.
+`Kotpass` is published on jitpack.io. Add repository it to your ```build.gradle``` script:
+```gradle
+allprojects {
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+and:
 
-Suggested installation methods:
-
-• Setup and distribute via [Local Maven repository](https://docs.gradle.org/current/userguide/declaring_repositories.html)
+```gradle
+dependencies {
+    implementation 'com.github.anvell:kotpass:0.4.0'
+}
+```
 
 ## Usage
 
