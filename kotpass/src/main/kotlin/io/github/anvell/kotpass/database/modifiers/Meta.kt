@@ -22,12 +22,12 @@ internal fun Meta.updateTimestamps(compareWith: Meta): Meta {
         settingsChanged = now
             .takeIf {
                 recycleBinEnabled != compareWith.recycleBinEnabled ||
-                        maintenanceHistoryDays != compareWith.maintenanceHistoryDays ||
-                        memoryProtection != compareWith.memoryProtection ||
-                        historyMaxItems != compareWith.historyMaxItems ||
-                        historyMaxSize != compareWith.historyMaxSize ||
-                        masterKeyChangeRec != compareWith.masterKeyChangeRec ||
-                        masterKeyChangeForce != compareWith.masterKeyChangeForce
+                    maintenanceHistoryDays != compareWith.maintenanceHistoryDays ||
+                    memoryProtection != compareWith.memoryProtection ||
+                    historyMaxItems != compareWith.historyMaxItems ||
+                    historyMaxSize != compareWith.historyMaxSize ||
+                    masterKeyChangeRec != compareWith.masterKeyChangeRec ||
+                    masterKeyChangeForce != compareWith.masterKeyChangeForce
             }
             ?: compareWith.settingsChanged,
         nameChanged = now
