@@ -138,7 +138,7 @@ internal fun Meta.marshal(context: XmlContext.Encode): Node {
         if (context.version.major < 4 && headerHash != null) {
             Tags.Meta.HeaderHash { addBytes(headerHash.toByteArray()) }
         }
-        if (settingsChanged != null) {
+        if (settingsChanged != null && context.version.major >= 4) {
             Tags.Meta.SettingsChanged { addDateTime(context, settingsChanged) }
         }
         Tags.Meta.DatabaseName { text(name) }
