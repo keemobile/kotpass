@@ -1,20 +1,40 @@
-@file:Suppress("unused")
-
 package io.github.anvell.kotpass.database.header
 
 import io.github.anvell.kotpass.constants.KdfConst
 import io.github.anvell.kotpass.errors.FormatError
 import okio.ByteString
 
+/**
+ * Describes key-derivation function parameters
+ */
 sealed class KdfParameters {
     abstract val uuid: ByteString
 
+    /**
+     * Uses AES as key-derivation function.
+     *
+     * @property uuid Used to identify KDF in [DatabaseHeader].
+     * @property rounds How many times to hash the data.
+     * @property seed Used as AES seed.
+     */
     data class Aes(
         override val uuid: ByteString,
         val rounds: ULong,
         val seed: ByteString
     ) : KdfParameters()
 
+    /**
+     * Uses Argon2 as key-derivation function.
+     *
+     * @property uuid Used to identify KDF in [DatabaseHeader].
+     * @property salt [ByteString] of salt to be used by the algorithm.
+     * @property parallelism The number of threads (or lanes) used by the algorithm.
+     * @property memory The amount of memory used by the algorithm (in bytes).
+     * @property iterations The number of passes over the memory.
+     * @property version Which algorithm version to use (0x10 or 0x13).
+     * @property secretKey Not used in KDBX format.
+     * @property associatedData Not used in KDBX format.
+     */
     data class Argon2(
         override val uuid: ByteString,
         val salt: ByteString,
@@ -23,9 +43,12 @@ sealed class KdfParameters {
         val iterations: ULong,
         val version: UInt,
         val secretKey: ByteString?,
-        val associatedData: ByteString?,
+        val associatedData: ByteString?
     ) : KdfParameters()
 
+    /**
+     * Encodes [KdfParameters] as [VariantDictionary] to [ByteString].
+     */
     internal fun writeToByteString(): ByteString {
         val items = when (this) {
             is Aes -> mapOf(
@@ -52,6 +75,11 @@ sealed class KdfParameters {
     }
 
     companion object {
+        /**
+         * Reads [KdfParameters] encoded as [VariantDictionary] from [data].
+         *
+         * @throws FormatError.InvalidHeader if any of required values is missing.
+         */
         internal fun readFrom(data: ByteString) = with(VariantDictionary.readFrom(data)) {
             val uuid = (get(KdfConst.Keys.Uuid) as? VariantItem.Bytes)?.value
                 ?: throw FormatError.InvalidHeader("No KDF UUID found.")
