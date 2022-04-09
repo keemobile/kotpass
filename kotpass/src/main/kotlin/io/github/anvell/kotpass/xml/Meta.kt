@@ -110,7 +110,6 @@ internal fun unmarshalMeta(node: Node): Meta {
     )
 }
 
-@OptIn(ExperimentalStdlibApi::class)
 private fun unmarshalMemoryProtection(node: Node): Set<MemoryProtectionFlag> =
     with(Tags.Meta.MemoryProtection) {
         return buildSet {

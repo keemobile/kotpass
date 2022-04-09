@@ -26,7 +26,6 @@ sealed class KdfParameters {
         val associatedData: ByteString?,
     ) : KdfParameters()
 
-    @OptIn(ExperimentalStdlibApi::class)
     internal fun writeToByteString(): ByteString {
         val items = when (this) {
             is Aes -> mapOf(

@@ -546,7 +546,6 @@ internal class Argon2Engine(
             quarterRound(v, c, d, b, 63)
         }
 
-        @OptIn(ExperimentalStdlibApi::class)
         private fun quarterRound(v: LongArray, x: Int, y: Int, z: Int, s: Int) {
             var a = v[x]
             val b = v[y]
