@@ -6,6 +6,9 @@ import io.github.anvell.kotpass.database.header.DatabaseInnerHeader
 import io.github.anvell.kotpass.models.*
 import java.util.*
 
+/**
+ * Main class which describes Keepass database.
+ */
 sealed class KeePassDatabase {
     abstract val credentials: Credentials
     abstract val header: DatabaseHeader
@@ -18,6 +21,13 @@ sealed class KeePassDatabase {
     ) : KeePassDatabase() {
 
         companion object {
+            /**
+             * Creates blank database with default settings.
+             *
+             * @param rootName Required name of the top group.
+             * @param meta Database metadata.
+             * @param credentials Database credentials.
+             */
             fun create(
                 rootName: String,
                 meta: Meta,
@@ -47,6 +57,13 @@ sealed class KeePassDatabase {
     ) : KeePassDatabase() {
 
         companion object {
+            /**
+             * Creates blank database with default settings.
+             *
+             * @param rootName Required name of the top group.
+             * @param meta Database metadata.
+             * @param credentials Database credentials.
+             */
             fun create(
                 rootName: String,
                 meta: Meta,
@@ -75,10 +92,18 @@ sealed class KeePassDatabase {
     }
 }
 
+/**
+ * Traverses [KeePassDatabase] invoking [block] on each [DatabaseElement].
+ */
 fun KeePassDatabase.traverse(
     block: (DatabaseElement) -> Unit
 ) = content.group.traverse(block)
 
+/**
+ * Searches for single [Group] which matches a given [predicate].
+ *
+ * @return Found [Group] paired with it’s parent [Group] or null.
+ */
 fun KeePassDatabase.findGroup(
     predicate: (Group) -> Boolean
 ): Pair<Group?, Group>? {
@@ -89,6 +114,9 @@ fun KeePassDatabase.findGroup(
     }
 }
 
+/**
+ * Searches for single [Group] which matches a given [predicate].
+ */
 fun KeePassDatabase.findGroupBy(
     predicate: Group.() -> Boolean
 ): Group? {
@@ -101,6 +129,11 @@ fun KeePassDatabase.findGroupBy(
     }
 }
 
+/**
+ * Searches for single [Entry] which matches a given [predicate].
+ *
+ * @return Found [Entry] paired with it’s parent [Group] or null.
+ */
 fun KeePassDatabase.findEntry(
     predicate: (Entry) -> Boolean
 ): Pair<Group, Entry>? {
@@ -109,6 +142,9 @@ fun KeePassDatabase.findEntry(
         .findChildEntry(predicate)
 }
 
+/**
+ * Searches for single [Entry] which matches a given [predicate].
+ */
 fun KeePassDatabase.findEntryBy(
     predicate: Entry.() -> Boolean
 ): Entry? {
@@ -118,6 +154,11 @@ fun KeePassDatabase.findEntryBy(
         ?.let { (_, entry) -> entry }
 }
 
+/**
+ * Searches for entries which match a given [predicate].
+ *
+ * @return [List] of found [Entry] items paired with corresponding parent [Group].
+ */
 fun KeePassDatabase.findEntries(
     predicate: (Entry) -> Boolean
 ): List<Pair<Group, List<Entry>>> {
