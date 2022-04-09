@@ -7,13 +7,14 @@ import io.github.anvell.kotpass.cryptography.EncryptedValue
 import io.github.anvell.kotpass.database.modifiers.modifyParentGroup
 import io.github.anvell.kotpass.extensions.toHexString
 import io.github.anvell.kotpass.models.EntryValue
+import io.github.anvell.kotpass.models.Meta
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import java.util.*
 
 private val EmptyDatabase = KeePassDatabase.Ver4x.create(
-    databaseName = "",
     rootName = "",
+    meta = Meta(),
     credentials = Credentials.from(EncryptedValue.fromString(""))
 )
 

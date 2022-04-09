@@ -19,14 +19,14 @@ sealed class KeePassDatabase {
 
         companion object {
             fun create(
-                databaseName: String,
                 rootName: String,
+                meta: Meta,
                 credentials: Credentials
             ) = Ver3x(
                 credentials = credentials,
                 header = DatabaseHeader.Ver3x.create(),
                 content = DatabaseContent(
-                    meta = Meta(name = databaseName),
+                    meta = meta,
                     group = Group(
                         uuid = UUID.randomUUID(),
                         name = rootName,
@@ -48,14 +48,14 @@ sealed class KeePassDatabase {
 
         companion object {
             fun create(
-                databaseName: String,
                 rootName: String,
+                meta: Meta,
                 credentials: Credentials
             ) = Ver4x(
                 credentials = credentials,
                 header = DatabaseHeader.Ver4x.create(),
                 content = DatabaseContent(
-                    meta = Meta(name = databaseName),
+                    meta = meta,
                     group = Group(
                         uuid = UUID.randomUUID(),
                         name = rootName,
