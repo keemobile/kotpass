@@ -1,10 +1,13 @@
 # Kotpass 
 ![Build & Test](https://github.com/anvell/kotpass/actions/workflows/gradle.yml/badge.svg) [![](https://jitpack.io/v/anvell/kotpass.svg)](https://jitpack.io/#anvell/kotpass)
 
-Library provides reading/writing support for KDBX files in Kotlin.
+Library provides reading/writing support for KDBX files in Kotlin (including newest format version 4.1). It's suitable for Mobile, Desktop and Backend JVM projects. Functional style API makes it convenient for MVI/Redux like architectures.
 
-Created specifically for **KeeMobile** Password Manager, check it out:
+## See it in action
 
+This library is used as backbone of **KeeMobile** Password Manager, check it out:
+
+[<img src='https://play-lh.googleusercontent.com/VSMqudfH58XxCtn3Il9sUq6JtEHlShVdmxWSpLlLk2JrOG-sE2nbBTLQOkMMbUlSjw=s360-rw' height='80'/>](https://play.google.com/store/apps/details?id=app.keemobile)
 [<img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' width='200'/>](https://play.google.com/store/apps/details?id=app.keemobile)
 
 ## Installation
