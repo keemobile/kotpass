@@ -43,12 +43,13 @@ data class Group(
     }
 
     fun findChildGroup(
+        recycleBinUuid: UUID? = null,
         predicate: (Group) -> Boolean
     ): Pair<Group, Group>? {
         val stack = Stack<Pair<Group, Group>>()
-        groups.forEach {
-            stack.push(this to it)
-        }
+        groups
+            .filter { recycleBinUuid == null || it.uuid.compareTo(recycleBinUuid) != 0 }
+            .forEach { stack.push(this to it) }
 
         while (!stack.empty()) {
             val (parent, current) = stack.pop()
@@ -56,56 +57,72 @@ data class Group(
             if (predicate(current)) {
                 return parent to current
             }
-            current.groups.forEach {
-                stack.push(current to it)
-            }
+            current.groups
+                .filter { recycleBinUuid == null || it.uuid.compareTo(recycleBinUuid) != 0 }
+                .forEach { stack.push(current to it) }
         }
 
         return null
     }
 
     fun findChildEntry(
+        useGroupOverride: Boolean = false,
+        recycleBinUuid: UUID? = null,
         predicate: (Entry) -> Boolean
     ): Pair<Group, Entry>? {
-        val stack = Stack<Group>()
-        stack.push(this)
+        val stack = Stack<Pair<Group, Boolean>>()
+        stack.push(this to true)
 
         while (!stack.empty()) {
-            val current = stack.pop()
-
-            for (entry in current.entries) {
-                if (predicate(entry)) {
-                    return current to entry
+            val (current, parentSearchEnabled) = stack.pop()
+            val searchEnabled = when (current.enableSearching) {
+                GroupOverride.Inherit -> parentSearchEnabled
+                GroupOverride.Enabled -> true
+                GroupOverride.Disabled -> false
+            }
+            if (!useGroupOverride || searchEnabled) {
+                for (entry in current.entries) {
+                    if (predicate(entry)) {
+                        return current to entry
+                    }
                 }
             }
-            current.groups.forEach(stack::push)
+
+            current.groups
+                .filter { recycleBinUuid == null || it.uuid.compareTo(recycleBinUuid) != 0 }
+                .forEach { stack.push(it to searchEnabled) }
         }
 
         return null
     }
 
     fun findChildEntries(
-        recycleBinUuid: UUID?,
+        useGroupOverride: Boolean = false,
+        recycleBinUuid: UUID? = null,
         predicate: (Entry) -> Boolean
     ): List<Pair<Group, List<Entry>>> {
         val result = mutableListOf<Pair<Group, List<Entry>>>()
-        val stack = Stack<Group>()
-        stack.push(this)
+        val stack = Stack<Pair<Group, Boolean>>()
+        stack.push(this to true)
 
         while (!stack.empty()) {
-            val current = stack.pop()
-            val found = current.entries.filter { predicate(it) }
-
-            if (found.isNotEmpty()) {
-                result.add(current to found)
+            val (current, parentSearchEnabled) = stack.pop()
+            val searchEnabled = when (current.enableSearching) {
+                GroupOverride.Inherit -> parentSearchEnabled
+                GroupOverride.Enabled -> true
+                GroupOverride.Disabled -> false
             }
-            current.groups.forEach {
-                if (recycleBinUuid == null ||
-                    it.uuid.compareTo(recycleBinUuid) != 0
-                ) {
-                    stack.push(it)
+            if (!useGroupOverride || searchEnabled) {
+                val found = current.entries.filter { predicate(it) }
+
+                if (found.isNotEmpty()) {
+                    result.add(current to found)
                 }
             }
+
+            current.groups
+                .filter { recycleBinUuid == null || it.uuid.compareTo(recycleBinUuid) != 0 }
+                .forEach { stack.push(it to searchEnabled) }
         }
 
         return result

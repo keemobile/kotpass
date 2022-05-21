@@ -1,22 +1,30 @@
 package io.github.anvell.kotpass.database
 
 import io.github.anvell.kotpass.constants.BasicField
+import io.github.anvell.kotpass.constants.GroupOverride
 import io.github.anvell.kotpass.cryptography.EncryptedValue
 import io.github.anvell.kotpass.database.modifiers.*
 import io.github.anvell.kotpass.io.decodeBase64ToArray
-import io.github.anvell.kotpass.models.DatabaseElement
-import io.github.anvell.kotpass.models.DeletedObject
-import io.github.anvell.kotpass.models.TimeData
+import io.github.anvell.kotpass.models.*
 import io.github.anvell.kotpass.resources.DatabaseRes
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.collections.shouldBeIn
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainAll
+import io.kotest.matchers.collections.shouldNotBeIn
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.time.Instant
 import java.time.Period
+import java.util.*
+
+private val EmptyDatabase = KeePassDatabase.Ver4x.create(
+    rootName = "",
+    meta = Meta(),
+    credentials = Credentials.from(EncryptedValue.fromString(""))
+)
 
 class KeePassDatabaseSpec : DescribeSpec({
 
@@ -89,6 +97,58 @@ class KeePassDatabaseSpec : DescribeSpec({
             )
         }
 
+        it("Entry search should respect Group's search override") {
+            val inEnabledGroup = Entry(UUID.randomUUID())
+            val inDisabledGroup = Entry(UUID.randomUUID())
+            val inInheritedGroup = Entry(UUID.randomUUID())
+            val enabledGroup = {
+                Group(
+                    uuid = UUID.randomUUID(),
+                    name = "",
+                    enableSearching = GroupOverride.Enabled,
+                    entries = listOf(inEnabledGroup)
+                )
+            }
+            val disabledGroup = {
+                Group(
+                    uuid = UUID.randomUUID(),
+                    name = "",
+                    enableSearching = GroupOverride.Disabled,
+                    groups = listOf(
+                        enabledGroup(),
+                        enabledGroup()
+                    ),
+                    entries = listOf(inDisabledGroup)
+                )
+            }
+            val database = EmptyDatabase.modifyParentGroup {
+                copy(
+                    enableSearching = GroupOverride.Enabled,
+                    groups = listOf(
+                        Group(
+                            uuid = UUID.randomUUID(),
+                            name = "",
+                            enableSearching = GroupOverride.Inherit,
+                            groups = listOf(
+                                disabledGroup(),
+                                disabledGroup()
+                            ),
+                            entries = listOf(inInheritedGroup)
+                        )
+                    )
+                )
+            }
+            val uuids = database
+                .findEntries { true }
+                .flatMap { (_, entries) -> entries }
+                .map(Entry::uuid)
+                .toSet()
+
+            inEnabledGroup.uuid shouldBeIn uuids
+            inInheritedGroup.uuid shouldBeIn uuids
+            inDisabledGroup.uuid shouldNotBeIn uuids
+        }
+
         it("Finds entries with specific title") {
             val database = loadDatabase(
                 rawData = DatabaseRes.GroupsAndEntries.DbGroupsAndEntries,
@@ -122,7 +182,7 @@ class KeePassDatabaseSpec : DescribeSpec({
                 rawData = DatabaseRes.GroupsAndEntries.DbGroupsAndEntries,
                 passphrase = "1"
             )
-            val result = database.findGroup { it.name == "Group 3" }
+            val result = database.getGroup { it.name == "Group 3" }
 
             result shouldNotBe null
             result?.second?.name shouldBe "Group 3"
@@ -138,7 +198,7 @@ class KeePassDatabaseSpec : DescribeSpec({
                 moveGroup(DatabaseRes.GroupsAndEntries.Group2, recycleBinUuid)
             }
             val (parent, _) = database
-                .findGroup { it.uuid == DatabaseRes.GroupsAndEntries.Group2 }!!
+                .getGroup { it.uuid == DatabaseRes.GroupsAndEntries.Group2 }!!
 
             database.content.meta.recycleBinEnabled shouldBe true
             parent?.uuid shouldBe database.content.meta.recycleBinUuid
@@ -170,7 +230,7 @@ class KeePassDatabaseSpec : DescribeSpec({
                 passphrase = "1"
             ).modifyGroup(DatabaseRes.GroupsAndEntries.Group3) {
                 copy(name = "Hello")
-            }.findGroup {
+            }.getGroup {
                 it.uuid == DatabaseRes.GroupsAndEntries.Group3
             }!!
 
@@ -185,7 +245,7 @@ class KeePassDatabaseSpec : DescribeSpec({
                 withHistory {
                     copy(overrideUrl = "Hello")
                 }
-            }.findEntry {
+            }.getEntry {
                 it.uuid == DatabaseRes.GroupsAndEntries.Entry1
             }!!
 
@@ -201,7 +261,7 @@ class KeePassDatabaseSpec : DescribeSpec({
                 moveEntry(DatabaseRes.GroupsAndEntries.Entry1, recycleBinUuid)
             }
             val (parent, _) = database
-                .findEntry { it.uuid == DatabaseRes.GroupsAndEntries.Entry1 }!!
+                .getEntry { it.uuid == DatabaseRes.GroupsAndEntries.Entry1 }!!
 
             database.content.meta.recycleBinEnabled shouldBe true
             parent.uuid shouldBe database.content.meta.recycleBinUuid
@@ -243,7 +303,7 @@ class KeePassDatabaseSpec : DescribeSpec({
                     )
                 }
                 .cleanupHistory()
-                .findEntry { it.uuid == DatabaseRes.GroupsAndEntries.Entry1 }!!
+                .getEntry { it.uuid == DatabaseRes.GroupsAndEntries.Entry1 }!!
 
             entry.history.size shouldBe 0
         }

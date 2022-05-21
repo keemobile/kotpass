@@ -1,7 +1,7 @@
 package io.github.anvell.kotpass.database.modifiers
 
 import io.github.anvell.kotpass.database.KeePassDatabase
-import io.github.anvell.kotpass.database.findEntry
+import io.github.anvell.kotpass.database.getEntry
 import io.github.anvell.kotpass.models.DeletedObject
 import io.github.anvell.kotpass.models.Entry
 import io.github.anvell.kotpass.models.Group
@@ -13,7 +13,7 @@ fun KeePassDatabase.moveEntry(
     uuid: UUID,
     parentGroup: UUID
 ): KeePassDatabase {
-    val (parent, item) = findEntry { it.uuid == uuid } ?: return this
+    val (parent, item) = getEntry { it.uuid == uuid } ?: return this
 
     return modifyParentGroup {
         removeChildEntry(uuid)

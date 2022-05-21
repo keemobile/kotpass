@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package io.github.anvell.kotpass.database
 
 import io.github.anvell.kotpass.constants.GroupOverride
@@ -100,37 +102,51 @@ fun KeePassDatabase.traverse(
 ) = content.group.traverse(block)
 
 /**
- * Searches for single [Group] which matches a given [predicate].
+ * Retrieves a single [Group] which matches a given [predicate].
  *
  * @return Found [Group] paired with it’s parent [Group] or null.
  */
-fun KeePassDatabase.findGroup(
+fun KeePassDatabase.getGroup(
     predicate: (Group) -> Boolean
 ): Pair<Group?, Group>? {
     return if (predicate(content.group)) {
         null to content.group
     } else {
-        content.group.findChildGroup(predicate)
+        content.group.findChildGroup(null, predicate)
     }
 }
 
 /**
- * Searches for single [Group] which matches a given [predicate].
+ * Retrieves a single [Group] which matches a given [predicate].
  */
-fun KeePassDatabase.findGroupBy(
+fun KeePassDatabase.getGroupBy(
     predicate: Group.() -> Boolean
 ): Group? {
     return if (predicate(content.group)) {
         content.group
     } else {
         content.group
-            .findChildGroup(predicate)
+            .findChildGroup(null, predicate)
             ?.let { (_, group) -> group }
     }
 }
 
 /**
- * Searches for single [Entry] which matches a given [predicate].
+ * Retrieves a single [Entry] which matches a given [predicate].
+ *
+ * @return Found [Entry] paired with it’s parent [Group] or null.
+ */
+fun KeePassDatabase.getEntry(
+    predicate: (Entry) -> Boolean
+): Pair<Group, Entry>? {
+    return content
+        .group
+        .findChildEntry(false, null, predicate)
+}
+
+/**
+ * Searches for single [Entry] which matches a given [predicate] while
+ * respecting [GroupOverride] and ignoring items in Recycle Bin.
  *
  * @return Found [Entry] paired with it’s parent [Group] or null.
  */
@@ -139,23 +155,50 @@ fun KeePassDatabase.findEntry(
 ): Pair<Group, Entry>? {
     return content
         .group
-        .findChildEntry(predicate)
+        .findChildEntry(true, content.meta.recycleBinUuid, predicate)
 }
 
 /**
- * Searches for single [Entry] which matches a given [predicate].
+ * Retrieves a single [Entry] which matches a given [predicate].
+ */
+fun KeePassDatabase.getEntryBy(
+    predicate: Entry.() -> Boolean
+): Entry? {
+    return content
+        .group
+        .findChildEntry(false, null, predicate)
+        ?.let { (_, entry) -> entry }
+}
+
+/**
+ * Searches for single [Entry] which matches a given [predicate] while
+ * respecting [GroupOverride] and ignoring items in Recycle Bin.
  */
 fun KeePassDatabase.findEntryBy(
     predicate: Entry.() -> Boolean
 ): Entry? {
     return content
         .group
-        .findChildEntry(predicate)
+        .findChildEntry(true, content.meta.recycleBinUuid, predicate)
         ?.let { (_, entry) -> entry }
 }
 
 /**
- * Searches for entries which match a given [predicate].
+ * Retrieves entries which match a given [predicate].
+ *
+ * @return [List] of found [Entry] items paired with corresponding parent [Group].
+ */
+fun KeePassDatabase.getEntries(
+    predicate: (Entry) -> Boolean
+): List<Pair<Group, List<Entry>>> {
+    return content
+        .group
+        .findChildEntries(false, null, predicate)
+}
+
+/**
+ * Searches for entries which match a given [predicate] while
+ * respecting [GroupOverride] and ignoring items in Recycle Bin.
  *
  * @return [List] of found [Entry] items paired with corresponding parent [Group].
  */
@@ -164,5 +207,5 @@ fun KeePassDatabase.findEntries(
 ): List<Pair<Group, List<Entry>>> {
     return content
         .group
-        .findChildEntries(content.meta.recycleBinUuid, predicate)
+        .findChildEntries(true, content.meta.recycleBinUuid, predicate)
 }

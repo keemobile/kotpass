@@ -104,26 +104,26 @@ fun KeePassDatabase.resolveReference(
     val foundEntry = when (searchIn) {
         FieldReference.SearchIn.Uuid -> {
             runCatching { searchText.decodeHex().asUuid() }
-                .map { refUuid -> findEntryBy { uuid == refUuid } }
+                .map { refUuid -> getEntryBy { uuid == refUuid } }
                 .getOrNull()
         }
         FieldReference.SearchIn.Title -> {
-            findEntryBy { findInField(BasicField.Title(), searchText) }
+            getEntryBy { findInField(BasicField.Title(), searchText) }
         }
         FieldReference.SearchIn.UserName -> {
-            findEntryBy { findInField(BasicField.UserName(), searchText) }
+            getEntryBy { findInField(BasicField.UserName(), searchText) }
         }
         FieldReference.SearchIn.Password -> {
-            findEntryBy { findInField(BasicField.Password(), searchText) }
+            getEntryBy { findInField(BasicField.Password(), searchText) }
         }
         FieldReference.SearchIn.Url -> {
-            findEntryBy { findInField(BasicField.Url(), searchText) }
+            getEntryBy { findInField(BasicField.Url(), searchText) }
         }
         FieldReference.SearchIn.Notes -> {
-            findEntryBy { findInField(BasicField.Notes(), searchText) }
+            getEntryBy { findInField(BasicField.Notes(), searchText) }
         }
         FieldReference.SearchIn.Other -> {
-            findEntryBy {
+            getEntryBy {
                 val customFieldKeys = fields.keys - BasicField.keys
                 customFieldKeys
                     .any { k -> findInField(k, searchText) }
