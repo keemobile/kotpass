@@ -1,7 +1,6 @@
 package io.github.anvell.kotpass.database.modifiers
 
 import io.github.anvell.kotpass.constants.Defaults
-import io.github.anvell.kotpass.constants.PredefinedIcon
 import io.github.anvell.kotpass.database.KeePassDatabase
 import io.github.anvell.kotpass.extensions.isNullOrZero
 import io.github.anvell.kotpass.models.DatabaseContent
@@ -25,11 +24,8 @@ inline fun KeePassDatabase.withRecycleBin(
     return if (!content.meta.recycleBinUuid.isNullOrZero()) {
         block(this, content.meta.recycleBinUuid!!)
     } else {
-        val recycleBin = Group(
-            uuid = UUID.randomUUID(),
-            name = Defaults.RecycleBinName,
-            icon = PredefinedIcon.TrashBin
-        )
+        val recycleBin = Group.createRecycleBin(Defaults.RecycleBinName)
+
         modifyContent {
             copy(
                 meta = meta.copy(

@@ -110,4 +110,17 @@ data class Group(
 
         return result
     }
+
+    companion object {
+        /**
+         * Creates [Group] with proper settings for Recycle Bin.
+         */
+        fun createRecycleBin(name: String) = Group(
+            uuid = UUID.randomUUID(),
+            name = name,
+            icon = PredefinedIcon.TrashBin,
+            enableSearching = GroupOverride.Disabled,
+            enableAutoType = GroupOverride.Disabled
+        )
+    }
 }
