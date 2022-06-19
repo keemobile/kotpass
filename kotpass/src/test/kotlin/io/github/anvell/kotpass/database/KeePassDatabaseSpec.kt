@@ -237,6 +237,22 @@ class KeePassDatabaseSpec : DescribeSpec({
             group.name shouldBe "Hello"
         }
 
+        it("Entries mass modification") {
+            val label = "Hello"
+            val database = loadDatabase(
+                rawData = DatabaseRes.GroupsAndEntries.DbGroupsAndEntries,
+                passphrase = "1"
+            ).modifyEntries {
+                copy(overrideUrl = label)
+            }
+
+            database.traverse { element ->
+                if (element is Entry) {
+                    element.overrideUrl shouldBe label
+                }
+            }
+        }
+
         it("Entry modification with history") {
             val (_, entry) = loadDatabase(
                 rawData = DatabaseRes.GroupsAndEntries.DbGroupsAndEntries,

@@ -36,6 +36,12 @@ fun KeePassDatabase.modifyEntry(
     copy(group = group.modifyEntry(uuid, block))
 }
 
+fun KeePassDatabase.modifyEntries(
+    block: Entry.() -> Entry
+) = modifyContent {
+    copy(group = group.modifyEntries(block))
+}
+
 fun KeePassDatabase.removeEntry(
     uuid: UUID
 ) = modifyContent {
@@ -73,6 +79,27 @@ private fun Group.modifyEntry(
         copy(groups = groups.map { it.modifyEntry(uuid, block) })
     }
 }
+
+private fun Group.modifyEntries(
+    block: Entry.() -> Entry
+): Group = copy(
+    entries = entries.map { entry ->
+        val newEntry = block(entry)
+
+        if (newEntry != entry) {
+            val now = Instant.now()
+            newEntry.copy(
+                times = entry.times?.copy(
+                    lastAccessTime = now,
+                    lastModificationTime = now
+                ) ?: TimeData.create()
+            )
+        } else {
+            newEntry
+        }
+    },
+    groups = groups.map { it.modifyEntries(block) }
+)
 
 private fun Group.removeChildEntry(
     uuid: UUID
