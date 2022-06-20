@@ -8,7 +8,7 @@ import java.util.*
 data class Entry(
     override val uuid: UUID,
     override val icon: PredefinedIcon = PredefinedIcon.Key,
-    val customIconUuid: UUID? = null,
+    override val customIconUuid: UUID? = null,
     val foregroundColor: String? = null,
     val backgroundColor: String? = null,
     val overrideUrl: String = "",

@@ -9,7 +9,7 @@ data class Group(
     val name: String,
     val notes: String = "",
     override val icon: PredefinedIcon = PredefinedIcon.Folder,
-    val customIconUuid: UUID? = null,
+    override val customIconUuid: UUID? = null,
     override val times: TimeData? = TimeData.create(),
     val expanded: Boolean = true,
     val defaultAutoTypeSequence: String? = null,
