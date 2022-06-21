@@ -1,10 +1,12 @@
 package io.github.anvell.kotpass.database.modifiers
 
 import io.github.anvell.kotpass.cryptography.EncryptedValue
-import io.github.anvell.kotpass.database.*
+import io.github.anvell.kotpass.database.Credentials
+import io.github.anvell.kotpass.database.KeePassDatabase
+import io.github.anvell.kotpass.database.decode
+import io.github.anvell.kotpass.database.traverse
 import io.github.anvell.kotpass.io.decodeBase64ToArray
 import io.github.anvell.kotpass.models.CustomIcon
-import io.github.anvell.kotpass.models.Entry
 import io.github.anvell.kotpass.resources.DatabaseRes
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
@@ -26,18 +28,16 @@ class CustomIconsSpec : DescribeSpec({
                 customIcons
             }.modifyEntries {
                 copy(customIconUuid = uuid)
+            }.modifyGroups {
+                copy(customIconUuid = uuid)
             }
             database.traverse { element ->
-                if (element is Entry) {
-                    element.customIconUuid shouldBe uuid
-                }
+                element.customIconUuid shouldBe uuid
             }
             val noCustomIcons = database.modifyCustomIcons { mapOf() }
 
             noCustomIcons.traverse { element ->
-                if (element is Entry) {
-                    element.customIconUuid shouldBe null
-                }
+                element.customIconUuid shouldBe null
             }
         }
     }

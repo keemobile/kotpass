@@ -15,10 +15,14 @@ inline fun KeePassDatabase.modifyCustomIcons(
         .filter { it !in newCustomIcons.keys }
 
     return modifyEntries {
-        if (customIconUuid in removedUuids) {
-            copy(customIconUuid = null)
-        } else {
-            this
+        when (customIconUuid) {
+            in removedUuids -> copy(customIconUuid = null)
+            else -> this
+        }
+    }.modifyGroups {
+        when (customIconUuid) {
+            in removedUuids -> copy(customIconUuid = null)
+            else -> this
         }
     }.modifyMeta {
         copy(customIcons = newCustomIcons)
