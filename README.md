@@ -1,5 +1,5 @@
 # Kotpass 
-![Build & Test](https://github.com/anvell/kotpass/actions/workflows/gradle.yml/badge.svg) [![](https://jitpack.io/v/anvell/kotpass.svg)](https://jitpack.io/#anvell/kotpass)
+![Build & Test](https://github.com/keemobile/kotpass/actions/workflows/gradle.yml/badge.svg) [![](https://jitpack.io/v/keemobile/kotpass.svg)](https://jitpack.io/#keemobile/kotpass)
 
 Library provides reading/writing support for KDBX files in Kotlin (including newest format version 4.1). It's suitable for Mobile, Desktop and Backend JVM projects. Functional style API makes it convenient for MVI/Redux like architectures.
 
@@ -24,7 +24,7 @@ and:
 
 ```gradle
 dependencies {
-    implementation 'com.github.anvell:kotpass:0.4.0'
+    implementation 'app.keemobile:kotpass:0.4.10'
 }
 ```
 
