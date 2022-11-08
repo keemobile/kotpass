@@ -6,6 +6,13 @@ import app.keemobile.kotpass.io.encodeBase64
 import java.security.SecureRandom
 import kotlin.experimental.xor
 
+/**
+ * Applies simple XOR encryption to make value harder
+ * to identify and extract from process memory.
+ *
+ * @property value encrypted raw data.
+ * @property salt which was used on the value.
+ */
 class EncryptedValue(
     private val value: ByteArray,
     private val salt: ByteArray
@@ -35,6 +42,22 @@ class EncryptedValue(
     fun toBase64(): String = getBinary().encodeBase64()
 
     override fun toString(): String = value.encodeBase64()
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as EncryptedValue
+
+        return value.contentEquals(other.value) &&
+            salt.contentEquals(other.salt)
+    }
+
+    override fun hashCode(): Int {
+        var result = value.contentHashCode()
+        result = 31 * result + salt.contentHashCode()
+
+        return result
+    }
 
     companion object {
         fun fromString(text: String) = fromBinary(text.toByteArray())
