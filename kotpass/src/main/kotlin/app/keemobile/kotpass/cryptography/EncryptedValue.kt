@@ -17,12 +17,24 @@ class EncryptedValue(
     private val value: ByteArray,
     private val salt: ByteArray
 ) {
+    /**
+     * Length of encrypted value in bytes.
+     */
     val byteLength: Int get() = value.size
 
+    /**
+     * Decrypts value and parses as [UTF_8][Charsets.UTF_8] string.
+     */
     val text: String get() = getBinary().toString(Charsets.UTF_8)
 
+    /**
+     * Decrypts value and calculates SHA256.
+     */
     fun getHash() = getBinary().sha256()
 
+    /**
+     * Decrypts value and returns raw bytes.
+     */
     fun getBinary(): ByteArray {
         val bytes = ByteArray(value.size)
 
@@ -32,6 +44,9 @@ class EncryptedValue(
         return bytes
     }
 
+    /**
+     * Encodes value with [newSalt].
+     */
     fun setSalt(newSalt: ByteArray) {
         for (i in value.indices) {
             value[i] = (value[i] xor salt[i]) xor newSalt[i]
@@ -39,6 +54,9 @@ class EncryptedValue(
         }
     }
 
+    /**
+     * Decrypts value and returns as base 64.
+     */
     fun toBase64(): String = getBinary().encodeBase64()
 
     override fun toString(): String = value.encodeBase64()
