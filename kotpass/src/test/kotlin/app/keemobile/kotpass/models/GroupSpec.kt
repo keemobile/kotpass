@@ -1,6 +1,5 @@
 package app.keemobile.kotpass.models
 
-import app.keemobile.kotpass.constants.BasicField
 import app.keemobile.kotpass.constants.GroupOverride
 import app.keemobile.kotpass.constants.PredefinedIcon
 import app.keemobile.kotpass.cryptography.EncryptionSaltGenerator
@@ -52,7 +51,7 @@ class GroupSpec : DescribeSpec({
             val group = unmarshalGroup(context, GroupRes.BasicXml.parseAsXml())
 
             group.findChildEntry {
-                it.fields[BasicField.Title.key]?.content == "Lorem"
+                it.fields.title?.content == "Lorem"
             } shouldNotBe null
         }
     }

@@ -37,7 +37,7 @@ internal inline fun buildEntry(
             overrideUrl = overrideUrl,
             times = times,
             autoType = autoType,
-            fields = fields,
+            fields = EntryFields(fields),
             tags = tags,
             binaries = binaries,
             history = history,
