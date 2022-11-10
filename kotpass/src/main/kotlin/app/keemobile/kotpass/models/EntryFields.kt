@@ -3,6 +3,10 @@ package app.keemobile.kotpass.models
 import app.keemobile.kotpass.constants.BasicField
 import app.keemobile.kotpass.cryptography.EncryptedValue
 
+/**
+ * Wraps [Map] to override [equals] and take into
+ * account order of items in equality checks.
+ */
 class EntryFields(
     private val fields: Map<String, EntryValue>
 ) : Map<String, EntryValue> by fields {
@@ -46,6 +50,10 @@ class EntryFields(
     companion object {
         fun of(vararg pairs: Pair<String, EntryValue>) = EntryFields(mapOf(*pairs))
 
+        /**
+         * Creates [EntryFields] which is populated with empty [BasicField]
+         * values as required by KeePass contract.
+         */
         fun createDefault() = EntryFields(
             buildMap {
                 BasicField

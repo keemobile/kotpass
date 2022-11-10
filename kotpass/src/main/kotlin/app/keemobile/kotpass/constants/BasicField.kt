@@ -1,5 +1,8 @@
 package app.keemobile.kotpass.constants
 
+/**
+ * Basic fields which should be added to every entry.
+ */
 enum class BasicField(val key: String) {
     Title("Title"),
     UserName("UserName"),

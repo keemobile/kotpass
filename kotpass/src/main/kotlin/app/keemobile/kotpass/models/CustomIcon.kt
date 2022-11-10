@@ -2,6 +2,14 @@ package app.keemobile.kotpass.models
 
 import java.time.Instant
 
+/**
+ * Extra icon added by user to the database. Can be used
+ * for customizing groups and entries.
+ *
+ * @property data contains the icon image data as binary blob.
+ * @property name optionally given to icon.
+ * @property lastModified timestamp.
+ */
 data class CustomIcon(
     val data: ByteArray,
     val name: String?,
