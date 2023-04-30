@@ -1,5 +1,7 @@
 [versions]
 kotlin = "1.6.10"
+okio = "2.10.0"
+kotlin-xml-builder = "1.9.0"
 ktlint = "0.46.0"
 kotest = "5.0.3"
 spotless = "6.18.0"
@@ -14,6 +16,5 @@ spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 [libraries]
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 testing-kotest = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
-
-kotlin-xml-builder = "org.redundent:kotlin-xml-builder:1.7.4"
-okio = "com.squareup.okio:okio:2.10.0"
+kotlin-xml-builder = { module = "org.redundent:kotlin-xml-builder", version.ref = "kotlin-xml-builder" }
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
