@@ -22,9 +22,10 @@ subprojects {
         }
     }
 }
+
 tasks.withType<DependencyUpdatesTask> {
     rejectVersionIf {
-        val version = candidate.version.toLowerCase()
+        val version = candidate.version.lowercase()
 
         listOf("-alpha", "-beta", "-rc")
             .any { it in version }
