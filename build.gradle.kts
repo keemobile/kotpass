@@ -1,6 +1,9 @@
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+
 plugins {
     id("maven-publish")
     id("com.diffplug.spotless") version "5.11.1"
+    id("com.github.ben-manes.versions") version "0.46.0"
 }
 
 subprojects {
@@ -17,5 +20,13 @@ subprojects {
                 mapOf("disabled_rules" to "no-wildcard-imports")
             )
         }
+    }
+}
+tasks.withType<DependencyUpdatesTask> {
+    rejectVersionIf {
+        val version = candidate.version.toLowerCase()
+
+        listOf("-alpha", "-beta", "-rc")
+            .any { it in version }
     }
 }
