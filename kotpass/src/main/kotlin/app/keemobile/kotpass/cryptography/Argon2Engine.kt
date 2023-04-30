@@ -54,7 +54,7 @@ internal class Argon2Engine(
     enum class Type(val id: Int) {
         Argon2D(0x00),
         Argon2I(0x01),
-        Argon2Id(0x02),
+        Argon2Id(0x02)
     }
 
     enum class Version(val id: Int) {

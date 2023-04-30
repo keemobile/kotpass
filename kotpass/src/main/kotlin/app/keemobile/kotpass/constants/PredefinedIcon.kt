@@ -71,5 +71,5 @@ enum class PredefinedIcon {
     Wiki,
     Money,
     Certificate,
-    BlackBerry,
+    BlackBerry
 }

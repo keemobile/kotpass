@@ -104,12 +104,12 @@ sealed class DatabaseHeader {
         ChaCha20(
             uuid = UUID.fromString("d6038a2b-8b6f-4cb5-a524-339a31dbb59a"),
             ivLength = 12
-        ),
+        )
     }
 
     enum class Compression {
         None,
-        GZip,
+        GZip
     }
 
     internal fun writeTo(sink: BufferedSink) {

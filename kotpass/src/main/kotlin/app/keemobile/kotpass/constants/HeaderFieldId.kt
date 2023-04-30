@@ -15,5 +15,5 @@ internal enum class HeaderFieldId {
     StreamStartBytes,
     InnerRandomStreamId,
     KdfParameters,
-    PublicCustomData,
+    PublicCustomData
 }
