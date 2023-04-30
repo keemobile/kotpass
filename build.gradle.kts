@@ -6,20 +6,10 @@ plugins {
     id("maven-publish")
 }
 
-subprojects {
-    apply {
-        plugin("com.diffplug.spotless")
-    }
-
-    spotless {
-        kotlin {
-            target("**/*.kt")
-            targetExclude("$buildDir/**/*.kt")
-            targetExclude("bin/**/*.kt")
-            ktlint(libs.versions.ktlint.get()).userData(
-                mapOf("disabled_rules" to "no-wildcard-imports")
-            )
-        }
+spotless {
+    kotlin {
+        target("kotpass/src/**/*.kt")
+        ktlint(libs.versions.ktlint.get())
     }
 }
 

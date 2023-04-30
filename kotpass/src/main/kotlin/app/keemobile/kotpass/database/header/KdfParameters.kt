@@ -91,7 +91,7 @@ sealed class KdfParameters {
                         rounds = (get(KdfConst.Keys.Rounds) as? VariantItem.UInt64)?.value
                             ?: throw FormatError.InvalidHeader("No KDF rounds found."),
                         seed = (get(KdfConst.Keys.SaltOrSeed) as? VariantItem.Bytes)?.value
-                            ?: throw FormatError.InvalidHeader("No KDF seed found."),
+                            ?: throw FormatError.InvalidHeader("No KDF seed found.")
                     )
                 }
                 KdfConst.KdfArgon2d, KdfConst.KdfArgon2id -> {
@@ -109,7 +109,7 @@ sealed class KdfParameters {
                         version = (get(KdfConst.Keys.Version) as? VariantItem.UInt32)?.value
                             ?: throw FormatError.InvalidHeader("No KDF version found."),
                         secretKey = (get(KdfConst.Keys.SecretKey) as? VariantItem.Bytes)?.value,
-                        associatedData = (get(KdfConst.Keys.AssocData) as? VariantItem.Bytes)?.value,
+                        associatedData = (get(KdfConst.Keys.AssocData) as? VariantItem.Bytes)?.value
                     )
                 }
                 else -> throw FormatError.InvalidHeader("Unknown KDF UUID.")

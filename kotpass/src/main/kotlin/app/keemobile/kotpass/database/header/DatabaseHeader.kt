@@ -15,7 +15,7 @@ import okio.BufferedSource
 import okio.ByteString
 import java.nio.ByteBuffer
 import java.security.SecureRandom
-import java.util.*
+import java.util.UUID
 
 private val EndOfHeaderBytes = ByteString.of(0x0D, 0x0A, 0x0D, 0x0A)
 
@@ -38,7 +38,7 @@ sealed class DatabaseHeader {
         val transformRounds: ULong,
         val innerRandomStreamId: CrsAlgorithm,
         val innerRandomStreamKey: ByteString,
-        val streamStartBytes: ByteString,
+        val streamStartBytes: ByteString
     ) : DatabaseHeader() {
 
         companion object {
@@ -54,7 +54,7 @@ sealed class DatabaseHeader {
                     transformRounds = 6000U,
                     innerRandomStreamId = CrsAlgorithm.Salsa20,
                     innerRandomStreamKey = nextByteString(32),
-                    streamStartBytes = nextByteString(32),
+                    streamStartBytes = nextByteString(32)
                 )
             }
         }
@@ -88,7 +88,7 @@ sealed class DatabaseHeader {
                         iterations = 8U,
                         version = Argon2Engine.Version.Ver13.id.toUInt(),
                         secretKey = null,
-                        associatedData = null,
+                        associatedData = null
                     ),
                     publicCustomData = mapOf()
                 )
@@ -104,12 +104,12 @@ sealed class DatabaseHeader {
         ChaCha20(
             uuid = UUID.fromString("d6038a2b-8b6f-4cb5-a524-339a31dbb59a"),
             ivLength = 12
-        )
+        ),
     }
 
     enum class Compression {
         None,
-        GZip
+        GZip,
     }
 
     internal fun writeTo(sink: BufferedSink) {

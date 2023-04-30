@@ -2,7 +2,7 @@ package app.keemobile.kotpass.extensions
 
 import okio.ByteString
 import java.nio.ByteOrder
-import java.util.*
+import java.util.UUID
 
 internal fun ByteString.asIntLe() = asByteBuffer()
     .apply { order(ByteOrder.LITTLE_ENDIAN) }

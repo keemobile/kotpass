@@ -1,8 +1,8 @@
 [versions]
 kotlin = "1.6.10"
-ktlint = "0.42.1"
+ktlint = "0.46.0"
 kotest = "5.0.3"
-spotless = "5.11.1"
+spotless = "6.18.0"
 versions = "0.46.0"
 
 [plugins]

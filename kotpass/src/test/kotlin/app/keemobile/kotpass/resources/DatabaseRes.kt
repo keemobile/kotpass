@@ -1,6 +1,6 @@
 package app.keemobile.kotpass.resources
 
-import java.util.*
+import java.util.UUID
 
 internal object DatabaseRes {
     const val DbVer4Argon2 =

@@ -4,7 +4,13 @@ import app.keemobile.kotpass.builders.buildGroup
 import app.keemobile.kotpass.constants.Const
 import app.keemobile.kotpass.constants.PredefinedIcon
 import app.keemobile.kotpass.errors.FormatError
-import app.keemobile.kotpass.extensions.*
+import app.keemobile.kotpass.extensions.addBoolean
+import app.keemobile.kotpass.extensions.addGroupOverride
+import app.keemobile.kotpass.extensions.addUuid
+import app.keemobile.kotpass.extensions.childNodes
+import app.keemobile.kotpass.extensions.getGroupOverride
+import app.keemobile.kotpass.extensions.getText
+import app.keemobile.kotpass.extensions.getUuid
 import app.keemobile.kotpass.models.Group
 import app.keemobile.kotpass.models.XmlContext
 import app.keemobile.kotpass.xml.FormatXml.Tags

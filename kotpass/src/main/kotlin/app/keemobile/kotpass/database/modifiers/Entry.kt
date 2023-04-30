@@ -7,7 +7,7 @@ import app.keemobile.kotpass.models.Entry
 import app.keemobile.kotpass.models.Group
 import app.keemobile.kotpass.models.TimeData
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 fun KeePassDatabase.moveEntry(
     uuid: UUID,

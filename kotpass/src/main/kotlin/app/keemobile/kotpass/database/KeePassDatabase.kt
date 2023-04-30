@@ -5,8 +5,12 @@ package app.keemobile.kotpass.database
 import app.keemobile.kotpass.constants.GroupOverride
 import app.keemobile.kotpass.database.header.DatabaseHeader
 import app.keemobile.kotpass.database.header.DatabaseInnerHeader
-import app.keemobile.kotpass.models.*
-import java.util.*
+import app.keemobile.kotpass.models.DatabaseContent
+import app.keemobile.kotpass.models.DatabaseElement
+import app.keemobile.kotpass.models.Entry
+import app.keemobile.kotpass.models.Group
+import app.keemobile.kotpass.models.Meta
+import java.util.UUID
 
 /**
  * Main class which describes Keepass database.

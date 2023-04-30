@@ -7,7 +7,7 @@ import okio.ByteString
 
 class Signature(
     val base: ByteString,
-    val secondary: ByteString,
+    val secondary: ByteString
 ) {
 
     internal fun writeTo(sink: BufferedSink) = with(sink) {

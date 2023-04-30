@@ -1,7 +1,7 @@
 package app.keemobile.kotpass.models
 
 import app.keemobile.kotpass.constants.PredefinedIcon
-import java.util.*
+import java.util.UUID
 
 sealed interface DatabaseElement {
     val uuid: UUID

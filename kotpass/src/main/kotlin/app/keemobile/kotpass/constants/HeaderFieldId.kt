@@ -2,6 +2,7 @@ package app.keemobile.kotpass.constants
 
 internal enum class HeaderFieldId {
     EndOfHeader,
+
     @Deprecated("No longer supported.")
     Comment,
     CipherId,
@@ -14,5 +15,5 @@ internal enum class HeaderFieldId {
     StreamStartBytes,
     InnerRandomStreamId,
     KdfParameters,
-    PublicCustomData
+    PublicCustomData,
 }

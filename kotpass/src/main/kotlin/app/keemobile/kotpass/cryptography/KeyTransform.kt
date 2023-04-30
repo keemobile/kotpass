@@ -61,7 +61,7 @@ internal object KeyTransform {
                             additional = header.kdfParameters.associatedData?.toByteArray(),
                             iterations = header.kdfParameters.iterations,
                             parallelism = header.kdfParameters.parallelism,
-                            memory = header.kdfParameters.memory,
+                            memory = header.kdfParameters.memory
                         )
                     }
                 }

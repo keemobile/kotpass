@@ -10,7 +10,7 @@ import app.keemobile.kotpass.models.EntryValue
 import app.keemobile.kotpass.models.Meta
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
-import java.util.*
+import java.util.UUID
 
 private val EmptyDatabase = KeePassDatabase.Ver4x.create(
     rootName = "",

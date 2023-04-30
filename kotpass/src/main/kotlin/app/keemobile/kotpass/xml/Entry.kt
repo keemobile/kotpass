@@ -5,7 +5,14 @@ import app.keemobile.kotpass.constants.Const
 import app.keemobile.kotpass.constants.PredefinedIcon
 import app.keemobile.kotpass.cryptography.EncryptedValue
 import app.keemobile.kotpass.errors.FormatError
-import app.keemobile.kotpass.extensions.*
+import app.keemobile.kotpass.extensions.addBoolean
+import app.keemobile.kotpass.extensions.addBytes
+import app.keemobile.kotpass.extensions.addUuid
+import app.keemobile.kotpass.extensions.childNodes
+import app.keemobile.kotpass.extensions.getBytes
+import app.keemobile.kotpass.extensions.getText
+import app.keemobile.kotpass.extensions.getUuid
+import app.keemobile.kotpass.extensions.toXmlString
 import app.keemobile.kotpass.models.Entry
 import app.keemobile.kotpass.models.EntryValue
 import app.keemobile.kotpass.models.XmlContext

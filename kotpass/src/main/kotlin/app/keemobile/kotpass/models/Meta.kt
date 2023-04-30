@@ -4,7 +4,7 @@ import app.keemobile.kotpass.constants.Defaults
 import app.keemobile.kotpass.constants.MemoryProtectionFlag
 import okio.ByteString
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 /**
  * Meta describes various database meta data.

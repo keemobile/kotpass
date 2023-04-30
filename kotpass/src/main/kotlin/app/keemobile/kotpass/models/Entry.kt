@@ -2,7 +2,7 @@ package app.keemobile.kotpass.models
 
 import app.keemobile.kotpass.constants.BasicField
 import app.keemobile.kotpass.constants.PredefinedIcon
-import java.util.*
+import java.util.UUID
 
 data class Entry(
     override val uuid: UUID,

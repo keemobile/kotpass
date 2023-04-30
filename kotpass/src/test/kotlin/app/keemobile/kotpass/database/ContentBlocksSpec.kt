@@ -31,7 +31,7 @@ class ContentBlocksSpec : DescribeSpec({
                 sink = buffer,
                 contentData = ContentBlocksRes.TestData.toByteArray(),
                 masterSeed = seed,
-                transformedKey = key,
+                transformedKey = key
             )
             val output = ContentBlocks
                 .readContentBlocksVer4x(buffer, seed, key)

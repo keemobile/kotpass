@@ -17,7 +17,7 @@ import app.keemobile.kotpass.xml.unmarshalBinaries
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import java.io.ByteArrayInputStream
-import java.util.*
+import java.util.UUID
 
 private const val Contents = "hello kotpass"
 private const val ContentsAsXml =

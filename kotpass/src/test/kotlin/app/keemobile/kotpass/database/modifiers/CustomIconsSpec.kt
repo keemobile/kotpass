@@ -11,7 +11,7 @@ import app.keemobile.kotpass.resources.DatabaseRes
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import java.io.ByteArrayInputStream
-import java.util.*
+import java.util.UUID
 
 class CustomIconsSpec : DescribeSpec({
 

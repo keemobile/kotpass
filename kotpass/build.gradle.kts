@@ -16,11 +16,6 @@ plugins {
 group = ArtifactGroup
 version = ArtifactVersion
 
-repositories {
-    mavenCentral()
-    maven("https://jitpack.io")
-}
-
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         jvmTarget = "1.8"
