@@ -7,8 +7,8 @@ val ArtifactGroup = "app.keemobile"
 val ArtifactVersion = "0.4.12"
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.6.0"
-    id("org.jetbrains.dokka") version "1.6.0"
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.dokka)
     id("java-library")
     id("maven-publish")
 }
