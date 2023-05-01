@@ -18,6 +18,11 @@ internal class TeeBufferedSource(
 
     override val buffer: Buffer = bufferedSource.buffer
 
+    @Deprecated(
+        "moved to val: use getBuffer() instead",
+        replaceWith = ReplaceWith("buffer"),
+        level = DeprecationLevel.WARNING
+    )
     override fun buffer(): Buffer = buffer
 
     override fun close() = bufferedSource.close()
