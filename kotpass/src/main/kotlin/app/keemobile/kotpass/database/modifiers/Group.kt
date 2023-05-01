@@ -52,7 +52,7 @@ fun KeePassDatabase.modifyGroups(
 }
 
 fun KeePassDatabase.removeGroup(
-    uuid: UUID,
+    uuid: UUID
 ): KeePassDatabase {
     val now = Instant.now()
     val deletedUuids = (findGroupChildIds(uuid) + uuid)
@@ -107,7 +107,7 @@ private fun Group.modifyGroup(
             times = times?.copy(
                 lastAccessTime = now,
                 lastModificationTime = now
-            ) ?: TimeData.create(),
+            ) ?: TimeData.create()
         )
     } else {
         copy(groups = groups.map { it.modifyGroup(uuid, block) })

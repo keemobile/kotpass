@@ -7,5 +7,5 @@ enum class MemoryProtectionFlag(val value: String) {
     UserName(FormatXml.Tags.Meta.MemoryProtection.ProtectUserName),
     Password(FormatXml.Tags.Meta.MemoryProtection.ProtectPassword),
     Url(FormatXml.Tags.Meta.MemoryProtection.ProtectUrl),
-    Notes(FormatXml.Tags.Meta.MemoryProtection.ProtectNotes);
+    Notes(FormatXml.Tags.Meta.MemoryProtection.ProtectNotes)
 }

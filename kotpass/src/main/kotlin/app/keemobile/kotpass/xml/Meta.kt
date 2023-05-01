@@ -2,7 +2,13 @@ package app.keemobile.kotpass.xml
 
 import app.keemobile.kotpass.constants.Defaults
 import app.keemobile.kotpass.constants.MemoryProtectionFlag
-import app.keemobile.kotpass.extensions.*
+import app.keemobile.kotpass.extensions.addBoolean
+import app.keemobile.kotpass.extensions.addBytes
+import app.keemobile.kotpass.extensions.addDateTime
+import app.keemobile.kotpass.extensions.addUuid
+import app.keemobile.kotpass.extensions.getBytes
+import app.keemobile.kotpass.extensions.getText
+import app.keemobile.kotpass.extensions.getUuid
 import app.keemobile.kotpass.models.Meta
 import app.keemobile.kotpass.models.XmlContext
 import app.keemobile.kotpass.xml.FormatXml.Tags

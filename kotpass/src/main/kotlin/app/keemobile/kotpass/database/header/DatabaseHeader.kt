@@ -38,7 +38,7 @@ sealed class DatabaseHeader {
         val transformRounds: ULong,
         val innerRandomStreamId: CrsAlgorithm,
         val innerRandomStreamKey: ByteString,
-        val streamStartBytes: ByteString,
+        val streamStartBytes: ByteString
     ) : DatabaseHeader() {
 
         companion object {
@@ -54,7 +54,7 @@ sealed class DatabaseHeader {
                     transformRounds = 6000U,
                     innerRandomStreamId = CrsAlgorithm.Salsa20,
                     innerRandomStreamKey = nextByteString(32),
-                    streamStartBytes = nextByteString(32),
+                    streamStartBytes = nextByteString(32)
                 )
             }
         }
@@ -88,7 +88,7 @@ sealed class DatabaseHeader {
                         iterations = 8U,
                         version = Argon2Engine.Version.Ver13.id.toUInt(),
                         secretKey = null,
-                        associatedData = null,
+                        associatedData = null
                     ),
                     publicCustomData = mapOf()
                 )

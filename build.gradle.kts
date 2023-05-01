@@ -1,6 +1,6 @@
 plugins {
     id("maven-publish")
-    id("com.diffplug.spotless") version "5.11.1"
+    id("com.diffplug.spotless") version "6.18.0"
 }
 
 subprojects {
@@ -13,9 +13,7 @@ subprojects {
             target("**/*.kt")
             targetExclude("$buildDir/**/*.kt")
             targetExclude("bin/**/*.kt")
-            ktlint(libs.versions.ktlint.get()).userData(
-                mapOf("disabled_rules" to "no-wildcard-imports")
-            )
+            ktlint(libs.versions.ktlint.get())
         }
     }
 }

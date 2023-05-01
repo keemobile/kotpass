@@ -9,7 +9,7 @@ class EncryptionSaltGeneratorSpec : DescribeSpec({
     describe("EncryptionSaltGenerator") {
         it("Generates random sequences with Salsa20") {
             EncryptionSaltGenerator.Salsa20(
-                key = byteArrayOf(1, 2, 3),
+                key = byteArrayOf(1, 2, 3)
             ).run {
                 getSalt(0).size shouldBe 0
 
@@ -23,7 +23,7 @@ class EncryptionSaltGeneratorSpec : DescribeSpec({
 
         it("Generates random sequences with ChaCha20") {
             EncryptionSaltGenerator.ChaCha20(
-                key = byteArrayOf(1, 2, 3),
+                key = byteArrayOf(1, 2, 3)
             ).run {
                 getSalt(0).size shouldBe 0
 

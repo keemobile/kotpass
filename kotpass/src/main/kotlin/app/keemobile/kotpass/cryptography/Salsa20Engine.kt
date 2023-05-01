@@ -35,7 +35,9 @@ private const val DefaultRounds = 20
 private const val StateSize = 16 // 16, 32 bit ints = 64 bytes
 
 private val TauSigma = littleEndianToInt(
-    ("expand 16-byte k" + "expand 32-byte k").toByteArray(Charsets.US_ASCII), 0, 8
+    bs = ("expand 16-byte k" + "expand 32-byte k").toByteArray(Charsets.US_ASCII),
+    off = 0,
+    count = 8
 )
 
 internal open class Salsa20Engine(protected val rounds: Int = DefaultRounds) {

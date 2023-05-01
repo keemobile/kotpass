@@ -222,7 +222,10 @@ internal class Blake2bDigest {
             remainingLength = ByteLength - bufferPos
             if (remainingLength < len) { // full buffer + at least 1 byte
                 System.arraycopy(
-                    message, offset, buffer, bufferPos,
+                    message,
+                    offset,
+                    buffer,
+                    bufferPos,
                     remainingLength
                 )
                 t0 += ByteLength.toLong()
@@ -371,9 +374,14 @@ internal class Blake2bDigest {
 
     companion object {
         private val Blake2bIV = longArrayOf(
-            0x6a09e667f3bcc908L, -0x4498517a7b3558c5L, 0x3c6ef372fe94f82bL,
-            -0x5ab00ac5a0e2c90fL, 0x510e527fade682d1L, -0x64fa9773d4c193e1L,
-            0x1f83d9abfb41bd6bL, 0x5be0cd19137e2179L
+            0x6a09e667f3bcc908L,
+            -0x4498517a7b3558c5L,
+            0x3c6ef372fe94f82bL,
+            -0x5ab00ac5a0e2c90fL,
+            0x510e527fade682d1L,
+            -0x64fa9773d4c193e1L,
+            0x1f83d9abfb41bd6bL,
+            0x5be0cd19137e2179L
         )
 
         private val Blake2bSigma = arrayOf(

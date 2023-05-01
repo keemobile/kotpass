@@ -11,7 +11,7 @@ internal object Argon2Kdf {
         salt: ByteArray,
         iterations: ULong,
         parallelism: UInt,
-        memory: ULong,
+        memory: ULong
     ): ByteArray {
         val result = ByteArray(32)
         Argon2Engine(

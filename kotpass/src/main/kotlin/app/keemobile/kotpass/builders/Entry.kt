@@ -1,7 +1,13 @@
 package app.keemobile.kotpass.builders
 
 import app.keemobile.kotpass.constants.PredefinedIcon
-import app.keemobile.kotpass.models.*
+import app.keemobile.kotpass.models.AutoTypeData
+import app.keemobile.kotpass.models.BinaryReference
+import app.keemobile.kotpass.models.CustomDataValue
+import app.keemobile.kotpass.models.Entry
+import app.keemobile.kotpass.models.EntryFields
+import app.keemobile.kotpass.models.EntryValue
+import app.keemobile.kotpass.models.TimeData
 import java.util.*
 
 internal class MutableEntry(
