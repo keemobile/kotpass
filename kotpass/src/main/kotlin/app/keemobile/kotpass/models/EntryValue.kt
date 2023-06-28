@@ -12,11 +12,18 @@ sealed class EntryValue {
     abstract val content: String
 
     /**
+     * Checks whether [content] is empty without exposing [EncryptedValue].
+     */
+    abstract fun isEmpty(): Boolean
+
+    /**
      * Should be used for non-sensitive values.
      */
     data class Plain(
         override val content: String
-    ) : EntryValue()
+    ) : EntryValue() {
+        override fun isEmpty() = content.isEmpty()
+    }
 
     /**
      * Should be used for secrets.
@@ -25,6 +32,8 @@ sealed class EntryValue {
         private val value: EncryptedValue
     ) : EntryValue() {
         override val content: String get() = value.text
+
+        override fun isEmpty() = value.byteLength == 0
     }
 
     /**
