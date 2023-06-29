@@ -44,11 +44,6 @@ tasks.withType<Jar> {
     )
 }
 
-tasks.create<Jar>("sourceJar") {
-    archiveClassifier.set("sources")
-    from(sourceSets["main"].allSource)
-}
-
 publishing {
     publications {
         create<MavenPublication>("maven") {
@@ -57,7 +52,6 @@ publishing {
             version = ArtifactVersion
 
             from(components["java"])
-            artifact(tasks["sourceJar"])
         }
     }
 }
