@@ -23,7 +23,7 @@ repositories {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
         freeCompilerArgs += listOf("-Xopt-in=kotlin.RequiresOptIn")
     }
 }
@@ -31,8 +31,8 @@ tasks.withType<KotlinCompile> {
 java {
     withSourcesJar()
 
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 tasks.withType<Jar> {
