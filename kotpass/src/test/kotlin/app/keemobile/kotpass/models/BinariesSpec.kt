@@ -16,6 +16,8 @@ import app.keemobile.kotpass.xml.marshal
 import app.keemobile.kotpass.xml.unmarshalBinaries
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import okio.buffer
+import okio.source
 import java.io.ByteArrayInputStream
 import java.util.*
 
@@ -38,6 +40,23 @@ class BinariesSpec : DescribeSpec({
                 .map { (_, binary) -> binary }
                 .first()
                 .getContent() shouldBe Contents.toByteArray()
+        }
+
+        it("Reads from compressed stream") {
+            val binaryData = unmarshalBinaries(ContentsAsXml.parseAsXml())
+                .map { (_, binary) -> binary }
+                .first()
+
+            binaryData
+                .inputStream()
+                .use { stream ->
+                    val content = Contents.take(5)
+                    val source = stream.source().buffer()
+                    val sample = source
+                        .use { it.readUtf8(content.length.toLong()) }
+
+                    sample shouldBe content
+                }
         }
 
         it("Removes unused binaries") {
