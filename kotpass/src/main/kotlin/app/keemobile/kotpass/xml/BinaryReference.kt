@@ -8,18 +8,36 @@ import app.keemobile.kotpass.xml.FormatXml.Tags
 import org.redundent.kotlin.xml.Node
 import org.redundent.kotlin.xml.node
 
+/**
+ * Note that references with invalid IDs are skipped.
+ * This table represents how other clients handle this situation:
+ *
+ * | Client    | Behaviour                               |
+ * |-----------|-----------------------------------------|
+ * | KeePass   | Drops invalid attachments               |
+ * | KeePassXC | Keeps attachments as invalid references |
+ * | KeeWeb    | Drops invalid attachments               |
+ * | MacPass   | Drops invalid attachments               |
+ *
+ * @return BinaryReference or **null** when reference ID is invalid.
+ */
 internal fun unmarshalBinaryReference(
     context: XmlContext.Decode,
     node: Node
-): BinaryReference {
+): BinaryReference? {
     val id = node
         .firstOrNull(Tags.Entry.BinaryReferences.ItemValue)
         ?.get<String?>(FormatXml.Attributes.Ref)
         ?.toInt()
         ?: throw FormatError.InvalidXml("Invalid binary reference id.")
+    val hash = context
+        .binaries
+        .keys
+        .elementAtOrNull(id)
+        ?: return null
 
     return BinaryReference(
-        hash = context.binaries.keys.elementAt(id),
+        hash = hash,
         name = node
             .firstOrNull(Tags.Entry.BinaryReferences.ItemKey)
             ?.getText()

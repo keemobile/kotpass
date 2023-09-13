@@ -68,7 +68,7 @@ internal fun unmarshalEntry(
                         ?.forEach(tags::add)
                 }
                 Tags.Entry.BinaryReferences.TagName -> {
-                    binaries.add(unmarshalBinaryReference(context, childNode))
+                    unmarshalBinaryReference(context, childNode)?.let(binaries::add)
                 }
                 Tags.Entry.History -> {
                     history = unmarshalEntries(context, childNode).toMutableList()

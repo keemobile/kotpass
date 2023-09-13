@@ -2,13 +2,21 @@ package app.keemobile.kotpass.models
 
 import app.keemobile.kotpass.builders.buildEntry
 import app.keemobile.kotpass.constants.BasicField
+import app.keemobile.kotpass.cryptography.EncryptedValue
 import app.keemobile.kotpass.cryptography.EncryptionSaltGenerator
+import app.keemobile.kotpass.database.Credentials
+import app.keemobile.kotpass.database.KeePassDatabase
+import app.keemobile.kotpass.database.decode
+import app.keemobile.kotpass.database.modifiers.binaries
+import app.keemobile.kotpass.database.traverse
 import app.keemobile.kotpass.extensions.parseAsXml
 import app.keemobile.kotpass.resources.EntryRes
 import app.keemobile.kotpass.resources.TimeDataRes
 import app.keemobile.kotpass.xml.unmarshalEntry
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainAll
+import io.kotest.matchers.maps.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import java.util.*
@@ -60,6 +68,24 @@ class EntrySpec : DescribeSpec({
 
             items shouldBe reversed
             entry1 shouldNotBe entry2
+        }
+
+        it("Invalid binary references are skipped") {
+            val database = ClassLoader
+                .getSystemResourceAsStream("entry/invalid_references.kdbx")!!
+                .use { inputStream ->
+                    KeePassDatabase.decode(
+                        inputStream = inputStream,
+                        credentials = Credentials.from(EncryptedValue.fromString("1"))
+                    )
+                }
+
+            database.binaries.shouldBeEmpty()
+            database.traverse { element ->
+                if (element is Entry) {
+                    element.binaries.shouldBeEmpty()
+                }
+            }
         }
     }
 })
