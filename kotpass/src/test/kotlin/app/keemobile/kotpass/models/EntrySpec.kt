@@ -5,13 +5,12 @@ import app.keemobile.kotpass.constants.BasicField
 import app.keemobile.kotpass.cryptography.EncryptedValue
 import app.keemobile.kotpass.cryptography.EncryptionSaltGenerator
 import app.keemobile.kotpass.database.Credentials
-import app.keemobile.kotpass.database.KeePassDatabase
-import app.keemobile.kotpass.database.decode
 import app.keemobile.kotpass.database.modifiers.binaries
 import app.keemobile.kotpass.database.traverse
 import app.keemobile.kotpass.extensions.parseAsXml
 import app.keemobile.kotpass.resources.EntryRes
 import app.keemobile.kotpass.resources.TimeDataRes
+import app.keemobile.kotpass.resources.decodeFromResources
 import app.keemobile.kotpass.xml.unmarshalEntry
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty
@@ -71,14 +70,10 @@ class EntrySpec : DescribeSpec({
         }
 
         it("Invalid binary references are skipped") {
-            val database = ClassLoader
-                .getSystemResourceAsStream("entry/invalid_references.kdbx")!!
-                .use { inputStream ->
-                    KeePassDatabase.decode(
-                        inputStream = inputStream,
-                        credentials = Credentials.from(EncryptedValue.fromString("1"))
-                    )
-                }
+            val database = decodeFromResources(
+                path = "entry/invalid_references.kdbx",
+                credentials = Credentials.from(EncryptedValue.fromString("1"))
+            )
 
             database.binaries.shouldBeEmpty()
             database.traverse { element ->
