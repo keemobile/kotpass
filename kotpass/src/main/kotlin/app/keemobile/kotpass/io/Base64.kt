@@ -24,9 +24,9 @@ private val Base64Map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz012
 private val Base64UrlSafeMap = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
     .toByteArray(Charsets.UTF_8)
 
-internal fun ByteArray.encodeBase64() = encodeBase64(Base64Map)
+fun ByteArray.encodeBase64() = encodeBase64(Base64Map)
 
-internal fun ByteArray.encodeBase64UrlSafe() = encodeBase64(Base64UrlSafeMap)
+fun ByteArray.encodeBase64UrlSafe() = encodeBase64(Base64UrlSafeMap)
 
 private fun ByteArray.encodeBase64(map: ByteArray): String {
     val length = (size + 2) / 3 * 4
@@ -63,7 +63,7 @@ private fun ByteArray.encodeBase64(map: ByteArray): String {
     return out.toString(Charsets.UTF_8)
 }
 
-internal fun String.decodeBase64ToArray(): ByteArray {
+fun String.decodeBase64ToArray(): ByteArray {
     // Ignore trailing '=' padding and whitespace from the input.
     var limit = length
     while (limit > 0) {
