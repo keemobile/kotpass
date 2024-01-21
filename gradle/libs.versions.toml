@@ -1,5 +1,6 @@
 [versions]
-kotlin = "1.8.10"
+kotlin = "1.8.22"
+dokka = "1.9.10"
 ktlint = "0.48.2"
 kotest = "5.6.1"
 spotless = "6.18.0"
@@ -7,7 +8,7 @@ versions = "0.46.0"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-dokka = { id = "org.jetbrains.dokka", version.ref = "kotlin" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "versions" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 

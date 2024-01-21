@@ -1,5 +1,6 @@
 @file:Suppress("PropertyName")
 
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val ArtifactId = "kotpass"
@@ -53,6 +54,12 @@ publishing {
 
             from(components["java"])
         }
+    }
+}
+
+tasks.withType<DokkaTask>().configureEach {
+    dokkaSourceSets {
+        configureEach { includes.from("README.md") }
     }
 }
 
