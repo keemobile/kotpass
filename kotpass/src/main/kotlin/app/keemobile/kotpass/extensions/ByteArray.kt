@@ -7,19 +7,19 @@ import kotlin.experimental.xor
 private const val Sha256 = "SHA-256"
 private const val Sha512 = "SHA-512"
 
-fun ByteArray.sha256(): ByteArray = MessageDigest
+internal fun ByteArray.sha256(): ByteArray = MessageDigest
     .getInstance(Sha256)
     .digest(this)
 
-fun ByteArray.sha512(): ByteArray = MessageDigest
+internal fun ByteArray.sha512(): ByteArray = MessageDigest
     .getInstance(Sha512)
     .digest(this)
 
-fun ByteArray.clear() {
+internal fun ByteArray.clear() {
     for (i in indices) this[i] = 0x0
 }
 
-fun ByteArray.constantTimeEquals(other: ByteArray): Boolean {
+internal fun ByteArray.constantTimeEquals(other: ByteArray): Boolean {
     if (this === other) {
         return true
     }
