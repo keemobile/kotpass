@@ -11,7 +11,6 @@ internal object ChaChaRes {
                 "2C840EC3CE9A7F3B181BE188EF711A1E" +
                 "984CE172B9216F419F445367456D5619" +
                 "314A42A3DA86B001387BFDB80E0CFE42"
-
         ),
         StreamCipherTestCase(
             rounds = 12,

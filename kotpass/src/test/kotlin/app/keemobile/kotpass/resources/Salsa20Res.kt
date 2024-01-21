@@ -44,7 +44,6 @@ internal object Salsa20Res {
             plaintext = "0000000000000000",
             cipher = "52e20cf8775ae882"
         ),
-
         StreamCipherEncryptionTestCase(
             rounds = 20,
             key = "80000000000000000000000000000000",

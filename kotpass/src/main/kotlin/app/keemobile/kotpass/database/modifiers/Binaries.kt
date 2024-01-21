@@ -5,7 +5,7 @@ import app.keemobile.kotpass.models.BinaryData
 import app.keemobile.kotpass.models.BinaryReference
 import app.keemobile.kotpass.models.Group
 import okio.ByteString
-import java.util.*
+import java.util.Stack
 
 val KeePassDatabase.binaries
     get() = when (this) {

@@ -11,7 +11,6 @@ import app.keemobile.kotpass.extensions.sha256
 import app.keemobile.kotpass.extensions.sha512
 
 internal object KeyTransform {
-
     fun compositeKey(credentials: Credentials): ByteArray {
         val items = listOfNotNull(
             credentials.passphrase?.getBinary(),

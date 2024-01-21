@@ -29,10 +29,10 @@ private const val Argon2PreHashDigestLength = 64
 private const val Argon2PreHashSeedLength = 72
 private const val Argon2SyncPoints = 4
 
-/* Minimum and maximum digest size in bytes */
+// Minimum and maximum digest size in bytes
 private const val MinOutLen = 4
 
-/* Minimum and maximum number of passes */
+// Minimum and maximum number of passes
 private const val M32L = 0xFFFFFFFFL
 
 private val ZeroBytes = ByteArray(4)
@@ -70,8 +70,10 @@ internal class Argon2Engine(
     }
 
     init {
-        /* 2. Align memory size */
-        /* Minimum memoryBlocks = 8L blocks, where L is the number of lanes */
+        /**
+         * 2. Align memory size
+         * Minimum memoryBlocks = 8L blocks, where L is the number of lanes
+         */
         var memoryBlocks = memory
         if (memoryBlocks < 2 * Argon2SyncPoints * parallelism) {
             memoryBlocks = 2 * Argon2SyncPoints * parallelism
@@ -79,7 +81,7 @@ internal class Argon2Engine(
         segmentLength = memoryBlocks / (parallelism * Argon2SyncPoints)
         laneLength = segmentLength * Argon2SyncPoints
 
-        /* Ensure that all segments have equal length */
+        // Ensure that all segments have equal length
         memoryBlocks = segmentLength * (parallelism * Argon2SyncPoints)
 
         blocks = Array(memoryBlocks) { Block() }
@@ -145,7 +147,7 @@ internal class Argon2Engine(
             val refLane = getRefLane(position, pseudoRandom)
             val refColumn = getRefColumn(position, index, pseudoRandom, refLane == position.lane)
 
-            /* 2 Creating a new block */
+            // 2 Creating a new block
             val prevBlock = blocks[prevOffset]
             val refBlock = blocks[laneLength * refLane + refColumn]
             val currentBlock = blocks[currentOffset]
@@ -177,7 +179,7 @@ internal class Argon2Engine(
         inputBlock.v[5] = intToLong(type.id)
 
         if (position.pass == 0 && position.slice == 0) {
-            /* Don't forget to generate the first block of addresses: */
+            // Don't forget to generate the first block of addresses:
             nextAddresses(filler, inputBlock, addressBlock)
         }
     }
@@ -188,10 +190,10 @@ internal class Argon2Engine(
 
     private fun getPrevOffset(currentOffset: Int): Int {
         return if (currentOffset % laneLength == 0) {
-            /* Last block in this lane */
+            // Last block in this lane
             currentOffset + laneLength - 1
         } else {
-            /* Previous block */
+            // Previous block
             currentOffset - 1
         }
     }
@@ -202,8 +204,10 @@ internal class Argon2Engine(
         filler.fillBlock(addressBlock, addressBlock)
     }
 
-    /* 1.2 Computing the index of the reference block */
-    /* 1.2.1 Taking pseudo-random value from the previous block */
+    /**
+     * 1.2 Computing the index of the reference block
+     * 1.2.1 Taking pseudo-random value from the previous block
+     */
     private fun getPseudoRandom(
         filler: FillBlock,
         index: Int,
@@ -226,7 +230,7 @@ internal class Argon2Engine(
     private fun getRefLane(position: Position, pseudoRandom: Long): Int {
         var refLane = ((pseudoRandom ushr 32) % parallelism).toInt()
         if (position.pass == 0 && position.slice == 0) {
-            /* Can not reference other lanes yet */
+            // Can not reference other lanes yet
             refLane = position.lane
         }
         return refLane
@@ -244,10 +248,10 @@ internal class Argon2Engine(
         if (position.pass == 0) {
             startPosition = 0
             referenceAreaSize = if (sameLane) {
-                /* The same lane => add current segment */
+                // The same lane => add current segment
                 position.slice * segmentLength + index - 1
             } else {
-                /* pass == 0 && !sameLane => position.slice > 0*/
+                // pass == 0 && !sameLane => position.slice > 0
                 position.slice * segmentLength + if (index == 0) -1 else 0
             }
         } else {
@@ -268,7 +272,7 @@ internal class Argon2Engine(
     private fun digest(tmpBlockBytes: ByteArray, out: ByteArray, outOff: Int, outLen: Int) {
         val finalBlock = blocks[laneLength - 1]
 
-        /* XOR the last blocks */
+        // XOR the last blocks
         for (i in 1 until parallelism) {
             val lastBlockInLane = i * laneLength + (laneLength - 1)
             finalBlock.xorWith(blocks[lastBlockInLane])
@@ -294,7 +298,7 @@ internal class Argon2Engine(
             var digest = Blake2bDigest(blake2bLength * 8)
             val outBuffer = ByteArray(blake2bLength)
 
-            /* V1 */
+            // V1
             digest.update(outLenBytes, 0, outLenBytes.size)
             digest.update(input, 0, input.size)
             digest.doFinal(outBuffer, 0)
@@ -306,7 +310,7 @@ internal class Argon2Engine(
             var i = 2
 
             while (i <= r) {
-                /* V2 to Vr */
+                // V2 to Vr
                 digest.update(outBuffer, 0, outBuffer.size)
                 digest.doFinal(outBuffer, 0)
                 System.arraycopy(outBuffer, 0, out, outPos, halfLen)
@@ -315,7 +319,7 @@ internal class Argon2Engine(
             }
             val lastLength = outLen - 32 * r
 
-            /* Vr+1 */
+            // Vr+1
             digest = Blake2bDigest(lastLength * 8)
             digest.update(outBuffer, 0, outBuffer.size)
             digest.doFinal(out, outPos)
@@ -375,9 +379,9 @@ internal class Argon2Engine(
 
         private fun applyBlake() {
             /*
-            * Apply Blake2 on columns of 64-bit words: (0,1,...,15),
-            * then (16,17,..31)... finally (112,113,...127)
-            */
+             * Apply Blake2 on columns of 64-bit words: (0,1,...,15),
+             * then (16,17,..31)... finally (112,113,...127)
+             */
             for (i in 0..7) {
                 val i16 = 16 * i
                 roundFunction(
@@ -431,7 +435,7 @@ internal class Argon2Engine(
     private class Block {
         private val Size = Argon2QwordsInBlock
 
-        /* 128 * 8 Byte QWords */
+        // 128 * 8 Byte QWords
         val v: LongArray = LongArray(Size)
 
         fun fromBytes(input: ByteArray) {
@@ -488,7 +492,7 @@ internal class Argon2Engine(
 
     private fun getStartingIndex(position: Position): Int {
         return if (position.pass == 0 && position.slice == 0) {
-            2 /* we have already generated the first two blocks */
+            2 // we have already generated the first two blocks
         } else {
             0
         }

@@ -24,7 +24,6 @@ class Credentials private constructor(
     val passphrase: EncryptedValue?,
     val key: EncryptedValue?
 ) {
-
     companion object {
         fun from(passphrase: EncryptedValue) = Credentials(
             passphrase = EncryptedValue.fromBinary(passphrase.getHash()),

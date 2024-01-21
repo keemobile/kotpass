@@ -2,7 +2,8 @@ package app.keemobile.kotpass.models
 
 import app.keemobile.kotpass.constants.GroupOverride
 import app.keemobile.kotpass.constants.PredefinedIcon
-import java.util.*
+import java.util.Stack
+import java.util.UUID
 
 data class Group(
     override val uuid: UUID,
@@ -22,7 +23,6 @@ data class Group(
     val entries: List<Entry> = listOf(),
     val customData: Map<String, CustomDataValue> = mapOf()
 ) : DatabaseElement {
-
     fun traverse(
         block: (DatabaseElement) -> Unit
     ) {

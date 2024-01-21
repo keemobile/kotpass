@@ -2,7 +2,7 @@ package app.keemobile.kotpass.resources
 
 import app.keemobile.kotpass.models.DeletedObject
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 internal object DeletedObjectRes {
     const val Base64StringUuid = "LtoeZ26BBkqtr93N9tqO4g=="

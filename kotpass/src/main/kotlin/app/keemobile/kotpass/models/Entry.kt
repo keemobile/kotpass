@@ -2,7 +2,7 @@ package app.keemobile.kotpass.models
 
 import app.keemobile.kotpass.constants.BasicField
 import app.keemobile.kotpass.constants.PredefinedIcon
-import java.util.*
+import java.util.UUID
 
 data class Entry(
     override val uuid: UUID,
@@ -21,6 +21,5 @@ data class Entry(
     val previousParentGroup: UUID? = null,
     val qualityCheck: Boolean = true
 ) : DatabaseElement {
-
     operator fun get(field: BasicField): EntryValue? = fields[field()]
 }

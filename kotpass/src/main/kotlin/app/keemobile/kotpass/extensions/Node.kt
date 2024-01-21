@@ -10,7 +10,7 @@ import org.redundent.kotlin.xml.Node
 import org.redundent.kotlin.xml.TextElement
 import java.nio.ByteBuffer
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 internal fun Node.childNodes() = children.filterIsInstance(Node::class.java)
 

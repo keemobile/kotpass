@@ -18,7 +18,7 @@ import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.maps.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import java.util.*
+import java.util.UUID
 
 class EntrySpec : DescribeSpec({
 

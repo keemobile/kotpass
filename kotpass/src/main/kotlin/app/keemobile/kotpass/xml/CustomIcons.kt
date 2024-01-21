@@ -12,10 +12,9 @@ import app.keemobile.kotpass.models.XmlContext
 import app.keemobile.kotpass.xml.FormatXml.Tags
 import org.redundent.kotlin.xml.Node
 import org.redundent.kotlin.xml.node
-import java.util.*
+import java.util.UUID
 
 internal object CustomIcons {
-
     fun unmarshal(node: Node): Map<UUID, CustomIcon> {
         return node
             .childNodes()

@@ -3,14 +3,15 @@
  *
  * Copyright (c) 2000-2021 The Legion Of The Bouncy Castle Inc. (https://www.bouncycastle.org)
  * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
- * and associated documentation files (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this
+ * software and associated documentation files (the "Software"), to deal in the Software
+ * without restriction, including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
+ * to whom the Software is furnished to do so,
  * subject to the following conditions:
  * <p>
- * The above copyright notice and this permission notice shall be included in all copies or substantial
- * portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies
+ * or substantial portions of the Software.
  * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
@@ -47,17 +48,20 @@ internal class Blake2bDigest {
 
     private var key: ByteArray? = null
 
-    // Tree hashing parameters:
-    // Because this class does not implement the Tree Hashing Mode,
-    // these parameters can be treated as constants (see init() function)
-    /*
-     * private int fanout = 1; // 0-255 private int depth = 1; // 1 - 255
-     * private int leafLength= 0; private long nodeOffset = 0L; private int
-     * nodeDepth = 0; private int innerHashLength = 0;
+    /**
+     * Tree hashing parameters:
+     * Because this class does not implement the Tree Hashing Mode,
+     * these parameters can be treated as constants (see init() function)
+     *
+     * private int fanout = 1;
+     * 0-255 private int depth = 1;
+     * 1-255 private int leafLength= 0;
+     * private long nodeOffset = 0L;
+     * private int nodeDepth = 0;
+     * private int innerHashLength = 0;
+     * whenever this buffer overflows, it will be processed in the compress() function.
+     * For performance issues, long messages will not use this buffer.
      */
-    // whenever this buffer overflows, it will be processed
-    // in the compress() function.
-    // For performance issues, long messages will not use this buffer.
     private val buffer: ByteArray // new byte[BLOCK_LENGTH_BYTES];
 
     // Position of last inserted byte:

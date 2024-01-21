@@ -25,7 +25,6 @@ data class DatabaseInnerHeader(
     @PublishedApi
     internal val binaries: Map<ByteString, BinaryData> = linkedMapOf()
 ) {
-
     internal fun writeTo(sink: BufferedSink) = with(sink) {
         writeByte(InnerHeaderFieldId.StreamId)
         writeIntLe(Int.SIZE_BYTES)

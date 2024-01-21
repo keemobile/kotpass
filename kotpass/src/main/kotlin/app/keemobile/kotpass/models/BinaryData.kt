@@ -24,7 +24,6 @@ sealed class BinaryData(val hash: ByteString) {
         override val memoryProtection: Boolean,
         override val rawContent: ByteArray
     ) : BinaryData(rawContent.sha256().toByteString()) {
-
         override fun getContent(): ByteArray = rawContent
 
         override fun inputStream(): InputStream = rawContent.inputStream()
@@ -42,7 +41,6 @@ sealed class BinaryData(val hash: ByteString) {
         override val memoryProtection: Boolean,
         override val rawContent: ByteArray
     ) : BinaryData(rawContent.sha256().toByteString()) {
-
         override fun getContent(): ByteArray = try {
             inputStream().use(InputStream::readBytes)
         } catch (_: IOException) {

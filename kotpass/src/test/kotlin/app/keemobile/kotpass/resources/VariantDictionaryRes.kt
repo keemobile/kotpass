@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:max-line-length")
+
 package app.keemobile.kotpass.resources
 
 internal object VariantDictionaryRes {

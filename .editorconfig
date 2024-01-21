@@ -6,8 +6,23 @@ insert_final_newline = true
 ij_continuation_indent_size = 4
 
 [{*.kt,*.kts}]
+ktlint_standard_annotation = disabled
+ktlint_standard_property-naming = disabled
+ktlint_standard_function-naming = disabled
+ktlint_standard_multiline-expression-wrapping = disabled
+ktlint_standard_string-template-indent = disabled
+ktlint_standard_function-signature = disabled
+ktlint_standard_indent = disabled
+ktlint_standard_discouraged-comment-location = enabled
+ktlint_standard_no-empty-first-line-in-class-body = enabled
+ktlint_standard_blank-line-before-declaration = enabled
+ktlint_standard_if-else-bracing = enabled
+ktlint_standard_no-empty-file = enabled
+ktlint_standard_no-single-line-block-comment = enabled
+
 ij_kotlin_allow_trailing_comma = false
 ij_kotlin_allow_trailing_comma_on_call_site = false
 ij_kotlin_blank_lines_around_block_when_branches = 0
 ij_kotlin_name_count_to_use_star_import = 2147483647
 ij_kotlin_name_count_to_use_star_import_for_members = 2147483647
+ij_kotlin_packages_to_use_import_on_demand = unset

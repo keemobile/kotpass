@@ -9,7 +9,6 @@ import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 
 internal object AesKdf {
-
     fun transformKey(
         key: ByteArray,
         seed: ByteArray,

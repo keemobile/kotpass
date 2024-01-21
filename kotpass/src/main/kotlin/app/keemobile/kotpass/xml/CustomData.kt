@@ -9,7 +9,6 @@ import org.redundent.kotlin.xml.Node
 import org.redundent.kotlin.xml.node
 
 internal object CustomData {
-
     fun unmarshal(node: Node): Map<String, CustomDataValue> {
         return node
             .childNodes()

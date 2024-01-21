@@ -16,7 +16,7 @@ subprojects {
             target("**/*.kt")
             targetExclude("$buildDir/**/*.kt")
             targetExclude("bin/**/*.kt")
-            ktlint(libs.versions.ktlint.get())
+            ktlint()
         }
     }
 }

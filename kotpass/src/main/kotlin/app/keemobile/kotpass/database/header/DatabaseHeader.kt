@@ -15,7 +15,7 @@ import okio.BufferedSource
 import okio.ByteString
 import java.nio.ByteBuffer
 import java.security.SecureRandom
-import java.util.*
+import java.util.UUID
 
 private val EndOfHeaderBytes = ByteString.of(0x0D, 0x0A, 0x0D, 0x0A)
 
@@ -40,7 +40,6 @@ sealed class DatabaseHeader {
         val innerRandomStreamKey: ByteString,
         val streamStartBytes: ByteString
     ) : DatabaseHeader() {
-
         companion object {
             fun create() = with(SecureRandom()) {
                 Ver3x(
@@ -70,7 +69,6 @@ sealed class DatabaseHeader {
         val kdfParameters: KdfParameters,
         val publicCustomData: Map<String, VariantItem>
     ) : DatabaseHeader() {
-
         companion object {
             fun create() = with(SecureRandom()) {
                 Ver4x(

@@ -1,7 +1,6 @@
 package app.keemobile.kotpass.resources
 
 internal object EntryRes {
-
     val BasicXml = """
     <Entry>
         <UUID>tbwabsUKQEu3LmJ/wwKMpA==</UUID>

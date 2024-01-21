@@ -2,7 +2,7 @@ package app.keemobile.kotpass.database.modifiers
 
 import app.keemobile.kotpass.database.KeePassDatabase
 import app.keemobile.kotpass.models.CustomIcon
-import java.util.*
+import java.util.UUID
 
 /**
  * Replaces [Map] of [CustomIcon] while removing invalid references in entries.

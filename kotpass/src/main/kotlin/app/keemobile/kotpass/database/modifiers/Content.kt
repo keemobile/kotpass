@@ -9,7 +9,7 @@ import app.keemobile.kotpass.models.Group
 import app.keemobile.kotpass.models.Meta
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import java.util.*
+import java.util.UUID
 
 inline fun KeePassDatabase.modifyContent(
     crossinline block: DatabaseContent.() -> DatabaseContent

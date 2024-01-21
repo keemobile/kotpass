@@ -10,7 +10,7 @@ import app.keemobile.kotpass.models.DatabaseElement
 import app.keemobile.kotpass.models.Entry
 import app.keemobile.kotpass.models.Group
 import app.keemobile.kotpass.models.Meta
-import java.util.*
+import java.util.UUID
 
 /**
  * Main class which describes Keepass database.
@@ -25,7 +25,6 @@ sealed class KeePassDatabase {
         override val header: DatabaseHeader.Ver3x,
         override val content: DatabaseContent
     ) : KeePassDatabase() {
-
         companion object {
             /**
              * Creates blank database with default settings.
@@ -61,7 +60,6 @@ sealed class KeePassDatabase {
         override val content: DatabaseContent,
         val innerHeader: DatabaseInnerHeader
     ) : KeePassDatabase() {
-
         companion object {
             /**
              * Creates blank database with default settings.

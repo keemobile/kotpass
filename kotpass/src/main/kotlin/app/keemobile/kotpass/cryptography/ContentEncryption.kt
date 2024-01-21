@@ -3,7 +3,6 @@ package app.keemobile.kotpass.cryptography
 import app.keemobile.kotpass.database.header.DatabaseHeader
 
 internal object ContentEncryption {
-
     fun encrypt(
         cipherId: DatabaseHeader.CipherId,
         key: ByteArray,

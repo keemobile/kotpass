@@ -1,7 +1,6 @@
 package app.keemobile.kotpass.cryptography
 
 internal object Argon2Kdf {
-
     fun transformKey(
         type: Argon2Engine.Type,
         version: Argon2Engine.Version,

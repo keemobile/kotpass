@@ -8,7 +8,7 @@ import app.keemobile.kotpass.models.Entry
 import app.keemobile.kotpass.models.EntryFields
 import app.keemobile.kotpass.models.EntryValue
 import app.keemobile.kotpass.models.TimeData
-import java.util.*
+import java.util.UUID
 
 internal class MutableEntry(
     var uuid: UUID,

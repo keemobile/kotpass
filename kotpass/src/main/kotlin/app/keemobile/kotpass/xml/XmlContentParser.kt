@@ -6,7 +6,6 @@ import app.keemobile.kotpass.models.XmlContext
 import java.io.InputStream
 
 interface XmlContentParser {
-
     fun unmarshalContent(
         xmlData: ByteArray,
         contextBlock: (Meta) -> XmlContext.Decode

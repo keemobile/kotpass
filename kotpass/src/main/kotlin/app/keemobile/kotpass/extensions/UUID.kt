@@ -3,7 +3,7 @@ package app.keemobile.kotpass.extensions
 import app.keemobile.kotpass.io.encodeHex
 import app.keemobile.kotpass.models.Entry
 import java.nio.ByteBuffer
-import java.util.*
+import java.util.UUID
 
 /**
  * Converts [UUID] to hex string representation which

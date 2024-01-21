@@ -1,9 +1,8 @@
 [versions]
 kotlin = "1.8.22"
 dokka = "1.9.10"
-ktlint = "0.48.2"
 kotest = "5.6.1"
-spotless = "6.18.0"
+spotless = "6.24.0"
 versions = "0.46.0"
 
 [plugins]

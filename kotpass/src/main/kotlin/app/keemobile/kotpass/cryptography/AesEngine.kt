@@ -8,7 +8,6 @@ import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
 internal object AesEngine {
-
     fun encrypt(
         key: ByteArray,
         iv: ByteArray,

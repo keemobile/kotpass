@@ -34,7 +34,7 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.time.Instant
 import java.time.Period
-import java.util.*
+import java.util.UUID
 
 private val EmptyDatabase = KeePassDatabase.Ver4x.create(
     rootName = "",

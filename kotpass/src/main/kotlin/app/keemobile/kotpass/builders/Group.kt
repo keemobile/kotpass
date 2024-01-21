@@ -6,7 +6,7 @@ import app.keemobile.kotpass.models.CustomDataValue
 import app.keemobile.kotpass.models.Entry
 import app.keemobile.kotpass.models.Group
 import app.keemobile.kotpass.models.TimeData
-import java.util.*
+import java.util.UUID
 
 internal class MutableGroup(
     var uuid: UUID,

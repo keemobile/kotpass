@@ -19,7 +19,7 @@ import io.kotest.matchers.shouldBe
 import okio.buffer
 import okio.source
 import java.io.ByteArrayInputStream
-import java.util.*
+import java.util.UUID
 
 private const val Contents = "hello kotpass"
 private const val ContentsAsXml =
