@@ -15,7 +15,6 @@ import app.keemobile.kotpass.database.modifiers.removeEntry
 import app.keemobile.kotpass.database.modifiers.removeGroup
 import app.keemobile.kotpass.database.modifiers.withHistory
 import app.keemobile.kotpass.database.modifiers.withRecycleBin
-import app.keemobile.kotpass.io.decodeBase64ToArray
 import app.keemobile.kotpass.models.DatabaseElement
 import app.keemobile.kotpass.models.DeletedObject
 import app.keemobile.kotpass.models.Entry
@@ -46,28 +45,21 @@ class KeePassDatabaseSpec : DescribeSpec({
 
     describe("Database decoder") {
         it("Reads KeePass 3.x file") {
-            val database = loadDatabase(
-                rawData = DatabaseRes.DbVer3Aes,
-                passphrase = "1"
-            )
+            val database = loadDatabase("ver3_aes.kdbx", "1")
+
             database.content.group.name shouldBe "New"
         }
 
         it("Reads KeePass 4.x file") {
-            val database = loadDatabase(
-                rawData = DatabaseRes.DbVer4WithBinaries,
-                passphrase = "1"
-            )
+            val database = loadDatabase("ver4_with_binaries.kdbx", "1")
+
             database.content.group.name shouldBe "New"
         }
     }
 
     describe("Database encoder") {
         it("Writes KeePass 3.x file") {
-            var database = loadDatabase(
-                rawData = DatabaseRes.DbVer3Aes,
-                passphrase = "1"
-            )
+            var database = loadDatabase("ver3_aes.kdbx", "1")
             val data = ByteArrayOutputStream()
                 .apply { database.encode(this) }
                 .toByteArray()
@@ -79,10 +71,7 @@ class KeePassDatabaseSpec : DescribeSpec({
         }
 
         it("Writes KeePass 4.x file") {
-            var database = loadDatabase(
-                rawData = DatabaseRes.DbVer4Argon2,
-                passphrase = "1"
-            )
+            var database = loadDatabase("ver4_argon2.kdbx", "1")
             val data = ByteArrayOutputStream()
                 .apply { database.encode(this) }
                 .toByteArray()
@@ -96,10 +85,7 @@ class KeePassDatabaseSpec : DescribeSpec({
 
     describe("Database search") {
         it("Traverse database") {
-            val database = loadDatabase(
-                rawData = DatabaseRes.GroupsAndEntries.DbGroupsAndEntries,
-                passphrase = "1"
-            )
+            val database = loadDatabase("groups_and_entries.kdbx", "1")
             val result = mutableSetOf<DatabaseElement>()
             database.traverse { result += it }
 
@@ -166,10 +152,7 @@ class KeePassDatabaseSpec : DescribeSpec({
         }
 
         it("Finds entries with specific title") {
-            val database = loadDatabase(
-                rawData = DatabaseRes.GroupsAndEntries.DbGroupsAndEntries,
-                passphrase = "1"
-            )
+            val database = loadDatabase("groups_and_entries.kdbx", "1")
             val entries = database.findEntries {
                 it[BasicField.Title]
                     ?.content
@@ -180,10 +163,7 @@ class KeePassDatabaseSpec : DescribeSpec({
         }
 
         it("Finds entry with specific title") {
-            val database = loadDatabase(
-                rawData = DatabaseRes.GroupsAndEntries.DbGroupsAndEntries,
-                passphrase = "1"
-            )
+            val database = loadDatabase("groups_and_entries.kdbx", "1")
             val result = database.findEntry {
                 it[BasicField.Title]
                     ?.content
@@ -194,10 +174,7 @@ class KeePassDatabaseSpec : DescribeSpec({
         }
 
         it("Finds group with specific name") {
-            val database = loadDatabase(
-                rawData = DatabaseRes.GroupsAndEntries.DbGroupsAndEntries,
-                passphrase = "1"
-            )
+            val database = loadDatabase("groups_and_entries.kdbx", "1")
             val result = database.getGroup { it.name == "Group 3" }
 
             result shouldNotBe null
@@ -208,7 +185,7 @@ class KeePassDatabaseSpec : DescribeSpec({
     describe("Database modifiers") {
         it("Removed Group is moved to recycle bin") {
             val database = loadDatabase(
-                rawData = DatabaseRes.GroupsAndEntries.DbGroupsAndEntries,
+                fileName = "groups_and_entries.kdbx",
                 passphrase = "1"
             ).withRecycleBin { recycleBinUuid ->
                 moveGroup(DatabaseRes.GroupsAndEntries.Group2, recycleBinUuid)
@@ -222,7 +199,7 @@ class KeePassDatabaseSpec : DescribeSpec({
 
         it("Removed Group and it's children UUIDs are added to deleted objects") {
             val database = loadDatabase(
-                rawData = DatabaseRes.GroupsAndEntries.DbGroupsAndEntries,
+                fileName = "groups_and_entries.kdbx",
                 passphrase = "1"
             ).removeGroup(
                 DatabaseRes.GroupsAndEntries.Group2
@@ -242,7 +219,7 @@ class KeePassDatabaseSpec : DescribeSpec({
 
         it("Group modification") {
             val (_, group) = loadDatabase(
-                rawData = DatabaseRes.GroupsAndEntries.DbGroupsAndEntries,
+                fileName = "groups_and_entries.kdbx",
                 passphrase = "1"
             ).modifyGroup(DatabaseRes.GroupsAndEntries.Group3) {
                 copy(name = "Hello")
@@ -256,7 +233,7 @@ class KeePassDatabaseSpec : DescribeSpec({
         it("Groups mass modification") {
             val label = "Hello"
             val database = loadDatabase(
-                rawData = DatabaseRes.GroupsAndEntries.DbGroupsAndEntries,
+                fileName = "groups_and_entries.kdbx",
                 passphrase = "1"
             ).modifyGroups {
                 copy(name = label)
@@ -272,7 +249,7 @@ class KeePassDatabaseSpec : DescribeSpec({
         it("Entries mass modification") {
             val label = "Hello"
             val database = loadDatabase(
-                rawData = DatabaseRes.GroupsAndEntries.DbGroupsAndEntries,
+                fileName = "groups_and_entries.kdbx",
                 passphrase = "1"
             ).modifyEntries {
                 copy(overrideUrl = label)
@@ -287,7 +264,7 @@ class KeePassDatabaseSpec : DescribeSpec({
 
         it("Entry modification with history") {
             val (_, entry) = loadDatabase(
-                rawData = DatabaseRes.GroupsAndEntries.DbGroupsAndEntries,
+                fileName = "groups_and_entries.kdbx",
                 passphrase = "1"
             ).modifyEntry(DatabaseRes.GroupsAndEntries.Entry1) {
                 withHistory {
@@ -303,7 +280,7 @@ class KeePassDatabaseSpec : DescribeSpec({
 
         it("Removed Entry is moved to recycle bin") {
             val database = loadDatabase(
-                rawData = DatabaseRes.GroupsAndEntries.DbGroupsAndEntries,
+                fileName = "groups_and_entries.kdbx",
                 passphrase = "1"
             ).withRecycleBin { recycleBinUuid ->
                 moveEntry(DatabaseRes.GroupsAndEntries.Entry1, recycleBinUuid)
@@ -317,7 +294,7 @@ class KeePassDatabaseSpec : DescribeSpec({
 
         it("Removed Entry UUID is added to deleted objects") {
             val database = loadDatabase(
-                rawData = DatabaseRes.GroupsAndEntries.DbGroupsAndEntries,
+                fileName = "groups_and_entries.kdbx",
                 passphrase = "1"
             ).removeEntry(
                 DatabaseRes.GroupsAndEntries.Entry1
@@ -331,10 +308,7 @@ class KeePassDatabaseSpec : DescribeSpec({
         }
 
         it("Old entries are removed from history when performing cleanup") {
-            val database = loadDatabase(
-                rawData = DatabaseRes.GroupsAndEntries.DbGroupsAndEntries,
-                passphrase = "1"
-            )
+            val database = loadDatabase("groups_and_entries.kdbx", "1")
             val outdated = Instant
                 .now()
                 .minus(Period.ofDays(database.content.meta.maintenanceHistoryDays + 1))
@@ -359,9 +333,9 @@ class KeePassDatabaseSpec : DescribeSpec({
 })
 
 private fun loadDatabase(
-    rawData: String,
+    fileName: String,
     passphrase: String
 ) = KeePassDatabase.decode(
-    inputStream = ByteArrayInputStream(rawData.decodeBase64ToArray()),
+    inputStream = ClassLoader.getSystemResourceAsStream(fileName)!!,
     credentials = Credentials.from(EncryptedValue.fromString(passphrase))
 )

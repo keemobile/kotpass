@@ -81,7 +81,7 @@ class EntrySpec : DescribeSpec({
 
         it("Invalid binary references are skipped") {
             val database = decodeFromResources(
-                path = "entry/invalid_references.kdbx",
+                path = "invalid_references.kdbx",
                 credentials = Credentials.from(EncryptedValue.fromString("1"))
             )
 
