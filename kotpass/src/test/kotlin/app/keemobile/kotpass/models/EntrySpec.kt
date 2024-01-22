@@ -1,6 +1,7 @@
 package app.keemobile.kotpass.models
 
 import app.keemobile.kotpass.builders.buildEntry
+import app.keemobile.kotpass.common.decodeFromResources
 import app.keemobile.kotpass.constants.BasicField
 import app.keemobile.kotpass.cryptography.EncryptedValue
 import app.keemobile.kotpass.cryptography.EncryptionSaltGenerator
@@ -10,7 +11,6 @@ import app.keemobile.kotpass.database.traverse
 import app.keemobile.kotpass.extensions.parseAsXml
 import app.keemobile.kotpass.resources.EntryRes
 import app.keemobile.kotpass.resources.TimeDataRes
-import app.keemobile.kotpass.resources.decodeFromResources
 import app.keemobile.kotpass.xml.unmarshalEntry
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeEmpty

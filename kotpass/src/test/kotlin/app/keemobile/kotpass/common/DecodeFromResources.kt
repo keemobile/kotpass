@@ -1,4 +1,4 @@
-package app.keemobile.kotpass.resources
+package app.keemobile.kotpass.common
 
 import app.keemobile.kotpass.database.Credentials
 import app.keemobile.kotpass.database.KeePassDatabase
