@@ -1,5 +1,6 @@
 package app.keemobile.kotpass.database
 
+import app.keemobile.kotpass.constants.Defaults
 import app.keemobile.kotpass.cryptography.ContentEncryption
 import app.keemobile.kotpass.cryptography.EncryptionSaltGenerator
 import app.keemobile.kotpass.cryptography.KeyTransform
@@ -26,7 +27,8 @@ fun KeePassDatabase.Companion.decode(
     inputStream: InputStream,
     credentials: Credentials,
     validateHashes: Boolean = true,
-    contentParser: XmlContentParser = DefaultXmlContentParser
+    contentParser: XmlContentParser = DefaultXmlContentParser,
+    untitledLabel: String = Defaults.UntitledLabel
 ): KeePassDatabase {
     val headerBuffer = Buffer()
 
@@ -55,7 +57,8 @@ fun KeePassDatabase.Companion.decode(
                     XmlContext.Decode(
                         version = header.version,
                         encryption = saltGenerator,
-                        binaries = meta.binaries
+                        binaries = meta.binaries,
+                        untitledLabel = untitledLabel
                     )
                 }
                 val headerHash = content.meta.headerHash
@@ -99,7 +102,8 @@ fun KeePassDatabase.Companion.decode(
                     XmlContext.Decode(
                         version = header.version,
                         encryption = saltGenerator,
-                        binaries = innerHeader.binaries
+                        binaries = innerHeader.binaries,
+                        untitledLabel = untitledLabel
                     )
                 }
                 KeePassDatabase.Ver4x(credentials, header, content, innerHeader)
@@ -111,7 +115,8 @@ fun KeePassDatabase.Companion.decode(
 fun KeePassDatabase.Companion.decodeFromXml(
     inputStream: InputStream,
     credentials: Credentials,
-    contentParser: XmlContentParser = DefaultXmlContentParser
+    contentParser: XmlContentParser = DefaultXmlContentParser,
+    untitledLabel: String = Defaults.UntitledLabel
 ): KeePassDatabase {
     val header = DatabaseHeader.Ver4x.create()
     var innerHeader = DatabaseInnerHeader.create()
@@ -123,7 +128,8 @@ fun KeePassDatabase.Companion.decodeFromXml(
         XmlContext.Decode(
             version = header.version,
             encryption = saltGenerator,
-            binaries = meta.binaries
+            binaries = meta.binaries,
+            untitledLabel = untitledLabel
         )
     }
     innerHeader = innerHeader.copy(

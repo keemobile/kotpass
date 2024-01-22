@@ -5,7 +5,9 @@ import app.keemobile.kotpass.database.KeePassDatabase
 import app.keemobile.kotpass.database.decode
 import app.keemobile.kotpass.xml.DefaultXmlContentParser
 import app.keemobile.kotpass.xml.XmlContentParser
+import org.jetbrains.annotations.TestOnly
 
+@TestOnly
 internal fun decodeFromResources(
     path: String,
     credentials: Credentials,

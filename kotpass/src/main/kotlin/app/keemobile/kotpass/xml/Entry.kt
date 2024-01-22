@@ -1,5 +1,6 @@
 package app.keemobile.kotpass.xml
 
+import app.keemobile.kotpass.builders.MutableEntry
 import app.keemobile.kotpass.builders.buildEntry
 import app.keemobile.kotpass.constants.Const
 import app.keemobile.kotpass.constants.PredefinedIcon
@@ -24,6 +25,7 @@ internal fun unmarshalEntry(
     context: XmlContext.Decode,
     node: Node
 ): Entry {
+    val untitledFields = mutableListOf<EntryValue>()
     val uuid = node
         .firstOrNull(Tags.Uuid)
         ?.getUuid()
@@ -59,7 +61,12 @@ internal fun unmarshalEntry(
                 }
                 Tags.Entry.Fields.TagName -> {
                     val (name, value) = unmarshalField(context, childNode)
-                    fields[name] = value
+
+                    if (name != null) {
+                        fields[name] = value
+                    } else {
+                        untitledFields += value
+                    }
                 }
                 Tags.Entry.Tags -> {
                     childNode
@@ -84,6 +91,32 @@ internal fun unmarshalEntry(
                 }
             }
         }
+
+        if (untitledFields.isNotEmpty()) {
+            recoverUntitledFields(context, untitledFields)
+        }
+    }
+}
+
+/**
+ * Recovers up to [UInt.MAX_VALUE] untitled fields.
+ */
+private fun MutableEntry.recoverUntitledFields(
+    context: XmlContext.Decode,
+    untitledFields: List<EntryValue>
+) {
+    for (value in untitledFields) {
+        var n = 1U
+        var name = context.untitledLabel
+
+        while (name in fields) {
+            name = "${context.untitledLabel} ($n)"
+            n++
+
+            if (n == UInt.MAX_VALUE) return
+        }
+
+        fields[name] = value
     }
 }
 
@@ -98,11 +131,10 @@ internal fun unmarshalEntries(
 private fun unmarshalField(
     context: XmlContext.Decode,
     node: Node
-): Pair<String, EntryValue> {
+): Pair<String?, EntryValue> {
     val key = node
         .firstOrNull(Tags.Entry.Fields.ItemKey)
         ?.getText()
-        ?: throw FormatError.InvalidXml("Invalid entry field without id.")
     val protected = node
         .firstOrNull(Tags.Entry.Fields.ItemValue)
         ?.get<String?>(FormatXml.Attributes.Protected)

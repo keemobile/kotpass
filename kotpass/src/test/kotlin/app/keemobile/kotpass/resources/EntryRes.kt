@@ -1,5 +1,7 @@
 package app.keemobile.kotpass.resources
 
+import app.keemobile.kotpass.constants.Defaults
+
 internal object EntryRes {
     val BasicXml = """
     <Entry>
@@ -25,6 +27,9 @@ internal object EntryRes {
             <Value>dummy</Value>
         </String>
         <String>
+            <Value>content 1</Value>
+        </String>
+        <String>
             <Key>Notes</Key>
             <Value></Value>
         </String>
@@ -43,6 +48,16 @@ internal object EntryRes {
         <String>
             <Key>UserName</Key>
             <Value>User</Value>
+        </String>
+        <String>
+            <Value>content 2</Value>
+        </String>
+        <String>
+            <Value>content 3</Value>
+        </String>
+        <String>
+            <Key>${Defaults.UntitledLabel} (1)</Key>
+            <Value>Fizz</Value>
         </String>
         <AutoType>
             <Enabled>True</Enabled>
