@@ -9,16 +9,13 @@ import app.keemobile.kotpass.database.modifiers.modifyEntry
 import app.keemobile.kotpass.database.modifiers.removeUnusedBinaries
 import app.keemobile.kotpass.extensions.getText
 import app.keemobile.kotpass.extensions.parseAsXml
-import app.keemobile.kotpass.io.decodeBase64ToArray
 import app.keemobile.kotpass.io.encodeBase64
-import app.keemobile.kotpass.resources.DatabaseRes
 import app.keemobile.kotpass.xml.marshal
 import app.keemobile.kotpass.xml.unmarshalBinaries
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import okio.buffer
 import okio.source
-import java.io.ByteArrayInputStream
 import java.util.UUID
 
 private const val Contents = "hello kotpass"
@@ -61,8 +58,8 @@ class BinariesSpec : DescribeSpec({
 
         it("Removes unused binaries") {
             val database = KeePassDatabase.decode(
-                inputStream = ByteArrayInputStream(DatabaseRes.DbVer4WithBinaries.decodeBase64ToArray()),
-                credentials = Credentials.from(EncryptedValue.fromString("1"))
+                ClassLoader.getSystemResourceAsStream("ver4_with_binaries.kdbx")!!,
+                Credentials.from(EncryptedValue.fromString("1"))
             ).modifyEntry(UUID.fromString("6d9b7812-6d1a-1765-9cd7-c66a93a220e9")) {
                 copy(binaries = listOf())
             }.removeUnusedBinaries()
