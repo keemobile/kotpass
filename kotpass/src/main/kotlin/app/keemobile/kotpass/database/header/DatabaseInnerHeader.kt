@@ -47,13 +47,11 @@ data class DatabaseInnerHeader(
     }
 
     companion object {
-        fun create() = with(SecureRandom()) {
-            DatabaseInnerHeader(
-                randomStreamId = CrsAlgorithm.ChaCha20,
-                randomStreamKey = nextByteString(64),
-                binaries = linkedMapOf()
-            )
-        }
+        fun create(random: SecureRandom = SecureRandom()) = DatabaseInnerHeader(
+            randomStreamId = CrsAlgorithm.ChaCha20,
+            randomStreamKey = random.nextByteString(64),
+            binaries = linkedMapOf()
+        )
 
         internal fun readFrom(source: BufferedSource): DatabaseInnerHeader {
             val binaries = linkedMapOf<ByteString, BinaryData>()

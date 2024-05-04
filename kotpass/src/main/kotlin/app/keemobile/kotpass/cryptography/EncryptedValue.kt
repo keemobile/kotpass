@@ -82,9 +82,12 @@ class EncryptedValue(
 
         fun fromBase64(base64: String) = fromBinary(base64.decodeBase64ToArray())
 
-        fun fromBinary(bytes: ByteArray): EncryptedValue {
+        fun fromBinary(
+            bytes: ByteArray,
+            random: SecureRandom = SecureRandom()
+        ): EncryptedValue {
             val salt = ByteArray(bytes.size)
-            SecureRandom().nextBytes(salt)
+            random.nextBytes(salt)
 
             for (i in bytes.indices) {
                 bytes[i] = bytes[i] xor salt[i]

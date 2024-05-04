@@ -10,6 +10,7 @@ import app.keemobile.kotpass.models.DatabaseElement
 import app.keemobile.kotpass.models.Entry
 import app.keemobile.kotpass.models.Group
 import app.keemobile.kotpass.models.Meta
+import java.security.SecureRandom
 import java.util.UUID
 
 /**
@@ -32,14 +33,16 @@ sealed class KeePassDatabase {
              * @param rootName Required name of the top group.
              * @param meta Database metadata.
              * @param credentials Database credentials.
+             * @param random optional custom random generator.
              */
             fun create(
                 rootName: String,
                 meta: Meta,
-                credentials: Credentials
+                credentials: Credentials,
+                random: SecureRandom = SecureRandom()
             ) = Ver3x(
                 credentials = credentials,
-                header = DatabaseHeader.Ver3x.create(),
+                header = DatabaseHeader.Ver3x.create(random),
                 content = DatabaseContent(
                     meta = meta,
                     group = Group(
@@ -67,14 +70,16 @@ sealed class KeePassDatabase {
              * @param rootName Required name of the top group.
              * @param meta Database metadata.
              * @param credentials Database credentials.
+             * @param random optional custom random generator.
              */
             fun create(
                 rootName: String,
                 meta: Meta,
-                credentials: Credentials
+                credentials: Credentials,
+                random: SecureRandom = SecureRandom()
             ) = Ver4x(
                 credentials = credentials,
-                header = DatabaseHeader.Ver4x.create(),
+                header = DatabaseHeader.Ver4x.create(random),
                 content = DatabaseContent(
                     meta = meta,
                     group = Group(
@@ -85,7 +90,7 @@ sealed class KeePassDatabase {
                     ),
                     deletedObjects = listOf()
                 ),
-                innerHeader = DatabaseInnerHeader.create()
+                innerHeader = DatabaseInnerHeader.create(random)
             )
         }
     }
