@@ -2,9 +2,9 @@ package app.keemobile.kotpass.extensions
 
 import okio.ByteString
 import okio.ByteString.Companion.toByteString
-import java.security.SecureRandom
+import java.util.Random
 
-internal fun SecureRandom.nextByteString(length: Int): ByteString {
+internal fun Random.nextByteString(length: Int): ByteString {
     return ByteArray(length)
         .apply { nextBytes(this) }
         .toByteString()

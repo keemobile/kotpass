@@ -41,7 +41,10 @@ sealed class DatabaseHeader {
         val streamStartBytes: ByteString
     ) : DatabaseHeader() {
         companion object {
-            fun create() = with(SecureRandom()) {
+            /**
+             * Create an instance of [DatabaseHeader] with the default parameters.
+             */
+            fun create(random: SecureRandom = SecureRandom()) = with(random) {
                 Ver3x(
                     signature = Signature.Default,
                     version = FormatVersion(3, 1),
@@ -70,7 +73,10 @@ sealed class DatabaseHeader {
         val publicCustomData: Map<String, VariantItem>
     ) : DatabaseHeader() {
         companion object {
-            fun create() = with(SecureRandom()) {
+            /**
+             * Create an instance of [DatabaseHeader] with the default parameters.
+             */
+            fun create(random: SecureRandom = SecureRandom()) = with(random) {
                 Ver4x(
                     signature = Signature.Default,
                     version = FormatVersion(4, 1),
