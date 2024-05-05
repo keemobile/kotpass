@@ -3,8 +3,10 @@
 package app.keemobile.kotpass.database
 
 import app.keemobile.kotpass.constants.GroupOverride
+import app.keemobile.kotpass.cryptography.KeyTransform
 import app.keemobile.kotpass.database.header.DatabaseHeader
 import app.keemobile.kotpass.database.header.DatabaseInnerHeader
+import app.keemobile.kotpass.extensions.clear
 import app.keemobile.kotpass.models.DatabaseContent
 import app.keemobile.kotpass.models.DatabaseElement
 import app.keemobile.kotpass.models.Entry
@@ -12,6 +14,7 @@ import app.keemobile.kotpass.models.Group
 import app.keemobile.kotpass.models.Meta
 import java.security.SecureRandom
 import java.util.UUID
+import kotlin.system.measureTimeMillis
 
 /**
  * Main class which describes Keepass database.
@@ -215,4 +218,14 @@ fun KeePassDatabase.findEntries(
     return content
         .group
         .findChildEntries(true, content.meta.recycleBinUuid, predicate)
+}
+
+/**
+ * Measures KDF transform rounds performance based on
+ * [header][KeePassDatabase.header] parameters.
+ */
+fun KeePassDatabase.measureKeyTransformMillis() = measureTimeMillis {
+    KeyTransform
+        .transformedKey(header, credentials)
+        .clear()
 }
