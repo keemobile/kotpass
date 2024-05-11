@@ -86,27 +86,32 @@ fun KeePassDatabase.Companion.decode(
                         throw CryptoError.InvalidKey("Wrong key used for decryption.")
                     }
                 }
-                val innerHeaderBuffer = Buffer()
-                val contentSource = decryptRawContent(header, source, transformedKey)
+
+                decryptRawContent(header, source, transformedKey)
                     .inputStream()
                     .source()
-                    .teeBuffer(innerHeaderBuffer)
-                val innerHeader = DatabaseInnerHeader.readFrom(contentSource)
-                val saltGenerator = EncryptionSaltGenerator.create(
-                    id = innerHeader.randomStreamId,
-                    key = innerHeader.randomStreamKey
-                )
-                val content = contentParser.unmarshalContent(
-                    source = contentSource.inputStream()
-                ) {
-                    XmlContext.Decode(
-                        version = header.version,
-                        encryption = saltGenerator,
-                        binaries = innerHeader.binaries,
-                        untitledLabel = untitledLabel
-                    )
-                }
-                KeePassDatabase.Ver4x(credentials, header, content, innerHeader)
+                    .buffer()
+                    .use { rawContentBuffer ->
+                        val innerHeader = DatabaseInnerHeader.readFrom(rawContentBuffer)
+                        val saltGenerator = EncryptionSaltGenerator.create(
+                            id = innerHeader.randomStreamId,
+                            key = innerHeader.randomStreamKey
+                        )
+                        val content = rawContentBuffer
+                            .inputStream()
+                            .use {
+                                contentParser.unmarshalContent(it) {
+                                    XmlContext.Decode(
+                                        version = header.version,
+                                        encryption = saltGenerator,
+                                        binaries = innerHeader.binaries,
+                                        untitledLabel = untitledLabel
+                                    )
+                                }
+                            }
+
+                        KeePassDatabase.Ver4x(credentials, header, content, innerHeader)
+                    }
             }
         }
     }
