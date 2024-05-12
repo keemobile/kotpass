@@ -10,7 +10,6 @@ import org.redundent.kotlin.xml.PrintOptions
 import org.redundent.kotlin.xml.XmlVersion
 import org.redundent.kotlin.xml.parse
 import org.redundent.kotlin.xml.xml
-import java.io.ByteArrayInputStream
 import java.io.InputStream
 
 object DefaultXmlContentParser : XmlContentParser {
@@ -19,7 +18,9 @@ object DefaultXmlContentParser : XmlContentParser {
     override fun unmarshalContent(
         xmlData: ByteArray,
         contextBlock: (Meta) -> XmlContext.Decode
-    ) = unmarshalContent(ByteArrayInputStream(xmlData), contextBlock)
+    ): DatabaseContent = xmlData
+        .inputStream()
+        .use { unmarshalContent(it, contextBlock) }
 
     override fun unmarshalContent(
         source: InputStream,
