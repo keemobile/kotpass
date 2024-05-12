@@ -5,6 +5,7 @@ import app.keemobile.kotpass.cryptography.ContentEncryption
 import app.keemobile.kotpass.cryptography.EncryptionSaltGenerator
 import app.keemobile.kotpass.cryptography.KeyTransform
 import app.keemobile.kotpass.database.header.DatabaseHeader
+import app.keemobile.kotpass.database.header.DatabaseHeader.Compression
 import app.keemobile.kotpass.database.header.DatabaseInnerHeader
 import app.keemobile.kotpass.database.header.Signature
 import app.keemobile.kotpass.errors.CryptoError
@@ -16,12 +17,11 @@ import app.keemobile.kotpass.xml.XmlContentParser
 import okio.Buffer
 import okio.BufferedSource
 import okio.ByteString.Companion.toByteString
+import okio.Source
 import okio.buffer
+import okio.gzip
 import okio.source
-import java.io.ByteArrayInputStream
-import java.io.IOException
 import java.io.InputStream
-import java.util.zip.GZIPInputStream
 
 fun KeePassDatabase.Companion.decode(
     inputStream: InputStream,
@@ -52,15 +52,19 @@ fun KeePassDatabase.Companion.decode(
                 val saltGenerator = with(header) {
                     EncryptionSaltGenerator.create(innerRandomStreamId, innerRandomStreamKey)
                 }
-                val rawContent = decryptRawContent(header, source, transformedKey)
-                val content = contentParser.unmarshalContent(rawContent) { meta ->
-                    XmlContext.Decode(
-                        version = header.version,
-                        encryption = saltGenerator,
-                        binaries = meta.binaries,
-                        untitledLabel = untitledLabel
-                    )
-                }
+                val content = decryptRawContent(header, source, transformedKey)
+                    .buffer()
+                    .inputStream()
+                    .use {
+                        contentParser.unmarshalContent(it) { meta ->
+                            XmlContext.Decode(
+                                version = header.version,
+                                encryption = saltGenerator,
+                                binaries = meta.binaries,
+                                untitledLabel = untitledLabel
+                            )
+                        }
+                    }
                 val headerHash = content.meta.headerHash
 
                 if (validateHashes && headerHash != null && headerHash != rawHeaderData.sha256()) {
@@ -88,8 +92,6 @@ fun KeePassDatabase.Companion.decode(
                 }
 
                 decryptRawContent(header, source, transformedKey)
-                    .inputStream()
-                    .source()
                     .buffer()
                     .use { rawContentBuffer ->
                         val innerHeader = DatabaseInnerHeader.readFrom(rawContentBuffer)
@@ -151,45 +153,48 @@ private fun decryptRawContent(
     header: DatabaseHeader,
     source: BufferedSource,
     transformedKey: ByteArray
-): ByteArray {
+): Source {
     val masterSeed = header.masterSeed.toByteArray()
-    val encryptedContent = when (header) {
-        is DatabaseHeader.Ver3x -> source.readByteArray()
-        is DatabaseHeader.Ver4x -> ContentBlocks.readContentBlocksVer4x(
-            source = source,
-            masterSeed = masterSeed,
-            transformedKey = transformedKey
-        )
-    }
+    val decryptedContent = when (header) {
+        is DatabaseHeader.Ver3x -> {
+            val contentBlocks = ContentEncryption.decrypt(
+                cipherId = header.cipherId,
+                key = KeyTransform.masterKey(masterSeed, transformedKey),
+                iv = header.encryptionIV.toByteArray(),
+                data = source.readByteArray()
+            )
+            val streamStartBytes = header.streamStartBytes
+            if (!streamStartBytes.rangeEquals(0, contentBlocks, 0, streamStartBytes.size)) {
+                FormatError.InvalidContent("Database content could be corrupted or cannot be decrypted.")
+            }
 
-    var decryptedContent = ContentEncryption.decrypt(
-        cipherId = header.cipherId,
-        key = KeyTransform.masterKey(masterSeed, transformedKey),
-        iv = header.encryptionIV.toByteArray(),
-        data = encryptedContent
-    )
-
-    if (header is DatabaseHeader.Ver3x) {
-        val streamStartBytes = header.streamStartBytes
-        if (!streamStartBytes.rangeEquals(0, decryptedContent, 0, streamStartBytes.size)) {
-            FormatError.InvalidContent("Database content could be corrupted or cannot be decrypted.")
+            ContentBlocks.readContentBlocksVer3x(
+                contentBlocks
+                    .inputStream(streamStartBytes.size, contentBlocks.size)
+                    .source()
+                    .buffer()
+            )
         }
-        decryptedContent = ContentBlocks.readContentBlocksVer3x(
-            decryptedContent
-                .inputStream(streamStartBytes.size, decryptedContent.size)
-                .source()
-                .buffer()
-        )
-    }
+        is DatabaseHeader.Ver4x -> {
+            val encryptedContent = ContentBlocks
+                .readContentBlocksVer4x(source, masterSeed, transformedKey)
 
-    if (header.compression == DatabaseHeader.Compression.GZip) {
-        decryptedContent = try {
-            GZIPInputStream(ByteArrayInputStream(decryptedContent))
-                .use(GZIPInputStream::readBytes)
-        } catch (e: IOException) {
-            throw FormatError.FailedCompression("Failed to unzip content.")
+            ContentEncryption.decrypt(
+                cipherId = header.cipherId,
+                key = KeyTransform.masterKey(masterSeed, transformedKey),
+                iv = header.encryptionIV.toByteArray(),
+                data = encryptedContent
+            )
         }
     }
 
     return decryptedContent
+        .inputStream()
+        .source()
+        .let {
+            when (header.compression) {
+                Compression.None -> it
+                Compression.GZip -> it.gzip()
+            }
+        }
 }
