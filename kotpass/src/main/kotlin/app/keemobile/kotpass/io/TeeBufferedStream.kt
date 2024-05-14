@@ -1,29 +1,22 @@
 package app.keemobile.kotpass.io
 
 import okio.Buffer
-import okio.BufferedSource
 import okio.ByteString
 import okio.Options
 import okio.Sink
 import okio.Source
+import okio.TypedOptions
 import okio.buffer
 import java.nio.ByteBuffer
 import java.nio.charset.Charset
 
-internal class TeeBufferedSource(
+internal class TeeBufferedStream(
     source: Source,
     private val mirrorBuffer: Buffer
-) : BufferedSource {
+) : BufferedStream {
     private val bufferedSource = source.buffer()
 
     override val buffer: Buffer = bufferedSource.buffer
-
-    @Deprecated(
-        "moved to val: use getBuffer() instead",
-        replaceWith = ReplaceWith("buffer"),
-        level = DeprecationLevel.WARNING
-    )
-    override fun buffer(): Buffer = buffer
 
     override fun close() = bufferedSource.close()
 
@@ -198,6 +191,8 @@ internal class TeeBufferedSource(
     override fun require(byteCount: Long) = bufferedSource.require(byteCount)
 
     override fun select(options: Options) = bufferedSource.select(options)
+
+    override fun <T : Any> select(options: TypedOptions<T>): T? = bufferedSource.select(options)
 
     override fun skip(byteCount: Long) = bufferedSource.skip(byteCount)
 

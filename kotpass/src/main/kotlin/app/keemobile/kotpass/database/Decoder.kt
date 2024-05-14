@@ -10,12 +10,12 @@ import app.keemobile.kotpass.database.header.DatabaseInnerHeader
 import app.keemobile.kotpass.database.header.Signature
 import app.keemobile.kotpass.errors.CryptoError
 import app.keemobile.kotpass.errors.FormatError
-import app.keemobile.kotpass.extensions.teeBuffer
+import app.keemobile.kotpass.extensions.teeBufferStream
+import app.keemobile.kotpass.io.BufferedStream
 import app.keemobile.kotpass.models.XmlContext
 import app.keemobile.kotpass.xml.DefaultXmlContentParser
 import app.keemobile.kotpass.xml.XmlContentParser
 import okio.Buffer
-import okio.BufferedSource
 import okio.ByteString.Companion.toByteString
 import okio.Source
 import okio.buffer
@@ -32,7 +32,7 @@ fun KeePassDatabase.Companion.decode(
 ): KeePassDatabase {
     val headerBuffer = Buffer()
 
-    inputStream.source().teeBuffer(headerBuffer).use { source ->
+    inputStream.source().teeBufferStream(headerBuffer).use { source ->
         val header = DatabaseHeader.readFrom(source)
 
         if (header.signature.base != Signature.Base) {
@@ -151,7 +151,7 @@ fun KeePassDatabase.Companion.decodeFromXml(
 
 private fun decryptRawContent(
     header: DatabaseHeader,
-    source: BufferedSource,
+    source: BufferedStream,
     transformedKey: ByteArray
 ): Source {
     val masterSeed = header.masterSeed.toByteArray()

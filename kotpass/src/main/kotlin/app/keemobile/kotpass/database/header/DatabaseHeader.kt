@@ -9,9 +9,9 @@ import app.keemobile.kotpass.extensions.asIntLe
 import app.keemobile.kotpass.extensions.asLongLe
 import app.keemobile.kotpass.extensions.asUuid
 import app.keemobile.kotpass.extensions.nextByteString
+import app.keemobile.kotpass.io.BufferedStream
 import app.keemobile.kotpass.models.FormatVersion
 import okio.BufferedSink
-import okio.BufferedSource
 import okio.ByteString
 import java.nio.ByteBuffer
 import java.security.SecureRandom
@@ -192,7 +192,7 @@ sealed class DatabaseHeader {
     }
 
     companion object {
-        internal fun readFrom(source: BufferedSource): DatabaseHeader {
+        internal fun readFrom(source: BufferedStream): DatabaseHeader {
             var cipherId: CipherId? = null
             var compression: Compression? = null
             var masterSeed: ByteString? = null
@@ -287,7 +287,7 @@ sealed class DatabaseHeader {
         }
 
         private fun readHeaderValue(
-            source: BufferedSource,
+            source: BufferedStream,
             version: FormatVersion
         ): Pair<Int, ByteString> {
             val id = source.readByte()
