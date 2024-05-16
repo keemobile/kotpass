@@ -15,5 +15,5 @@ spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 testing-kotest = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 
-kotlin-xml-builder = "org.redundent:kotlin-xml-builder:1.9.0"
+kotlin-xml-builder = "org.redundent:kotlin-xml-builder:1.9.1"
 okio = "com.squareup.okio:okio:3.9.0"

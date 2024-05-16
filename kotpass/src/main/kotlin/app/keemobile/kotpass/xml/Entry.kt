@@ -177,23 +177,23 @@ internal fun Entry.marshal(
         Tags.Entry.PreviousParentGroup { addUuid(previousParentGroup) }
     }
     if (times != null) {
-        addNode(times.marshal(context))
+        addElement(times.marshal(context))
     }
     marshalFields(context, fields).forEach {
-        addNode(it)
+        addElement(it)
     }
     binaries.forEach {
-        addNode(it.marshal(context))
+        addElement(it.marshal(context))
     }
     if (customData.isNotEmpty()) {
-        addNode(CustomData.marshal(context, customData))
+        addElement(CustomData.marshal(context, customData))
     }
     if (autoType != null) {
-        addNode(autoType.marshal())
+        addElement(autoType.marshal())
     }
     if (history.isNotEmpty()) {
         Tags.Entry.History {
-            history.forEach { addNode(it.marshal(context)) }
+            history.forEach { addElement(it.marshal(context)) }
         }
     }
 }

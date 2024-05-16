@@ -96,7 +96,7 @@ internal fun Group.marshal(
         Tags.Group.CustomIconId { addUuid(customIconUuid) }
     }
     if (times != null) {
-        addNode(times.marshal(context))
+        addElement(times.marshal(context))
     }
     Tags.Group.IsExpanded { addBoolean(expanded) }
     Tags.Group.DefaultAutoTypeSequence { text(defaultAutoTypeSequence ?: "") }
@@ -112,8 +112,8 @@ internal fun Group.marshal(
         Tags.Group.Tags { text(tags.joinToString(Const.TagsSeparator)) }
     }
     if (customData.isNotEmpty()) {
-        addNode(CustomData.marshal(context, customData))
+        addElement(CustomData.marshal(context, customData))
     }
-    groups.forEach { group -> addNode(group.marshal(context)) }
-    entries.forEach { entry -> addNode(entry.marshal(context)) }
+    groups.forEach { group -> addElement(group.marshal(context)) }
+    entries.forEach { entry -> addElement(entry.marshal(context)) }
 }

@@ -54,12 +54,12 @@ object DefaultXmlContentParser : XmlContentParser {
         pretty: Boolean
     ): String {
         return xml(Tags.Document, XmlEncoding, XmlVersion.V10) {
-            addNode(content.meta.marshal(context))
+            addElement(content.meta.marshal(context))
             Tags.Root {
-                addNode(content.group.marshal(context))
+                addElement(content.group.marshal(context))
                 Tags.DeletedObjects.TagName {
                     content.deletedObjects.forEach {
-                        addNode(it.marshal(context))
+                        addElement(it.marshal(context))
                     }
                 }
             }
