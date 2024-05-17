@@ -16,7 +16,7 @@ private val DummyData = "Lorem ipsum".toByteArray()
 class TeeBufferedStreamSpec : DescribeSpec({
 
     describe("TeeBufferedStream") {
-        it("Writes data to side buffer") {
+        it("Writes data to the side buffer") {
             val buffer = Buffer()
             val data = ByteString.of(*DummyData)
             val tee = ByteArrayInputStream(DummyData)
@@ -31,6 +31,17 @@ class TeeBufferedStreamSpec : DescribeSpec({
 
             tee.readFully(ByteArray((data.size - buffer.size).toInt()))
             buffer.snapshot() shouldBe data
+        }
+
+        it("Does not write data to the side buffer while peeking") {
+            val buffer = Buffer()
+            val tee = ByteArrayInputStream(DummyData)
+                .source()
+                .teeBufferStream(buffer)
+                .peek()
+
+            tee.read(Buffer(), 5)
+            buffer.snapshot().size shouldBe 0
         }
     }
 })
