@@ -1,102 +1,118 @@
 package app.keemobile.kotpass.io
 
 import okio.Buffer
-import okio.BufferedSource
 import okio.ByteString
-import okio.Options
 import okio.Sink
 import okio.Source
-import okio.TypedOptions
-import java.io.InputStream
 import java.nio.channels.ReadableByteChannel
 import java.nio.charset.Charset
 
-interface BufferedStream : Source, ReadableByteChannel {
+internal interface BufferedStream : Source, ReadableByteChannel {
+    /** Underlying [Buffer]. */
     val buffer: Buffer
 
+    /** Returns *true* if there are no more bytes in this source. */
     fun exhausted(): Boolean
 
-    fun require(byteCount: Long)
-
-    fun request(byteCount: Long): Boolean
-
+    /** Removes a [Byte] from this source and returns it. */
     fun readByte(): Byte
 
+    /** Removes two bytes from this source and returns a big-endian [Short]. */
     fun readShort(): Short
 
+    /** Removes two bytes from this source and returns a little-endian [Short]. */
     fun readShortLe(): Short
 
+    /** Removes four bytes from this source and returns a big-endian [Int]. */
     fun readInt(): Int
 
+    /** Removes four bytes from this source and returns a little-endian [Int]. */
     fun readIntLe(): Int
 
+    /** Removes eight bytes from this source and returns a big-endian [Long]. */
     fun readLong(): Long
 
+    /** Removes eight bytes from this source and returns a little-endian [Long]. */
     fun readLongLe(): Long
 
-    fun readDecimalLong(): Long
-
-    fun readHexadecimalUnsignedLong(): Long
-
-    fun skip(byteCount: Long)
-
+    /** Removes all bytes from this and returns them as a byte string. */
     fun readByteString(): ByteString
 
+    /** Removes [byteCount] bytes from this and returns them as a byte string. */
     fun readByteString(byteCount: Long): ByteString
 
-    fun select(options: Options): Int
-
-    fun <T : Any> select(options: TypedOptions<T>): T?
-
+    /** Removes all bytes from this and returns them as a [ByteArray]. */
     fun readByteArray(): ByteArray
 
+    /** Removes [byteCount] bytes from this and returns them as a [ByteArray]. */
     fun readByteArray(byteCount: Long): ByteArray
 
-    fun read(sink: ByteArray): Int
-
+    /**
+     * Removes exactly `sink.length` bytes from this and copies them into `sink`. Throws an
+     * [EOFException][java.io.EOFException] if the requested number of bytes cannot be read.
+     */
     fun readFully(sink: ByteArray)
 
+    /**
+     * Removes up to `byteCount` bytes from this and copies them into `sink` at `offset`.
+     * Returns the number of bytes read, or -1 if this source is exhausted.
+     */
     fun read(sink: ByteArray, offset: Int, byteCount: Int): Int
 
+    /**
+     * Removes `byteCount` bytes from this and appends them to `sink`.
+     * Throws an [EOFException][java.io.EOFException] if the requested
+     * number of bytes cannot be read.
+     */
     fun readFully(sink: Buffer, byteCount: Long)
 
+    /**
+     * Removes all bytes from this and appends them to the `sink`.
+     * Returns the total number of bytes written to `sink`
+     * which will be 0 if this is exhausted.
+     */
     fun readAll(sink: Sink): Long
 
-    fun readUtf8(): String
+    /** Returns the index of the first `b` in the buffer at or after `fromIndex`. */
+    fun indexOf(b: Byte, fromIndex: Long = 0): Long
 
-    fun readUtf8(byteCount: Long): String
+    /**
+     * Returns the index of the first match for `bytes` in the buffer at or after `fromIndex`.
+     */
+    fun indexOf(bytes: ByteString, fromIndex: Long = 0): Long
 
-    fun readUtf8Line(): String?
-
-    fun readUtf8LineStrict(): String
-
-    fun readUtf8LineStrict(limit: Long): String
-
-    fun readUtf8CodePoint(): Int
-
-    fun readString(charset: Charset): String
-
-    fun readString(byteCount: Long, charset: Charset): String
-
-    fun indexOf(b: Byte): Long
-
-    fun indexOf(b: Byte, fromIndex: Long): Long
-
-    fun indexOf(b: Byte, fromIndex: Long, toIndex: Long): Long
-
-    fun indexOf(bytes: ByteString): Long
-
-    fun indexOf(bytes: ByteString, fromIndex: Long): Long
-
-    fun indexOfElement(targetBytes: ByteString): Long
-
-    fun indexOfElement(targetBytes: ByteString, fromIndex: Long): Long
-
+    /** Returns true if the bytes at `offset` in this source equal `bytes`. */
     fun rangeEquals(offset: Long, bytes: ByteString): Boolean
 
-    fun rangeEquals(offset: Long, bytes: ByteString, bytesOffset: Int, byteCount: Int): Boolean
+    /** Removes all bytes from this, decodes them as `charset`, and returns the string. */
+    fun readString(charset: Charset): String
 
-    fun peek(): BufferedSource
+    /**
+     * Removes `byteCount` bytes from this, decodes them as `charset`,
+     * and returns the [String].
+     */
+    fun readString(byteCount: Long, charset: Charset): String
 
-    fun inputStream(): InputStream
+    /**
+     * Returns *true* when the buffer contains at least [byteCount] bytes,
+     * expanding it as necessary. Returns false if the source is exhausted
+     * before the requested bytes can be read.
+     */
+    fun request(byteCount: Long): Boolean
+
+    /**
+     * Returns when the buffer contains at least [byteCount] bytes.
+     * Throws an [EOFException][java.io.EOFException] if the source
+     * is exhausted before the required bytes can be read.
+     */
+    fun require(byteCount: Long)
+
+    /** Reads and discards [byteCount] bytes from this source. */
+    fun skip(byteCount: Long)
+
+    /**
+     * Returns new [BufferedStream] that can read data from this
+     * [BufferedStream] without consuming it.
+     */
+    fun peek(): BufferedStream
 }
