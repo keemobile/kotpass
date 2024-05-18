@@ -186,7 +186,7 @@ internal fun Meta.marshal(context: XmlContext.Encode): Node {
 private fun marshalMemoryProtection(
     memoryProtection: Set<MemoryProtectionFlag>
 ): Node = node(Tags.Meta.MemoryProtection.TagName) {
-    for (field in MemoryProtectionFlag.values()) {
+    for (field in MemoryProtectionFlag.entries) {
         field.value {
             addBoolean(memoryProtection.contains(field))
         }

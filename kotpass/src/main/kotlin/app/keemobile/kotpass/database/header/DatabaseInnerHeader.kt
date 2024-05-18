@@ -68,7 +68,7 @@ data class DatabaseInnerHeader(
                         break
                     }
                     InnerHeaderFieldId.StreamId -> {
-                        randomStreamId = CrsAlgorithm.values()[source.readIntLe()]
+                        randomStreamId = CrsAlgorithm.entries[source.readIntLe()]
                     }
                     InnerHeaderFieldId.StreamKey -> {
                         randomStreamKey = source.readByteString(length)

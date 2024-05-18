@@ -211,7 +211,7 @@ sealed class DatabaseHeader {
             while (true) {
                 val (id, data) = readHeaderValue(source, version)
                 val fieldId = HeaderFieldId
-                    .values()
+                    .entries
                     .getOrNull(id)
                     ?: throw FormatError.InvalidHeader("Unsupported header field ID.")
 
@@ -220,11 +220,11 @@ sealed class DatabaseHeader {
                     HeaderFieldId.Comment -> Unit
                     HeaderFieldId.CipherId -> {
                         cipherId = data.asUuid().let { cipherUuid ->
-                            CipherId.values().firstOrNull { it.uuid == cipherUuid }
+                            CipherId.entries.firstOrNull { it.uuid == cipherUuid }
                         }
                     }
                     HeaderFieldId.Compression -> {
-                        compression = Compression.values()[data.asIntLe()]
+                        compression = Compression.entries[data.asIntLe()]
                     }
                     HeaderFieldId.MasterSeed -> masterSeed = data
                     HeaderFieldId.TransformSeed -> transformSeed = data
@@ -233,7 +233,7 @@ sealed class DatabaseHeader {
                     HeaderFieldId.InnerRandomStreamKey -> innerRandomStreamKey = data
                     HeaderFieldId.StreamStartBytes -> streamStartBytes = data
                     HeaderFieldId.InnerRandomStreamId -> {
-                        innerRandomStreamID = CrsAlgorithm.values()[data.asIntLe()]
+                        innerRandomStreamID = CrsAlgorithm.entries[data.asIntLe()]
                     }
                     HeaderFieldId.KdfParameters -> {
                         kdfParameters = KdfParameters.readFrom(data)

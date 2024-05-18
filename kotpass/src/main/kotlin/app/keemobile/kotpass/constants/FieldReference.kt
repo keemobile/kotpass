@@ -12,7 +12,7 @@ internal object FieldReference {
         operator fun invoke() = this.key
 
         companion object {
-            operator fun get(key: String) = values()
+            operator fun get(key: String) = entries
                 .firstOrNull { it.key.equals(key, true) }
         }
     }
@@ -29,7 +29,7 @@ internal object FieldReference {
         operator fun invoke() = this.key
 
         companion object {
-            operator fun get(key: String) = values()
+            operator fun get(key: String) = entries
                 .firstOrNull { it.key.equals(key, true) }
         }
     }

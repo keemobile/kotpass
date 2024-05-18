@@ -162,7 +162,7 @@ class EntryFields(
         fun createDefault() = EntryFields(
             buildMap {
                 BasicField
-                    .values()
+                    .entries
                     .filter { it != BasicField.Password }
                     .forEach { field -> put(field(), EntryValue.Plain("")) }
 

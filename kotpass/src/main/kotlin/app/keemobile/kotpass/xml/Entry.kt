@@ -38,7 +38,7 @@ internal fun unmarshalEntry(
                     icon = childNode
                         .getText()
                         ?.toInt()
-                        ?.let(PredefinedIcon.values()::getOrNull)
+                        ?.let(PredefinedIcon.entries::getOrNull)
                         ?: PredefinedIcon.Key
                 }
                 Tags.Entry.CustomIconId -> {

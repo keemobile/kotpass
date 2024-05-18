@@ -13,7 +13,7 @@ enum class BasicField(val key: String) {
     operator fun invoke() = this.key
 
     companion object {
-        val keys = values()
+        val keys = entries
             .map(BasicField::key)
             .toSet()
     }

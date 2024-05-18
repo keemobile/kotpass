@@ -20,7 +20,7 @@ internal fun unmarshalAutoTypeData(node: Node): AutoTypeData {
             .firstOrNull(Tags.Entry.AutoType.Obfuscation)
             ?.getText()
             ?.toInt()
-            ?.let(AutoTypeObfuscation.values()::getOrNull)
+            ?.let(AutoTypeObfuscation.entries::getOrNull)
             ?: AutoTypeObfuscation.None,
         defaultSequence = node
             .firstOrNull(Tags.Entry.AutoType.DefaultSequence)

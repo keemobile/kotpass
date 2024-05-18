@@ -38,7 +38,7 @@ internal fun unmarshalGroup(
                 Tags.Group.IconId -> {
                     icon = childNode.getText()
                         ?.toInt()
-                        ?.let(PredefinedIcon.values()::getOrNull)
+                        ?.let(PredefinedIcon.entries::getOrNull)
                         ?: PredefinedIcon.Folder
                 }
                 Tags.Group.CustomIconId -> {
