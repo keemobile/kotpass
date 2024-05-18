@@ -6,6 +6,7 @@ import app.keemobile.kotpass.errors.FormatError
 import app.keemobile.kotpass.extensions.constantTimeEquals
 import app.keemobile.kotpass.extensions.sha256
 import app.keemobile.kotpass.extensions.sha512
+import app.keemobile.kotpass.io.BufferedStream
 import okio.Buffer
 import okio.BufferedSink
 import okio.BufferedSource
@@ -44,7 +45,7 @@ internal object ContentBlocks {
     }
 
     fun readContentBlocksVer4x(
-        source: BufferedSource,
+        source: BufferedStream,
         masterSeed: ByteArray,
         transformedKey: ByteArray
     ): ByteArray {

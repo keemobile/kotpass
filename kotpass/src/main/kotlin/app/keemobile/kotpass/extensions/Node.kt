@@ -12,7 +12,7 @@ import java.nio.ByteBuffer
 import java.time.Instant
 import java.util.UUID
 
-internal fun Node.childNodes() = children.filterIsInstance(Node::class.java)
+internal fun Node.childNodes() = children.filterIsInstance<Node>()
 
 internal fun Node.getText() = (children.firstOrNull() as? TextElement)?.text
 

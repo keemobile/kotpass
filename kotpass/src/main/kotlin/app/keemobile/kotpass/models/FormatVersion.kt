@@ -1,7 +1,7 @@
 package app.keemobile.kotpass.models
 
+import app.keemobile.kotpass.io.BufferedStream
 import okio.BufferedSink
-import okio.BufferedSource
 
 data class FormatVersion(
     val major: Short,
@@ -17,7 +17,7 @@ data class FormatVersion(
     }
 
     companion object {
-        internal fun readFrom(source: BufferedSource) = FormatVersion(
+        internal fun readFrom(source: BufferedStream) = FormatVersion(
             minor = source.readShortLe(),
             major = source.readShortLe()
         )

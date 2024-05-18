@@ -1,8 +1,8 @@
 package app.keemobile.kotpass.database.header
 
 import app.keemobile.kotpass.extensions.b
+import app.keemobile.kotpass.io.BufferedStream
 import okio.BufferedSink
-import okio.BufferedSource
 import okio.ByteString
 
 class Signature(
@@ -19,7 +19,7 @@ class Signature(
         val Secondary = ByteString.of(0x67, 0xfb.b, 0x4b, 0xb5.b)
         val Default = Signature(Base, Secondary)
 
-        internal fun readFrom(source: BufferedSource) = Signature(
+        internal fun readFrom(source: BufferedStream) = Signature(
             base = source.readByteString(4),
             secondary = source.readByteString(4)
         )

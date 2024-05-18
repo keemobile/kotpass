@@ -2,7 +2,7 @@
 
 package app.keemobile.kotpass.io
 
-import app.keemobile.kotpass.extensions.teeBuffer
+import app.keemobile.kotpass.extensions.teeBufferStream
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import okio.Buffer
@@ -13,15 +13,15 @@ import java.nio.ByteBuffer
 
 private val DummyData = "Lorem ipsum".toByteArray()
 
-class TeeSourceSpec : DescribeSpec({
+class TeeBufferedStreamSpec : DescribeSpec({
 
-    describe("TeeBufferedSource") {
-        it("Writes data to side buffer") {
+    describe("TeeBufferedStream") {
+        it("Writes data to the side buffer") {
             val buffer = Buffer()
             val data = ByteString.of(*DummyData)
             val tee = ByteArrayInputStream(DummyData)
                 .source()
-                .teeBuffer(buffer)
+                .teeBufferStream(buffer)
 
             tee.read(Buffer(), 5)
             buffer.snapshot() shouldBe data.substring(0, 5)
@@ -31,6 +31,17 @@ class TeeSourceSpec : DescribeSpec({
 
             tee.readFully(ByteArray((data.size - buffer.size).toInt()))
             buffer.snapshot() shouldBe data
+        }
+
+        it("Does not write data to the side buffer while peeking") {
+            val buffer = Buffer()
+            val tee = ByteArrayInputStream(DummyData)
+                .source()
+                .teeBufferStream(buffer)
+                .peek()
+
+            tee.read(Buffer(), 5)
+            buffer.snapshot().size shouldBe 0
         }
     }
 })

@@ -166,16 +166,16 @@ internal fun Meta.marshal(context: XmlContext.Encode): Node {
         Tags.Meta.HistoryMaxSize { text(historyMaxSize.toString()) }
         Tags.Meta.LastSelectedGroup { lastSelectedGroup?.let(this::addUuid) }
         Tags.Meta.LastTopVisibleGroup { lastTopVisibleGroup?.let(this::addUuid) }
-        addNode(marshalMemoryProtection(memoryProtection))
-        addNode(CustomIcons.marshal(context, customIcons))
-        addNode(CustomData.marshal(context, customData))
+        addElement(marshalMemoryProtection(memoryProtection))
+        addElement(CustomIcons.marshal(context, customIcons))
+        addElement(CustomData.marshal(context, customData))
 
         // In version 4.x files are stored in binary inner header
         if (context.version.major < 4) {
             Tags.Meta.Binaries.TagName {
                 var binaryCount = 0
                 for ((_, binary) in binaries) {
-                    addNode(binary.marshal(binaryCount))
+                    addElement(binary.marshal(binaryCount))
                     binaryCount++
                 }
             }

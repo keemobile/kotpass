@@ -1,10 +1,10 @@
 package app.keemobile.kotpass.database.header
 
+import app.keemobile.kotpass.extensions.bufferStream
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import okio.Buffer
-import okio.buffer
 import okio.source
 
 class DatabaseHeaderSpec : DescribeSpec({
@@ -36,7 +36,7 @@ class DatabaseHeaderSpec : DescribeSpec({
                     .toByteArray()
                     .inputStream()
                     .source()
-                    .buffer()
+                    .bufferStream()
             }.let(DatabaseHeader.Companion::readFrom)
 
             ver4Argon2.signature.base shouldBe Signature.Base
@@ -50,4 +50,4 @@ class DatabaseHeaderSpec : DescribeSpec({
 
 private fun decodeHeader(fileName: String) = ClassLoader
     .getSystemResourceAsStream(fileName)!!
-    .use { DatabaseHeader.readFrom(it.source().buffer()) }
+    .use { DatabaseHeader.readFrom(it.source().bufferStream()) }

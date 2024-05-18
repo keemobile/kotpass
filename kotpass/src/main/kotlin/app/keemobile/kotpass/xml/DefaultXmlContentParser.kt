@@ -10,7 +10,6 @@ import org.redundent.kotlin.xml.PrintOptions
 import org.redundent.kotlin.xml.XmlVersion
 import org.redundent.kotlin.xml.parse
 import org.redundent.kotlin.xml.xml
-import java.io.ByteArrayInputStream
 import java.io.InputStream
 
 object DefaultXmlContentParser : XmlContentParser {
@@ -19,7 +18,9 @@ object DefaultXmlContentParser : XmlContentParser {
     override fun unmarshalContent(
         xmlData: ByteArray,
         contextBlock: (Meta) -> XmlContext.Decode
-    ) = unmarshalContent(ByteArrayInputStream(xmlData), contextBlock)
+    ): DatabaseContent = xmlData
+        .inputStream()
+        .use { unmarshalContent(it, contextBlock) }
 
     override fun unmarshalContent(
         source: InputStream,
@@ -53,12 +54,12 @@ object DefaultXmlContentParser : XmlContentParser {
         pretty: Boolean
     ): String {
         return xml(Tags.Document, XmlEncoding, XmlVersion.V10) {
-            addNode(content.meta.marshal(context))
+            addElement(content.meta.marshal(context))
             Tags.Root {
-                addNode(content.group.marshal(context))
+                addElement(content.group.marshal(context))
                 Tags.DeletedObjects.TagName {
                     content.deletedObjects.forEach {
-                        addNode(it.marshal(context))
+                        addElement(it.marshal(context))
                     }
                 }
             }

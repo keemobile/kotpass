@@ -1,5 +1,6 @@
 package app.keemobile.kotpass.database
 
+import app.keemobile.kotpass.extensions.bufferStream
 import app.keemobile.kotpass.resources.ContentBlocksRes
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldNotBe
@@ -34,7 +35,7 @@ class ContentBlocksSpec : DescribeSpec({
                 transformedKey = key
             )
             val output = ContentBlocks
-                .readContentBlocksVer4x(buffer, seed, key)
+                .readContentBlocksVer4x(buffer.bufferStream(), seed, key)
                 .toString(Charsets.UTF_8)
 
             output.indexOf(ContentBlocksRes.TestSentence) shouldNotBe -1
