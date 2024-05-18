@@ -10,6 +10,7 @@ val ArtifactVersion = "0.7.0"
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.dokka)
+    alias(libs.plugins.kover)
     id("java-library")
     id("maven-publish")
 }
