@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package app.keemobile.kotpass.xml
 
 internal object FormatXml {

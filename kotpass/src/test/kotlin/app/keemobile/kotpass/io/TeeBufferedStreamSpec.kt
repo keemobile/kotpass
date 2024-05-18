@@ -1,5 +1,3 @@
-@file:Suppress("BlockingMethodInNonBlockingContext")
-
 package app.keemobile.kotpass.io
 
 import app.keemobile.kotpass.extensions.teeBufferStream
