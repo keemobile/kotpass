@@ -2,9 +2,9 @@ name: Build, Test and Lint
 
 on:
   push:
-    branches: [master]
+    branches: [ master ]
   pull_request:
-    branches: [develop]
+    branches: [ develop ]
   workflow_dispatch:
 
 jobs:
@@ -13,12 +13,25 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
       - name: Setup JDK
         uses: actions/setup-java@v3
         with:
           distribution: adopt
           java-version: 11
+
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1
+
       - name: Check all modules
         run: ./gradlew check
+
+      - name: Generate test coverage report
+        run: ./gradlew koverXmlReport
+
+      - name: Upload test coverage report
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./kotpass/build/reports/kover/report.xml
+          fail_ci_if_error: true

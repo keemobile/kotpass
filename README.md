@@ -1,8 +1,8 @@
 # Kotpass 
-![Build & Test](https://img.shields.io/github/actions/workflow/status/keemobile/kotpass/gradle.yml?label=Build%20%26%20Test&style=flat-square)
-[![](https://jitpack.io/v/keemobile/kotpass.svg?style=flat-square)](https://jitpack.io/#keemobile/kotpass) ![badge][badge-jvm]
+![Build & Test](https://img.shields.io/github/actions/workflow/status/keemobile/kotpass/gradle.yml?label=Build%20%26%20Test)
+[![](https://jitpack.io/v/keemobile/kotpass.svg)](https://jitpack.io/#keemobile/kotpass) [![codecov](https://codecov.io/gh/keemobile/kotpass/graph/badge.svg?token=59LMP3BOXJ)](https://codecov.io/gh/keemobile/kotpass) ![badge][badge-jvm]
 
-[badge-jvm]: http://img.shields.io/badge/-JVM-DB413D.svg?style=flat-square
+[badge-jvm]: http://img.shields.io/badge/-JVM-DB413D.svg
 
 The library offers reading and writing support for [KeePass](https://en.wikipedia.org/wiki/KeePass) (KDBX) files in Kotlin, including the latest format version 4.1. It is suitable for Mobile, Desktop, and Backend JVM projects. The functional style API makes it convenient for MVI-like architectures.
 
