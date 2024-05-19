@@ -26,7 +26,7 @@ and:
 
 ```gradle
 dependencies {
-    implementation 'com.github.keemobile:kotpass:0.7.0'
+    implementation 'com.github.keemobile:kotpass:0.8.0'
 }
 ```
 

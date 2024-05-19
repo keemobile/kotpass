@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val ArtifactId = "kotpass"
 val ArtifactGroup = "app.keemobile"
-val ArtifactVersion = "0.7.0"
+val ArtifactVersion = "0.8.0"
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
