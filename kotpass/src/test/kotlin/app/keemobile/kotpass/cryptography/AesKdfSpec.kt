@@ -1,7 +1,6 @@
 package app.keemobile.kotpass.cryptography
 
 import app.keemobile.kotpass.database.Credentials
-import app.keemobile.kotpass.extensions.b
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
 
@@ -26,7 +25,7 @@ class AesKdfSpec : DescribeSpec({
 
         it("Transforms key values as expected 2") {
             val credentials = Credentials.from(EncryptedValue.fromString("secret"))
-            val seed = ByteArray(32) { 0x1.b }
+            val seed = ByteArray(32) { 0x1.toByte() }
             val result = AesKdf.transformKey(
                 key = KeyTransform.compositeKey(credentials),
                 seed = seed,

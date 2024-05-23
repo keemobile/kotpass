@@ -4,7 +4,6 @@ import app.keemobile.kotpass.database.Credentials
 import app.keemobile.kotpass.database.header.DatabaseHeader
 import app.keemobile.kotpass.database.header.KdfParameters.Aes
 import app.keemobile.kotpass.database.header.KdfParameters.Argon2
-import app.keemobile.kotpass.extensions.b
 import app.keemobile.kotpass.extensions.clear
 import app.keemobile.kotpass.extensions.sha256
 import app.keemobile.kotpass.extensions.sha512
@@ -74,7 +73,7 @@ internal object KeyTransform {
         transformedKey: ByteArray
     ): ByteArray {
         val combined = byteArrayOf(*masterSeed, *transformedKey, 0x01)
-        return (ByteArray(8) { 0xFF.b } + combined.sha512())
+        return (ByteArray(8) { 0xFF.toByte() } + combined.sha512())
             .sha512()
             .also { combined.clear() }
     }
