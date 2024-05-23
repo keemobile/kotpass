@@ -1,10 +1,9 @@
 package app.keemobile.kotpass.cryptography
 
-import app.keemobile.kotpass.constants.KdfConst
 import app.keemobile.kotpass.database.Credentials
 import app.keemobile.kotpass.database.header.DatabaseHeader
-import app.keemobile.kotpass.database.header.KdfParameters
-import app.keemobile.kotpass.errors.FormatError
+import app.keemobile.kotpass.database.header.KdfParameters.Aes
+import app.keemobile.kotpass.database.header.KdfParameters.Argon2
 import app.keemobile.kotpass.extensions.b
 import app.keemobile.kotpass.extensions.clear
 import app.keemobile.kotpass.extensions.sha256
@@ -37,21 +36,18 @@ internal object KeyTransform {
             }
             is DatabaseHeader.Ver4x -> {
                 when (header.kdfParameters) {
-                    is KdfParameters.Aes -> {
+                    is Aes -> {
                         AesKdf.transformKey(
                             key = compositeKey(credentials),
                             seed = header.kdfParameters.seed.toByteArray(),
                             rounds = header.kdfParameters.rounds
                         )
                     }
-                    is KdfParameters.Argon2 -> {
+                    is Argon2 -> {
                         Argon2Kdf.transformKey(
-                            type = when (header.kdfParameters.uuid) {
-                                KdfConst.KdfArgon2d -> Argon2Engine.Type.Argon2D
-                                KdfConst.KdfArgon2id -> Argon2Engine.Type.Argon2Id
-                                else -> throw FormatError.InvalidHeader(
-                                    "Unsupported Kdf UUID (Argon2): ${header.kdfParameters.uuid}"
-                                )
+                            variant = when (header.kdfParameters.variant) {
+                                Argon2.Variant.Argon2d -> Argon2Engine.Variant.Argon2d
+                                Argon2.Variant.Argon2id -> Argon2Engine.Variant.Argon2id
                             },
                             version = Argon2Engine.Version.from(header.kdfParameters.version),
                             password = compositeKey(credentials),

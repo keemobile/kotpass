@@ -2,7 +2,7 @@ package app.keemobile.kotpass.cryptography
 
 internal object Argon2Kdf {
     fun transformKey(
-        type: Argon2Engine.Type,
+        variant: Argon2Engine.Variant,
         version: Argon2Engine.Version,
         password: ByteArray,
         secretKey: ByteArray?,
@@ -14,7 +14,7 @@ internal object Argon2Kdf {
     ): ByteArray {
         val result = ByteArray(32)
         Argon2Engine(
-            type = type,
+            variant = variant,
             salt = salt,
             secret = secretKey,
             additional = additional,

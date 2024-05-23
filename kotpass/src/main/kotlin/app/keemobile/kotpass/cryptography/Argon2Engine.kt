@@ -38,7 +38,7 @@ private const val M32L = 0xFFFFFFFFL
 private val ZeroBytes = ByteArray(4)
 
 internal class Argon2Engine(
-    private val type: Type = Type.Argon2D,
+    private val variant: Variant = Variant.Argon2d,
     private val version: Version = Version.Ver13,
     private val salt: ByteArray,
     private val secret: ByteArray? = null,
@@ -51,10 +51,10 @@ internal class Argon2Engine(
     private var segmentLength = 0
     private var laneLength = 0
 
-    enum class Type(val id: Int) {
-        Argon2D(0x00),
-        Argon2I(0x01),
-        Argon2Id(0x02)
+    enum class Variant(val id: Int) {
+        Argon2d(0x00),
+        Argon2i(0x01),
+        Argon2id(0x02)
     }
 
     enum class Version(val id: Int) {
@@ -162,7 +162,8 @@ internal class Argon2Engine(
     }
 
     private fun isDataIndependentAddressing(position: Position): Boolean {
-        return type == Type.Argon2I || (type == Type.Argon2Id && position.pass == 0 && position.slice < Argon2SyncPoints / 2)
+        return variant == Variant.Argon2i ||
+            (variant == Variant.Argon2id && position.pass == 0 && position.slice < Argon2SyncPoints / 2)
     }
 
     private fun initAddressBlocks(
@@ -176,7 +177,7 @@ internal class Argon2Engine(
         inputBlock.v[2] = intToLong(position.slice)
         inputBlock.v[3] = intToLong(blocks.size)
         inputBlock.v[4] = intToLong(iterations)
-        inputBlock.v[5] = intToLong(type.id)
+        inputBlock.v[5] = intToLong(variant.id)
 
         if (position.pass == 0 && position.slice == 0) {
             // Don't forget to generate the first block of addresses:
@@ -332,7 +333,7 @@ internal class Argon2Engine(
      */
     private fun initialize(tmpBlockBytes: ByteArray, password: ByteArray, outputLength: Int) {
         val blake = Blake2bDigest(Argon2PreHashDigestLength * 8)
-        val values = intArrayOf(parallelism, outputLength, memory, iterations, version.id, type.id)
+        val values = intArrayOf(parallelism, outputLength, memory, iterations, version.id, variant.id)
 
         intToLittleEndian(values, tmpBlockBytes, 0)
         blake.update(tmpBlockBytes, 0, values.size * 4)

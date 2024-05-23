@@ -13,7 +13,7 @@ class Argon2Spec : DescribeSpec({
             val result = ByteArray(32)
 
             Argon2Engine(
-                type = Argon2Engine.Type.Argon2D,
+                variant = Argon2Engine.Variant.Argon2d,
                 version = Argon2Engine.Version.Ver13,
                 salt = Argon2Res.TestSalt,
                 secret = Argon2Res.TestSecret,
@@ -31,7 +31,7 @@ class Argon2Spec : DescribeSpec({
             val result = ByteArray(32)
 
             Argon2Engine(
-                type = Argon2Engine.Type.Argon2I,
+                variant = Argon2Engine.Variant.Argon2i,
                 version = Argon2Engine.Version.Ver13,
                 salt = Argon2Res.TestSalt,
                 secret = Argon2Res.TestSecret,
@@ -49,7 +49,7 @@ class Argon2Spec : DescribeSpec({
             val result = ByteArray(32)
 
             Argon2Engine(
-                type = Argon2Engine.Type.Argon2Id,
+                variant = Argon2Engine.Variant.Argon2id,
                 version = Argon2Engine.Version.Ver13,
                 salt = Argon2Res.TestSalt,
                 secret = Argon2Res.TestSecret,
