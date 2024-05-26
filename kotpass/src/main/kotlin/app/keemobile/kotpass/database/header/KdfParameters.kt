@@ -2,6 +2,7 @@ package app.keemobile.kotpass.database.header
 
 import app.keemobile.kotpass.constants.Const
 import app.keemobile.kotpass.constants.KdfConst
+import app.keemobile.kotpass.cryptography.Argon2Engine
 import app.keemobile.kotpass.errors.FormatError
 import okio.ByteString
 
@@ -83,6 +84,19 @@ sealed class KdfParameters {
 
                 fun from(uuid: ByteString) = entries.first { it.uuid == uuid }
             }
+        }
+
+        companion object {
+            fun default(salt: ByteString) = Argon2(
+                variant = Variant.Argon2d,
+                salt = salt,
+                parallelism = 2U,
+                memory = 32UL * 1024UL * 1024UL,
+                iterations = 8U,
+                version = Argon2Engine.Version.Ver13.id.toUInt(),
+                secretKey = null,
+                associatedData = null
+            )
         }
     }
 

@@ -2,7 +2,6 @@ package app.keemobile.kotpass.database.header
 
 import app.keemobile.kotpass.constants.CrsAlgorithm
 import app.keemobile.kotpass.constants.HeaderFieldId
-import app.keemobile.kotpass.cryptography.Argon2Engine
 import app.keemobile.kotpass.errors.FormatError
 import app.keemobile.kotpass.extensions.asIntLe
 import app.keemobile.kotpass.extensions.asLongLe
@@ -83,16 +82,7 @@ sealed class DatabaseHeader {
                     compression = Compression.GZip,
                     masterSeed = nextByteString(32),
                     encryptionIV = nextByteString(CipherId.Aes.ivLength),
-                    kdfParameters = KdfParameters.Argon2(
-                        variant = KdfParameters.Argon2.Variant.Argon2d,
-                        salt = nextByteString(32),
-                        parallelism = 2U,
-                        memory = 32UL * 1024UL * 1024UL,
-                        iterations = 8U,
-                        version = Argon2Engine.Version.Ver13.id.toUInt(),
-                        secretKey = null,
-                        associatedData = null
-                    ),
+                    kdfParameters = KdfParameters.Argon2.default(nextByteString(32)),
                     publicCustomData = mapOf()
                 )
             }
