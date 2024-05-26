@@ -2,7 +2,6 @@ package app.keemobile.kotpass.database.header
 
 import app.keemobile.kotpass.constants.VariantTypeId
 import app.keemobile.kotpass.errors.FormatError
-import app.keemobile.kotpass.extensions.b
 import okio.Buffer
 import okio.ByteString
 import okio.buffer
@@ -12,7 +11,7 @@ import kotlin.experimental.and
 
 internal object VariantDictionary {
     private const val Version: Short = 0x0100
-    private const val VersionFilter: Short = 0xff00.toShort()
+    private const val VersionFilter: Short = 0xFF00.toShort()
 
     fun readFrom(data: ByteString): Map<String, VariantItem> {
         val result = mutableMapOf<String, VariantItem>()
@@ -58,7 +57,7 @@ internal object VariantDictionary {
                         if (valueLength != Byte.SIZE_BYTES) {
                             throw FormatError.InvalidHeader("Invalid item's value length for type: Bool.")
                         }
-                        result[key] = VariantItem.Bool(buffer.readByte() != 0x0.b)
+                        result[key] = VariantItem.Bool(buffer.readByte() != 0x0.toByte())
                     }
                     VariantTypeId.Int32 -> {
                         if (valueLength != Int.SIZE_BYTES) {

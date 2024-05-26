@@ -2,7 +2,6 @@ package app.keemobile.kotpass.database.header
 
 import app.keemobile.kotpass.constants.CrsAlgorithm
 import app.keemobile.kotpass.errors.FormatError
-import app.keemobile.kotpass.extensions.b
 import app.keemobile.kotpass.extensions.nextByteString
 import app.keemobile.kotpass.models.BinaryData
 import okio.BufferedSink
@@ -74,7 +73,7 @@ data class DatabaseInnerHeader(
                         randomStreamKey = source.readByteString(length)
                     }
                     InnerHeaderFieldId.Binary -> {
-                        val memoryProtection = source.readByte() != 0x0.b
+                        val memoryProtection = source.readByte() != 0x0.toByte()
                         val content = source.readByteArray(length - BinaryFlagsSize)
                         val binary = BinaryData.Uncompressed(memoryProtection, content)
                         binaries[binary.hash] = binary
