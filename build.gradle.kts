@@ -4,11 +4,14 @@ plugins {
     alias(libs.plugins.spotless)
     alias(libs.plugins.versions)
     id("maven-publish")
+    id("signing")
 }
 
 subprojects {
     apply {
         plugin("com.diffplug.spotless")
+        plugin("maven-publish")
+        plugin("signing")
     }
 
     spotless {
@@ -18,6 +21,11 @@ subprojects {
             targetExclude("bin/**/*.kt")
             ktlint()
         }
+    }
+
+    signing {
+        useGpgCmd()
+        sign(publishing.publications)
     }
 }
 

@@ -3,20 +3,17 @@
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val ArtifactId = "kotpass"
-val ArtifactGroup = "app.keemobile"
-val ArtifactVersion = "0.9.0"
-
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.dokka)
     alias(libs.plugins.kover)
+    alias(libs.plugins.maven.publish)
     id("java-library")
     id("maven-publish")
 }
 
-group = ArtifactGroup
-version = ArtifactVersion
+group = properties["GROUP"].toString()
+version = properties["VERSION_NAME"].toString()
 
 repositories {
     mavenCentral()
@@ -30,8 +27,6 @@ tasks.withType<KotlinCompile> {
 }
 
 java {
-    withSourcesJar()
-
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
 }
@@ -43,18 +38,6 @@ tasks.withType<Jar> {
             "Implementation-Version" to project.version
         )
     )
-}
-
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            groupId = ArtifactGroup
-            artifactId = ArtifactId
-            version = ArtifactVersion
-
-            from(components["java"])
-        }
-    }
 }
 
 tasks.withType<DokkaTask>().configureEach {

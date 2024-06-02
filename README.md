@@ -14,19 +14,11 @@ This library is used as backbone of [KeeMobile](https://keemobile.app) password 
 
 ## Installation
 
-`Kotpass` is published on jitpack.io. Add repository it to your ```build.gradle``` script:
-```gradle
-allprojects {
-    repositories {
-        maven { url 'https://jitpack.io' }
-    }
-}
-```
-and:
+The latest release is available on [Maven Central](https://central.sonatype.com/artifact/app.keemobile/kotpass/overview).
 
-```gradle
+```kotlin
 dependencies {
-    implementation 'com.github.keemobile:kotpass:0.9.0'
+    implementation("app.keemobile:kotpass:0.9.0")
 }
 ```
 

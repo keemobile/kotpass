@@ -5,6 +5,7 @@ kotest = "5.6.1"
 spotless = "6.25.0"
 versions = "0.51.0"
 kover = "0.8.0"
+maven-publish = "0.28.0"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -12,6 +13,7 @@ dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 versions = { id = "com.github.ben-manes.versions", version.ref = "versions" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
 
 [libraries]
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
