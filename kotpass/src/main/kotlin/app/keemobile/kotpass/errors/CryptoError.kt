@@ -8,4 +8,6 @@ sealed class CryptoError : Exception() {
     class AlgorithmUnavailable(override val message: String) : CryptoError()
 
     class InvalidKey(override val message: String) : CryptoError()
+
+    class InvalidCipherText(override val message: String) : CryptoError()
 }
