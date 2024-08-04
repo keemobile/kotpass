@@ -2,6 +2,7 @@ package app.keemobile.kotpass.database.header
 
 import app.keemobile.kotpass.constants.CrsAlgorithm
 import app.keemobile.kotpass.constants.HeaderFieldId
+import app.keemobile.kotpass.cryptography.format.BaseCiphers
 import app.keemobile.kotpass.errors.FormatError
 import app.keemobile.kotpass.extensions.asIntLe
 import app.keemobile.kotpass.extensions.asLongLe
@@ -20,7 +21,7 @@ private val EndOfHeaderBytes = ByteString.of(0x0D, 0x0A, 0x0D, 0x0A)
 sealed class DatabaseHeader {
     abstract val signature: Signature
     abstract val version: FormatVersion
-    abstract val cipherId: CipherId
+    abstract val cipherId: UUID
     abstract val compression: Compression
     abstract val masterSeed: ByteString
     abstract val encryptionIV: ByteString
@@ -28,7 +29,7 @@ sealed class DatabaseHeader {
     data class Ver3x(
         override val signature: Signature,
         override val version: FormatVersion,
-        override val cipherId: CipherId,
+        override val cipherId: UUID,
         override val compression: Compression,
         override val masterSeed: ByteString,
         override val encryptionIV: ByteString,
@@ -46,10 +47,10 @@ sealed class DatabaseHeader {
                 Ver3x(
                     signature = Signature.Default,
                     version = FormatVersion(3, 1),
-                    cipherId = CipherId.Aes,
+                    cipherId = BaseCiphers.Aes.uuid,
                     compression = Compression.GZip,
                     masterSeed = nextByteString(32),
-                    encryptionIV = nextByteString(CipherId.Aes.ivLength),
+                    encryptionIV = nextByteString(BaseCiphers.Aes.ivLength.toInt()),
                     transformSeed = nextByteString(32),
                     transformRounds = 6000U,
                     innerRandomStreamId = CrsAlgorithm.Salsa20,
@@ -63,7 +64,7 @@ sealed class DatabaseHeader {
     data class Ver4x(
         override val signature: Signature,
         override val version: FormatVersion,
-        override val cipherId: CipherId,
+        override val cipherId: UUID,
         override val compression: Compression,
         override val masterSeed: ByteString,
         override val encryptionIV: ByteString,
@@ -78,26 +79,15 @@ sealed class DatabaseHeader {
                 Ver4x(
                     signature = Signature.Default,
                     version = FormatVersion(4, 1),
-                    cipherId = CipherId.Aes,
+                    cipherId = BaseCiphers.Aes.uuid,
                     compression = Compression.GZip,
                     masterSeed = nextByteString(32),
-                    encryptionIV = nextByteString(CipherId.Aes.ivLength),
+                    encryptionIV = nextByteString(BaseCiphers.Aes.ivLength.toInt()),
                     kdfParameters = KdfParameters.Argon2.default(nextByteString(32)),
                     publicCustomData = mapOf()
                 )
             }
         }
-    }
-
-    enum class CipherId(val uuid: UUID, val ivLength: Int) {
-        Aes(
-            uuid = UUID.fromString("31c1f2e6-bf71-4350-be58-05216afc5aff"),
-            ivLength = 16
-        ),
-        ChaCha20(
-            uuid = UUID.fromString("d6038a2b-8b6f-4cb5-a524-339a31dbb59a"),
-            ivLength = 12
-        )
     }
 
     enum class Compression {
@@ -111,8 +101,8 @@ sealed class DatabaseHeader {
 
         writeHeaderValue(sink, HeaderFieldId.CipherId, 16) {
             val buffer = ByteBuffer.allocate(16).apply {
-                putLong(cipherId.uuid.mostSignificantBits)
-                putLong(cipherId.uuid.leastSignificantBits)
+                putLong(cipherId.mostSignificantBits)
+                putLong(cipherId.leastSignificantBits)
             }
             write(buffer.array())
         }
@@ -182,7 +172,7 @@ sealed class DatabaseHeader {
 
     companion object {
         internal fun readFrom(source: BufferedStream): DatabaseHeader {
-            var cipherId: CipherId? = null
+            var cipherId: UUID? = null
             var compression: Compression? = null
             var masterSeed: ByteString? = null
             var transformSeed: ByteString? = null
@@ -207,11 +197,7 @@ sealed class DatabaseHeader {
                 when (fieldId) {
                     HeaderFieldId.EndOfHeader -> break
                     HeaderFieldId.Comment -> Unit
-                    HeaderFieldId.CipherId -> {
-                        cipherId = data.asUuid().let { cipherUuid ->
-                            CipherId.entries.firstOrNull { it.uuid == cipherUuid }
-                        }
-                    }
+                    HeaderFieldId.CipherId -> cipherId = data.asUuid()
                     HeaderFieldId.Compression -> {
                         compression = Compression.entries[data.asIntLe()]
                     }
