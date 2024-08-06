@@ -4,11 +4,19 @@ package app.keemobile.kotpass.cryptography
 
 import app.keemobile.kotpass.cryptography.block.BlockCipherMode
 import app.keemobile.kotpass.cryptography.block.PaddedBufferedBlockCipher
+import app.keemobile.kotpass.cryptography.format.BaseCiphers
+import app.keemobile.kotpass.cryptography.format.TwofishCipher
 import app.keemobile.kotpass.cryptography.padding.PKCS7Padding
+import app.keemobile.kotpass.database.Credentials
+import app.keemobile.kotpass.database.KeePassDatabase
+import app.keemobile.kotpass.database.decode
+import app.keemobile.kotpass.database.encode
 import app.keemobile.kotpass.io.decodeHexToArray
 import app.keemobile.kotpass.resources.TwofishCbcPaddedRes
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 
 class TwofishSpec : DescribeSpec({
 
@@ -51,6 +59,27 @@ class TwofishSpec : DescribeSpec({
                     result shouldBe plainTxt
                 }
             }
+        }
+
+        it("Decodes/encodes KeePass 4.x file with Twofish cipher") {
+            val credentials = Credentials.from(EncryptedValue.fromString("1"))
+            val cipherProviders = BaseCiphers.entries + TwofishCipher
+            var database = KeePassDatabase.decode(
+                inputStream = ClassLoader.getSystemResourceAsStream("ver4_twofish.kdbx")!!,
+                credentials = credentials,
+                cipherProviders = cipherProviders
+            )
+            database.content.group.name shouldBe "New"
+
+            val data = ByteArrayOutputStream()
+                .apply { database.encode(this, cipherProviders = cipherProviders) }
+                .toByteArray()
+            database = KeePassDatabase.decode(
+                inputStream = ByteArrayInputStream(data),
+                credentials = credentials,
+                cipherProviders = cipherProviders
+            )
+            database.content.group.name shouldBe "New"
         }
     }
 })
