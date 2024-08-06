@@ -1,11 +1,13 @@
 package app.keemobile.kotpass.database
 
-import app.keemobile.kotpass.cryptography.ContentEncryption
 import app.keemobile.kotpass.cryptography.EncryptionSaltGenerator
 import app.keemobile.kotpass.cryptography.KeyTransform
+import app.keemobile.kotpass.cryptography.format.BaseCiphers
+import app.keemobile.kotpass.cryptography.format.CipherProvider
 import app.keemobile.kotpass.database.header.DatabaseHeader
 import app.keemobile.kotpass.database.modifiers.binaries
 import app.keemobile.kotpass.database.modifiers.regenerateVectors
+import app.keemobile.kotpass.errors.FormatError
 import app.keemobile.kotpass.models.XmlContext
 import app.keemobile.kotpass.xml.DefaultXmlContentParser
 import app.keemobile.kotpass.xml.XmlContentParser
@@ -22,13 +24,15 @@ import java.util.zip.GZIPOutputStream
 fun KeePassDatabase.encode(
     outputStream: OutputStream,
     contentParser: XmlContentParser = DefaultXmlContentParser,
+    cipherProviders: List<CipherProvider> = BaseCiphers.entries,
     random: SecureRandom = SecureRandom()
-) = regenerateVectors(random)
-    .encodeAsBinary(outputStream, contentParser)
+) = regenerateVectors(random, cipherProviders)
+    .encodeAsBinary(outputStream, contentParser, cipherProviders)
 
 private fun KeePassDatabase.encodeAsBinary(
     outputStream: OutputStream,
-    contentParser: XmlContentParser = DefaultXmlContentParser
+    contentParser: XmlContentParser = DefaultXmlContentParser,
+    cipherProviders: List<CipherProvider>
 ) = apply {
     val transformedKey = KeyTransform.transformedKey(
         header = header,
@@ -96,7 +100,7 @@ private fun KeePassDatabase.encodeAsBinary(
 
     outputStream.sink().buffer().use { sink ->
         sink.write(headerBuffer.snapshot().toByteArray())
-        sink.writeEncryptedContent(header, rawContent, transformedKey)
+        sink.writeEncryptedContent(header, rawContent, transformedKey, cipherProviders)
     }
 }
 
@@ -133,8 +137,12 @@ fun KeePassDatabase.encodeAsXml(
 private fun BufferedSink.writeEncryptedContent(
     header: DatabaseHeader,
     rawContent: ByteArray,
-    transformedKey: ByteArray
+    transformedKey: ByteArray,
+    cipherProviders: List<CipherProvider>
 ) {
+    val cipher = cipherProviders
+        .firstOrNull { it.uuid == header.cipherId }
+        ?: throw FormatError.InvalidHeader("Unsupported cipher ID (${header.cipherId}).")
     val masterSeed = header.masterSeed.toByteArray()
 
     when (header) {
@@ -143,8 +151,7 @@ private fun BufferedSink.writeEncryptedContent(
             contentBuffer.write(header.streamStartBytes)
             ContentBlocks.writeContentBlocksVer3x(contentBuffer, rawContent)
 
-            val encryptedContent = ContentEncryption.encrypt(
-                cipherId = header.cipherId,
+            val encryptedContent = cipher.encrypt(
                 key = KeyTransform.masterKey(masterSeed, transformedKey),
                 iv = header.encryptionIV.toByteArray(),
                 data = contentBuffer.readByteArray()
@@ -152,8 +159,7 @@ private fun BufferedSink.writeEncryptedContent(
             write(encryptedContent)
         }
         is DatabaseHeader.Ver4x -> {
-            val encryptedContent = ContentEncryption.encrypt(
-                cipherId = header.cipherId,
+            val encryptedContent = cipher.encrypt(
                 key = KeyTransform.masterKey(masterSeed, transformedKey),
                 iv = header.encryptionIV.toByteArray(),
                 data = rawContent

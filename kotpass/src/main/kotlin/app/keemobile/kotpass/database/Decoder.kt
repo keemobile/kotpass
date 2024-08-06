@@ -1,9 +1,10 @@
 package app.keemobile.kotpass.database
 
 import app.keemobile.kotpass.constants.Defaults
-import app.keemobile.kotpass.cryptography.ContentEncryption
 import app.keemobile.kotpass.cryptography.EncryptionSaltGenerator
 import app.keemobile.kotpass.cryptography.KeyTransform
+import app.keemobile.kotpass.cryptography.format.BaseCiphers
+import app.keemobile.kotpass.cryptography.format.CipherProvider
 import app.keemobile.kotpass.database.header.DatabaseHeader
 import app.keemobile.kotpass.database.header.DatabaseHeader.Compression
 import app.keemobile.kotpass.database.header.DatabaseInnerHeader
@@ -28,6 +29,7 @@ fun KeePassDatabase.Companion.decode(
     credentials: Credentials,
     validateHashes: Boolean = true,
     contentParser: XmlContentParser = DefaultXmlContentParser,
+    cipherProviders: List<CipherProvider> = BaseCiphers.entries,
     untitledLabel: String = Defaults.UntitledLabel
 ): KeePassDatabase {
     val headerBuffer = Buffer()
@@ -52,7 +54,7 @@ fun KeePassDatabase.Companion.decode(
                 val saltGenerator = with(header) {
                     EncryptionSaltGenerator.create(innerRandomStreamId, innerRandomStreamKey)
                 }
-                val content = decryptRawContent(header, source, transformedKey)
+                val content = decryptRawContent(header, source, transformedKey, cipherProviders)
                     .buffer()
                     .inputStream()
                     .use {
@@ -91,7 +93,7 @@ fun KeePassDatabase.Companion.decode(
                     }
                 }
 
-                decryptRawContent(header, source, transformedKey)
+                decryptRawContent(header, source, transformedKey, cipherProviders)
                     .buffer()
                     .use { rawContentBuffer ->
                         val innerHeader = DatabaseInnerHeader.readFrom(rawContentBuffer)
@@ -152,13 +154,16 @@ fun KeePassDatabase.Companion.decodeFromXml(
 private fun decryptRawContent(
     header: DatabaseHeader,
     source: BufferedStream,
-    transformedKey: ByteArray
+    transformedKey: ByteArray,
+    cipherProviders: List<CipherProvider>
 ): Source {
+    val cipher = cipherProviders
+        .firstOrNull { it.uuid == header.cipherId }
+        ?: throw FormatError.InvalidHeader("Unsupported cipher ID (${header.cipherId}).")
     val masterSeed = header.masterSeed.toByteArray()
     val decryptedContent = when (header) {
         is DatabaseHeader.Ver3x -> {
-            val contentBlocks = ContentEncryption.decrypt(
-                cipherId = header.cipherId,
+            val contentBlocks = cipher.decrypt(
                 key = KeyTransform.masterKey(masterSeed, transformedKey),
                 iv = header.encryptionIV.toByteArray(),
                 data = source.readByteArray()
@@ -179,8 +184,7 @@ private fun decryptRawContent(
             val encryptedContent = ContentBlocks
                 .readContentBlocksVer4x(source, masterSeed, transformedKey)
 
-            ContentEncryption.decrypt(
-                cipherId = header.cipherId,
+            cipher.decrypt(
                 key = KeyTransform.masterKey(masterSeed, transformedKey),
                 iv = header.encryptionIV.toByteArray(),
                 data = encryptedContent
