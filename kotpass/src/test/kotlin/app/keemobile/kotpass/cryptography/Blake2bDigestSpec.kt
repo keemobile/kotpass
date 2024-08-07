@@ -1,5 +1,6 @@
 package app.keemobile.kotpass.cryptography
 
+import app.keemobile.kotpass.cryptography.engines.Blake2bDigest
 import app.keemobile.kotpass.resources.Blake2bDigestRes
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.shouldBe

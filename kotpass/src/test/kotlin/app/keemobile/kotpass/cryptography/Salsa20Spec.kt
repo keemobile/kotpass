@@ -1,5 +1,6 @@
 package app.keemobile.kotpass.cryptography
 
+import app.keemobile.kotpass.cryptography.engines.Salsa20Engine
 import app.keemobile.kotpass.io.decodeHexToArray
 import app.keemobile.kotpass.io.encodeHex
 import app.keemobile.kotpass.resources.Salsa20Res

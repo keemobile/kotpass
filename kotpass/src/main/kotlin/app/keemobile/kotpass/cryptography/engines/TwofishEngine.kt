@@ -28,9 +28,11 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package app.keemobile.kotpass.cryptography
+package app.keemobile.kotpass.cryptography.engines
 
 import app.keemobile.kotpass.cryptography.block.BlockCipher
+import app.keemobile.kotpass.cryptography.intToLittleEndian
+import app.keemobile.kotpass.cryptography.littleEndianToInt
 import app.keemobile.kotpass.errors.CryptoError.InvalidDataLength
 
 /**

@@ -1,4 +1,6 @@
-package app.keemobile.kotpass.cryptography
+package app.keemobile.kotpass.cryptography.format
+
+import app.keemobile.kotpass.cryptography.engines.Argon2Engine
 
 internal object Argon2Kdf {
     fun transformKey(

@@ -1,6 +1,8 @@
 package app.keemobile.kotpass.cryptography
 
 import app.keemobile.kotpass.constants.CrsAlgorithm
+import app.keemobile.kotpass.cryptography.engines.ChaCha7539Engine
+import app.keemobile.kotpass.cryptography.engines.Salsa20Engine
 import app.keemobile.kotpass.errors.FormatError
 import app.keemobile.kotpass.extensions.sha256
 import app.keemobile.kotpass.extensions.sha512

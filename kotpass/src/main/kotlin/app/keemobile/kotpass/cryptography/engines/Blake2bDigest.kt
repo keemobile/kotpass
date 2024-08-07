@@ -23,7 +23,10 @@
 
 @file:Suppress("MemberVisibilityCanBePrivate", "unused")
 
-package app.keemobile.kotpass.cryptography
+package app.keemobile.kotpass.cryptography.engines
+
+import app.keemobile.kotpass.cryptography.littleEndianToLong
+import app.keemobile.kotpass.cryptography.longToLittleEndian
 
 /**
  * Implementation of the cryptographic hash function Blakbe2b.

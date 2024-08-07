@@ -1,4 +1,4 @@
-package app.keemobile.kotpass.cryptography
+package app.keemobile.kotpass.cryptography.engines
 
 internal fun chachaCore(rounds: Int, input: IntArray, x: IntArray) {
     require(input.size == 16)

@@ -1,4 +1,4 @@
-package app.keemobile.kotpass.cryptography
+package app.keemobile.kotpass.cryptography.format
 
 import app.keemobile.kotpass.errors.CryptoError
 import app.keemobile.kotpass.extensions.clear

@@ -20,7 +20,11 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-package app.keemobile.kotpass.cryptography
+package app.keemobile.kotpass.cryptography.engines
+
+import app.keemobile.kotpass.cryptography.intToLittleEndian
+import app.keemobile.kotpass.cryptography.littleEndianToLong
+import app.keemobile.kotpass.cryptography.longToLittleEndian
 
 private const val Argon2BlockSize = 1024
 private const val Argon2QwordsInBlock = Argon2BlockSize / 8

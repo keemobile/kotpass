@@ -1,5 +1,6 @@
 package app.keemobile.kotpass.cryptography
 
+import app.keemobile.kotpass.cryptography.engines.Argon2Engine
 import app.keemobile.kotpass.io.decodeHexToArray
 import app.keemobile.kotpass.resources.Argon2Res
 import io.kotest.core.spec.style.DescribeSpec

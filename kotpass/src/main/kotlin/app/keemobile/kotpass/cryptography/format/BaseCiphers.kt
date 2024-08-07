@@ -1,6 +1,6 @@
 package app.keemobile.kotpass.cryptography.format
 
-import app.keemobile.kotpass.cryptography.ChaCha7539Engine
+import app.keemobile.kotpass.cryptography.engines.ChaCha7539Engine
 import app.keemobile.kotpass.errors.CryptoError.AlgorithmUnavailable
 import app.keemobile.kotpass.errors.CryptoError.InvalidKey
 import java.security.GeneralSecurityException

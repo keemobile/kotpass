@@ -1,5 +1,6 @@
 package app.keemobile.kotpass.cryptography
 
+import app.keemobile.kotpass.cryptography.engines.ChaChaEngine
 import app.keemobile.kotpass.io.decodeHexToArray
 import app.keemobile.kotpass.resources.ChaChaRes
 import io.kotest.core.spec.style.DescribeSpec
