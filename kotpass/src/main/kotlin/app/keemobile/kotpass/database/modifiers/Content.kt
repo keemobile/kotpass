@@ -47,7 +47,7 @@ inline fun KeePassDatabase.withRecycleBin(
  *
  * @return modified [KeePassDatabase].
  */
-fun KeePassDatabase.cleanupHistory(): KeePassDatabase {
+fun KeePassDatabase.cleanupHistory(reference: Instant = Instant.now()): KeePassDatabase {
     val maintenancePeriod = Duration
         .ofDays(content.meta.maintenanceHistoryDays.toLong())
 
@@ -55,6 +55,7 @@ fun KeePassDatabase.cleanupHistory(): KeePassDatabase {
         content.meta.historyMaxItems >= 0 -> modifyContent {
             copy(
                 group = group.cleanupChildHistory(
+                    reference = reference,
                     maintenancePeriod = maintenancePeriod,
                     historyMaxItems = content.meta.historyMaxItems.toUInt()
                 )
@@ -65,29 +66,30 @@ fun KeePassDatabase.cleanupHistory(): KeePassDatabase {
 }
 
 private fun Group.cleanupChildHistory(
+    reference: Instant,
     maintenancePeriod: Duration,
     historyMaxItems: UInt
 ): Group = copy(
     groups = groups.map { group ->
-        group.cleanupChildHistory(maintenancePeriod, historyMaxItems)
+        group.cleanupChildHistory(reference, maintenancePeriod, historyMaxItems)
     },
     entries = entries.map { entry ->
-        entry.cleanupHistory(maintenancePeriod, historyMaxItems)
+        entry.cleanupHistory(reference, maintenancePeriod, historyMaxItems)
     }
 )
 
 private fun Entry.cleanupHistory(
+    reference: Instant,
     maintenancePeriod: Duration,
     historyMaxItems: UInt
 ): Entry {
-    val now = Instant.now()
     val newHistory = history
         .filter { historicEntry ->
             historicEntry
                 .times
                 ?.lastModificationTime
                 ?.let { lastModificationTime ->
-                    val period = Duration.between(lastModificationTime, now)
+                    val period = Duration.between(lastModificationTime, reference)
                     period < maintenancePeriod
                 }
                 ?: true

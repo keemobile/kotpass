@@ -1,5 +1,6 @@
 package app.keemobile.kotpass.database
 
+import app.keemobile.kotpass.builders.buildEntry
 import app.keemobile.kotpass.constants.BasicField
 import app.keemobile.kotpass.constants.GroupOverride
 import app.keemobile.kotpass.cryptography.EncryptedValue
@@ -338,6 +339,32 @@ class KeePassDatabaseSpec : DescribeSpec({
             }
 
             shouldNotThrowAny { database.cleanupHistory() }
+        }
+
+        it("Performing cleanup on entries without timestamps") {
+            val entry = buildEntry(DatabaseRes.GroupsAndEntries.Entry1) {
+                history += Entry(uuid = UUID.randomUUID(), times = null)
+            }
+            val (_, cleanedEntry) = EmptyDatabase
+                .modifyParentGroup { copy(entries = listOf(entry)) }
+                .cleanupHistory()
+                .getEntry { it.uuid == DatabaseRes.GroupsAndEntries.Entry1 }!!
+
+            cleanedEntry.history.size shouldBe 1
+        }
+
+        it("Performing cleanup removes all history when maintenance days set to zero") {
+            val now = Instant.now()
+            val entry = buildEntry(DatabaseRes.GroupsAndEntries.Entry1) {
+                history += Entry(uuid = UUID.randomUUID(), times = TimeData.create(now))
+            }
+            val (_, cleanedEntry) = EmptyDatabase
+                .modifyMeta { copy(maintenanceHistoryDays = 0U) }
+                .modifyParentGroup { copy(entries = listOf(entry)) }
+                .cleanupHistory(now)
+                .getEntry { it.uuid == DatabaseRes.GroupsAndEntries.Entry1 }!!
+
+            cleanedEntry.history.size shouldBe 0
         }
     }
 })
