@@ -311,10 +311,10 @@ class KeePassDatabaseSpec : DescribeSpec({
         }
 
         it("Old entries are removed from history when performing cleanup") {
+            val now = Instant.now()
             val database = loadDatabase("groups_and_entries.kdbx", "1")
-            val outdated = Instant
-                .now()
-                .minus(Period.ofDays((database.content.meta.maintenanceHistoryDays + 1U).toInt()))
+            val maintenanceHistoryDays = database.content.meta.maintenanceHistoryDays.toInt()
+            val outdated = now - Period.ofDays(maintenanceHistoryDays + 1)
             val (_, entry) = database
                 .modifyEntry(DatabaseRes.GroupsAndEntries.Entry1) {
                     copy(
@@ -327,7 +327,7 @@ class KeePassDatabaseSpec : DescribeSpec({
                         )
                     )
                 }
-                .cleanupHistory()
+                .cleanupHistory(now)
                 .getEntry { it.uuid == DatabaseRes.GroupsAndEntries.Entry1 }!!
 
             entry.history.size shouldBe 0
