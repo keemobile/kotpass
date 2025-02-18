@@ -1,5 +1,6 @@
 package app.keemobile.kotpass.database
 
+import app.keemobile.kotpass.builders.buildEntry
 import app.keemobile.kotpass.constants.BasicField
 import app.keemobile.kotpass.constants.GroupOverride
 import app.keemobile.kotpass.cryptography.EncryptedValue
@@ -8,6 +9,7 @@ import app.keemobile.kotpass.database.modifiers.modifyEntries
 import app.keemobile.kotpass.database.modifiers.modifyEntry
 import app.keemobile.kotpass.database.modifiers.modifyGroup
 import app.keemobile.kotpass.database.modifiers.modifyGroups
+import app.keemobile.kotpass.database.modifiers.modifyMeta
 import app.keemobile.kotpass.database.modifiers.modifyParentGroup
 import app.keemobile.kotpass.database.modifiers.moveEntry
 import app.keemobile.kotpass.database.modifiers.moveGroup
@@ -22,6 +24,7 @@ import app.keemobile.kotpass.models.Group
 import app.keemobile.kotpass.models.Meta
 import app.keemobile.kotpass.models.TimeData
 import app.keemobile.kotpass.resources.DatabaseRes
+import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeIn
 import io.kotest.matchers.collections.shouldContain
@@ -308,10 +311,10 @@ class KeePassDatabaseSpec : DescribeSpec({
         }
 
         it("Old entries are removed from history when performing cleanup") {
+            val now = Instant.now()
             val database = loadDatabase("groups_and_entries.kdbx", "1")
-            val outdated = Instant
-                .now()
-                .minus(Period.ofDays(database.content.meta.maintenanceHistoryDays + 1))
+            val maintenanceHistoryDays = database.content.meta.maintenanceHistoryDays.toInt()
+            val outdated = now - Period.ofDays(maintenanceHistoryDays + 1)
             val (_, entry) = database
                 .modifyEntry(DatabaseRes.GroupsAndEntries.Entry1) {
                     copy(
@@ -324,10 +327,44 @@ class KeePassDatabaseSpec : DescribeSpec({
                         )
                     )
                 }
-                .cleanupHistory()
+                .cleanupHistory(now)
                 .getEntry { it.uuid == DatabaseRes.GroupsAndEntries.Entry1 }!!
 
             entry.history.size shouldBe 0
+        }
+
+        it("Performing cleanup with infinite max items setting") {
+            val database = loadDatabase("groups_and_entries.kdbx", "1").modifyMeta {
+                copy(historyMaxItems = -1)
+            }
+
+            shouldNotThrowAny { database.cleanupHistory() }
+        }
+
+        it("Performing cleanup on entries without timestamps") {
+            val entry = buildEntry(DatabaseRes.GroupsAndEntries.Entry1) {
+                history += Entry(uuid = UUID.randomUUID(), times = null)
+            }
+            val (_, cleanedEntry) = EmptyDatabase
+                .modifyParentGroup { copy(entries = listOf(entry)) }
+                .cleanupHistory()
+                .getEntry { it.uuid == DatabaseRes.GroupsAndEntries.Entry1 }!!
+
+            cleanedEntry.history.size shouldBe 1
+        }
+
+        it("Performing cleanup removes all history when maintenance days set to zero") {
+            val now = Instant.now()
+            val entry = buildEntry(DatabaseRes.GroupsAndEntries.Entry1) {
+                history += Entry(uuid = UUID.randomUUID(), times = TimeData.create(now))
+            }
+            val (_, cleanedEntry) = EmptyDatabase
+                .modifyMeta { copy(maintenanceHistoryDays = 0U) }
+                .modifyParentGroup { copy(entries = listOf(entry)) }
+                .cleanupHistory(now)
+                .getEntry { it.uuid == DatabaseRes.GroupsAndEntries.Entry1 }!!
+
+            cleanedEntry.history.size shouldBe 0
         }
     }
 })

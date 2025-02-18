@@ -12,17 +12,14 @@ data class TimeData(
     val usageCount: Int = 0
 ) {
     companion object {
-        fun create() = requireNotNull(Instant.now())
-            .let { now ->
-                TimeData(
-                    creationTime = now,
-                    lastAccessTime = now,
-                    lastModificationTime = now,
-                    locationChanged = now,
-                    expiryTime = null,
-                    expires = false,
-                    usageCount = 0
-                )
-            }
+        fun create(now: Instant = Instant.now()) = TimeData(
+            creationTime = now,
+            lastAccessTime = now,
+            lastModificationTime = now,
+            locationChanged = now,
+            expiryTime = null,
+            expires = false,
+            usageCount = 0
+        )
     }
 }

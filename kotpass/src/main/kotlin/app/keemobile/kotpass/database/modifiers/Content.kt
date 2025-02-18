@@ -6,9 +6,8 @@ import app.keemobile.kotpass.extensions.isNullOrZero
 import app.keemobile.kotpass.models.DatabaseContent
 import app.keemobile.kotpass.models.Entry
 import app.keemobile.kotpass.models.Group
-import app.keemobile.kotpass.models.Meta
+import java.time.Duration
 import java.time.Instant
-import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 inline fun KeePassDatabase.modifyContent(
@@ -42,31 +41,60 @@ inline fun KeePassDatabase.withRecycleBin(
     }
 }
 
-fun KeePassDatabase.cleanupHistory() = modifyContent {
-    copy(group = group.cleanupChildHistory(meta))
+/**
+ * Drops outdated history entries while taking into account `historyMaxItems`.
+ * Note that `historyMaxSize` value is ignored by this method.
+ *
+ * @return modified [KeePassDatabase].
+ */
+fun KeePassDatabase.cleanupHistory(reference: Instant = Instant.now()): KeePassDatabase {
+    val maintenancePeriod = Duration
+        .ofDays(content.meta.maintenanceHistoryDays.toLong())
+
+    return when {
+        content.meta.historyMaxItems >= 0 -> modifyContent {
+            copy(
+                group = group.cleanupChildHistory(
+                    reference = reference,
+                    maintenancePeriod = maintenancePeriod,
+                    historyMaxItems = content.meta.historyMaxItems.toUInt()
+                )
+            )
+        }
+        else -> this
+    }
 }
 
 private fun Group.cleanupChildHistory(
-    meta: Meta
+    reference: Instant,
+    maintenancePeriod: Duration,
+    historyMaxItems: UInt
 ): Group = copy(
-    groups = groups.map { it.cleanupChildHistory(meta) },
-    entries = entries.map { it.cleanupHistory(meta) }
+    groups = groups.map { group ->
+        group.cleanupChildHistory(reference, maintenancePeriod, historyMaxItems)
+    },
+    entries = entries.map { entry ->
+        entry.cleanupHistory(reference, maintenancePeriod, historyMaxItems)
+    }
 )
 
 private fun Entry.cleanupHistory(
-    meta: Meta
+    reference: Instant,
+    maintenancePeriod: Duration,
+    historyMaxItems: UInt
 ): Entry {
-    val now = Instant.now()
+    val newHistory = history
+        .filter { historicEntry ->
+            historicEntry
+                .times
+                ?.lastModificationTime
+                ?.let { lastModificationTime ->
+                    val period = Duration.between(lastModificationTime, reference)
+                    period < maintenancePeriod
+                }
+                ?: true
+        }
+        .takeLast(historyMaxItems.toInt())
 
-    return copy(
-        history = history.filter {
-            if (it.times?.lastModificationTime != null) {
-                val days = ChronoUnit.DAYS
-                    .between(it.times.lastModificationTime, now)
-                days < meta.maintenanceHistoryDays
-            } else {
-                true
-            }
-        }.takeLast(meta.historyMaxItems)
-    )
+    return copy(history = newHistory)
 }

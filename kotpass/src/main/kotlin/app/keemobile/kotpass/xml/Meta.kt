@@ -53,7 +53,7 @@ internal fun unmarshalMeta(node: Node): Meta {
         maintenanceHistoryDays = node
             .firstOrNull(Tags.Meta.MaintenanceHistoryDays)
             ?.getText()
-            ?.toInt()
+            ?.toUIntOrNull()
             ?: Defaults.MaintenanceHistoryDays,
         color = node
             .firstOrNull(Tags.Meta.Color)
