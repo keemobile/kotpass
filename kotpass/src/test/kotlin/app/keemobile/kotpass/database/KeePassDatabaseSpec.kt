@@ -8,6 +8,7 @@ import app.keemobile.kotpass.database.modifiers.modifyEntries
 import app.keemobile.kotpass.database.modifiers.modifyEntry
 import app.keemobile.kotpass.database.modifiers.modifyGroup
 import app.keemobile.kotpass.database.modifiers.modifyGroups
+import app.keemobile.kotpass.database.modifiers.modifyMeta
 import app.keemobile.kotpass.database.modifiers.modifyParentGroup
 import app.keemobile.kotpass.database.modifiers.moveEntry
 import app.keemobile.kotpass.database.modifiers.moveGroup
@@ -22,6 +23,7 @@ import app.keemobile.kotpass.models.Group
 import app.keemobile.kotpass.models.Meta
 import app.keemobile.kotpass.models.TimeData
 import app.keemobile.kotpass.resources.DatabaseRes
+import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.matchers.collections.shouldBeIn
 import io.kotest.matchers.collections.shouldContain
@@ -311,7 +313,7 @@ class KeePassDatabaseSpec : DescribeSpec({
             val database = loadDatabase("groups_and_entries.kdbx", "1")
             val outdated = Instant
                 .now()
-                .minus(Period.ofDays(database.content.meta.maintenanceHistoryDays + 1))
+                .minus(Period.ofDays((database.content.meta.maintenanceHistoryDays + 1U).toInt()))
             val (_, entry) = database
                 .modifyEntry(DatabaseRes.GroupsAndEntries.Entry1) {
                     copy(
@@ -328,6 +330,14 @@ class KeePassDatabaseSpec : DescribeSpec({
                 .getEntry { it.uuid == DatabaseRes.GroupsAndEntries.Entry1 }!!
 
             entry.history.size shouldBe 0
+        }
+
+        it("Performing cleanup with infinite max items setting") {
+            val database = loadDatabase("groups_and_entries.kdbx", "1").modifyMeta {
+                copy(historyMaxItems = -1)
+            }
+
+            shouldNotThrowAny { database.cleanupHistory() }
         }
     }
 })

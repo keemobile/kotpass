@@ -32,8 +32,8 @@ import java.util.UUID
  * @property recycleBinChanged Timestamp of the last change of [recycleBinUuid].
  * @property entryTemplatesGroup [UUID] of the group that holds templates for the new entries.
  * @property entryTemplatesGroupChanged Timestamp of the last change of [entryTemplatesGroup].
- * @property historyMaxItems Maximum number of historic items [Entry] should store.
- * @property historyMaxSize Indicates maximum history size in bytes.
+ * @property historyMaxItems Maximum number of historic items [Entry] should store (-1 means unlimited).
+ * @property historyMaxSize Indicates maximum history size in bytes (-1 means unlimited).
  * @property lastSelectedGroup [UUID] of the group that was last selected by the user.
  * @property lastTopVisibleGroup [UUID] of the top-most group that is visible in the user’s last session.
  * @property memoryProtection Indicates which fields should be protected by in-memory encryption at runtime.
@@ -51,7 +51,7 @@ data class Meta(
     val descriptionChanged: Instant? = Instant.now(),
     val defaultUser: String = "",
     val defaultUserChanged: Instant? = Instant.now(),
-    val maintenanceHistoryDays: Int = Defaults.MaintenanceHistoryDays,
+    val maintenanceHistoryDays: UInt = Defaults.MaintenanceHistoryDays,
     val color: String? = null,
     val masterKeyChanged: Instant? = null,
     val masterKeyChangeRec: Int = -1,
