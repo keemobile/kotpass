@@ -341,6 +341,25 @@ class KeePassDatabaseSpec : DescribeSpec({
             shouldNotThrowAny { database.cleanupHistory() }
         }
 
+        it("Performing cleanup with infinite max items and outdated entries") {
+            val now = Instant.now()
+            val entry = buildEntry(DatabaseRes.GroupsAndEntries.Entry1) {
+                history += Entry(uuid = UUID.randomUUID(), times = TimeData.create(now))
+            }
+            val (_, cleanedEntry) = EmptyDatabase
+                .modifyMeta {
+                    copy(
+                        maintenanceHistoryDays = 0U,
+                        historyMaxItems = -1
+                    )
+                }
+                .modifyParentGroup { copy(entries = listOf(entry)) }
+                .cleanupHistory(now)
+                .getEntry { it.uuid == DatabaseRes.GroupsAndEntries.Entry1 }!!
+
+            cleanedEntry.history.size shouldBe 0
+        }
+
         it("Performing cleanup on entries without timestamps") {
             val entry = buildEntry(DatabaseRes.GroupsAndEntries.Entry1) {
                 history += Entry(uuid = UUID.randomUUID(), times = null)

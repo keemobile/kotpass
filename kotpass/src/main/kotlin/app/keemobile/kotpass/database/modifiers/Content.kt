@@ -51,24 +51,21 @@ fun KeePassDatabase.cleanupHistory(reference: Instant = Instant.now()): KeePassD
     val maintenancePeriod = Duration
         .ofDays(content.meta.maintenanceHistoryDays.toLong())
 
-    return when {
-        content.meta.historyMaxItems >= 0 -> modifyContent {
-            copy(
-                group = group.cleanupChildHistory(
-                    reference = reference,
-                    maintenancePeriod = maintenancePeriod,
-                    historyMaxItems = content.meta.historyMaxItems.toUInt()
-                )
+    return modifyContent {
+        copy(
+            group = group.cleanupChildHistory(
+                reference = reference,
+                maintenancePeriod = maintenancePeriod,
+                historyMaxItems = content.meta.historyMaxItems
             )
-        }
-        else -> this
+        )
     }
 }
 
 private fun Group.cleanupChildHistory(
     reference: Instant,
     maintenancePeriod: Duration,
-    historyMaxItems: UInt
+    historyMaxItems: Int
 ): Group = copy(
     groups = groups.map { group ->
         group.cleanupChildHistory(reference, maintenancePeriod, historyMaxItems)
@@ -81,20 +78,23 @@ private fun Group.cleanupChildHistory(
 private fun Entry.cleanupHistory(
     reference: Instant,
     maintenancePeriod: Duration,
-    historyMaxItems: UInt
+    historyMaxItems: Int
 ): Entry {
-    val newHistory = history
-        .filter { historicEntry ->
-            historicEntry
-                .times
-                ?.lastModificationTime
-                ?.let { lastModificationTime ->
-                    val period = Duration.between(lastModificationTime, reference)
-                    period < maintenancePeriod
-                }
-                ?: true
-        }
-        .takeLast(historyMaxItems.toInt())
+    val newHistory = history.filter { historicEntry ->
+        historicEntry
+            .times
+            ?.lastModificationTime
+            ?.let { lastModificationTime ->
+                val period = Duration.between(lastModificationTime, reference)
+                period < maintenancePeriod
+            }
+            ?: true
+    }
 
-    return copy(history = newHistory)
+    return copy(
+        history = when {
+            historyMaxItems >= 0 -> newHistory.takeLast(historyMaxItems)
+            else -> newHistory
+        }
+    )
 }
