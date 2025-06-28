@@ -54,10 +54,10 @@ internal fun BinaryReference.marshal(
     }
 
     return node(Tags.Entry.BinaryReferences.TagName) {
-        Tags.Entry.BinaryReferences.ItemKey {
+        element(Tags.Entry.BinaryReferences.ItemKey) {
             text(name)
         }
-        Tags.Entry.BinaryReferences.ItemValue {
+        element(Tags.Entry.BinaryReferences.ItemValue) {
             attribute(FormatXml.Attributes.Ref, id.toString())
         }
     }

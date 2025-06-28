@@ -55,9 +55,10 @@ object DefaultXmlContentParser : XmlContentParser {
     ): String {
         return xml(Tags.Document, XmlEncoding, XmlVersion.V10) {
             addElement(content.meta.marshal(context))
-            Tags.Root {
+
+            element(Tags.Root) {
                 addElement(content.group.marshal(context))
-                Tags.DeletedObjects.TagName {
+                element(Tags.DeletedObjects.TagName) {
                     content.deletedObjects.forEach {
                         addElement(it.marshal(context))
                     }

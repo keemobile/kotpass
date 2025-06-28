@@ -22,12 +22,12 @@ internal fun unmarshalTimeData(node: Node): TimeData = with(node) {
 
 internal fun TimeData.marshal(context: XmlContext.Encode): Node {
     return node(FormatXml.Tags.TimeData.TagName) {
-        FormatXml.Tags.TimeData.CreationTime { addDateTime(context, creationTime) }
-        FormatXml.Tags.TimeData.LastAccessTime { addDateTime(context, lastAccessTime) }
-        FormatXml.Tags.TimeData.LastModificationTime { addDateTime(context, lastModificationTime) }
-        FormatXml.Tags.TimeData.LocationChanged { addDateTime(context, locationChanged) }
-        FormatXml.Tags.TimeData.ExpiryTime { addDateTime(context, expiryTime) }
-        FormatXml.Tags.TimeData.Expires { addBoolean(expires) }
-        FormatXml.Tags.TimeData.UsageCount { text(usageCount.toString()) }
+        element(FormatXml.Tags.TimeData.CreationTime) { addDateTime(context, creationTime) }
+        element(FormatXml.Tags.TimeData.LastAccessTime) { addDateTime(context, lastAccessTime) }
+        element(FormatXml.Tags.TimeData.LastModificationTime) { addDateTime(context, lastModificationTime) }
+        element(FormatXml.Tags.TimeData.LocationChanged) { addDateTime(context, locationChanged) }
+        element(FormatXml.Tags.TimeData.ExpiryTime) { addDateTime(context, expiryTime) }
+        element(FormatXml.Tags.TimeData.Expires) { addBoolean(expires) }
+        element(FormatXml.Tags.TimeData.UsageCount) { text(usageCount.toString()) }
     }
 }

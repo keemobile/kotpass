@@ -47,15 +47,15 @@ internal object CustomIcons {
         customIcons: Map<UUID, CustomIcon>
     ): Node = node(Tags.Meta.CustomIcons.TagName) {
         for ((key, item) in customIcons) {
-            Tags.Meta.CustomIcons.Item {
-                Tags.Meta.CustomIcons.ItemUuid { addUuid(key) }
-                Tags.Meta.CustomIcons.ItemData { addBytes(item.data) }
+            element(Tags.Meta.CustomIcons.Item) {
+                element(Tags.Meta.CustomIcons.ItemUuid) { addUuid(key) }
+                element(Tags.Meta.CustomIcons.ItemData) { addBytes(item.data) }
 
                 if (context.version.isAtLeast(4, 1)) {
-                    Tags.Meta.CustomIcons.ItemName {
-                        item.name?.let(this::text)
+                    element(Tags.Meta.CustomIcons.ItemName) {
+                        if (item.name != null) text(item.name)
                     }
-                    Tags.TimeData.LastModificationTime {
+                    element(Tags.TimeData.LastModificationTime) {
                         addDateTime(context, item.lastModified)
                     }
                 }

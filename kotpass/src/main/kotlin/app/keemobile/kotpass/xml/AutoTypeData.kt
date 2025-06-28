@@ -47,14 +47,14 @@ private fun unmarshalAutoTypeItems(node: Node): List<AutoTypeItem> {
 
 internal fun AutoTypeData.marshal(): Node {
     return node(Tags.Entry.AutoType.TagName) {
-        Tags.Entry.AutoType.Enabled { addBoolean(enabled) }
-        Tags.Entry.AutoType.Obfuscation { text(obfuscation.ordinal.toString()) }
-        Tags.Entry.AutoType.DefaultSequence { text(defaultSequence ?: "") }
+        element(Tags.Entry.AutoType.Enabled) { addBoolean(enabled) }
+        element(Tags.Entry.AutoType.Obfuscation) { text(obfuscation.ordinal.toString()) }
+        element(Tags.Entry.AutoType.DefaultSequence) { text(defaultSequence ?: "") }
 
         for (item in items) {
-            Tags.Entry.AutoType.Association {
-                Tags.Entry.AutoType.Window { text(item.window) }
-                Tags.Entry.AutoType.KeystrokeSequence { text(item.keystrokeSequence) }
+            element(Tags.Entry.AutoType.Association) {
+                element(Tags.Entry.AutoType.Window) { text(item.window) }
+                element(Tags.Entry.AutoType.KeystrokeSequence) { text(item.keystrokeSequence) }
             }
         }
     }
