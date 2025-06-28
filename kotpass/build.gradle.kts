@@ -1,6 +1,7 @@
 @file:Suppress("PropertyName")
 
 import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -15,14 +16,9 @@ plugins {
 group = properties["GROUP"].toString()
 version = properties["VERSION_NAME"].toString()
 
-repositories {
-    mavenCentral()
-    maven("https://jitpack.io")
-}
-
 tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = "11"
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_11
     }
 }
 
@@ -51,9 +47,10 @@ tasks.test {
 }
 
 dependencies {
+    implementation(project(":xml-builder"))
+
+    implementation(libs.okio)
+
     testImplementation(libs.testing.kotest)
     testImplementation(libs.kotlin.reflect)
-
-    implementation(libs.kotlin.xml.builder)
-    implementation(libs.okio)
 }
