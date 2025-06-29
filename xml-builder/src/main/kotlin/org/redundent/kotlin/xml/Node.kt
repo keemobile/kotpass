@@ -9,30 +9,12 @@ import org.apache.commons.lang3.builder.HashCodeBuilder
  * Base type for all elements. This is what handles pretty much all the rendering and building.
  */
 open class Node(val nodeName: String) : Element {
-    private companion object {
-        private val isReflectionAvailable: Boolean by lazy {
-            Node::class.java.classLoader.getResource("kotlin/reflect/full") != null
-        }
-    }
-
     private var parent: Node? = null
     private val _globalLevelProcessingInstructions = ArrayList<ProcessingInstructionElement>()
     private var doctype: Doctype? = null
     private val _namespaces: MutableSet<Namespace> = LinkedHashSet()
     private val _attributes: LinkedHashMap<String, Any?> = LinkedHashMap()
     private val _children = ArrayList<Element>()
-    private val childOrderMap: Map<String, Int>? by lazy {
-        if (!isReflectionAvailable) {
-            return@lazy null
-        }
-
-        val xmlTypeAnnotation =
-            this::class.annotations.firstOrNull { it is XmlType } as? XmlType ?: return@lazy null
-
-        val childOrder = xmlTypeAnnotation.childOrder
-
-        childOrder.indices.associateBy { childOrder[it] }
-    }
 
     val namespaces: Collection<Namespace>
         get() = LinkedHashSet(_namespaces)
@@ -159,7 +141,7 @@ open class Node(val nodeName: String) : Element {
                 builder.append("</$nodeName>$lineEnding")
             } else {
                 builder.append(">$lineEnding")
-                for (c in sortedChildren()) {
+                for (c in _children) {
                     c.render(builder, getIndent(printOptions, indent), printOptions)
                 }
 
@@ -187,19 +169,6 @@ open class Node(val nodeName: String) : Element {
             "/>"
         } else {
             "></$nodeName>"
-        }
-    }
-
-    private fun sortedChildren(): List<Element> {
-        return if (childOrderMap == null) {
-            _children
-        } else {
-            _children.sortedWith { a, b ->
-                val indexA = if (a is Node) childOrderMap!![a.nodeName] else 0
-                val indexB = if (b is Node) childOrderMap!![b.nodeName] else 0
-
-                compareValues(indexA, indexB)
-            }
         }
     }
 

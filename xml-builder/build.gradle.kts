@@ -20,11 +20,7 @@ java {
 }
 
 dependencies {
-	compileOnly(kotlin("reflect", libs.versions.kotlin.get()))
-
 	implementation(libs.apache.commons.lang)
 
-    testImplementation(libs.testing.kotest)
-	testImplementation(kotlin("reflect", libs.versions.kotlin.get()))
 	testImplementation(kotlin("test-junit", libs.versions.kotlin.get()))
 }
