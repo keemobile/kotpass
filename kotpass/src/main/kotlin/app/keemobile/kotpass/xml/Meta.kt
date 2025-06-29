@@ -195,7 +195,7 @@ private fun marshalMemoryProtection(
     memoryProtection: Set<MemoryProtectionFlag>
 ): Node = node(Tags.Meta.MemoryProtection.TagName) {
     for (field in MemoryProtectionFlag.entries) {
-        field.value {
+        element(field.value) {
             addBoolean(memoryProtection.contains(field))
         }
     }
