@@ -3,7 +3,7 @@ package org.redundent.kotlin.xml
 import org.junit.Test
 import kotlin.test.assertEquals
 
-class UtilsKtTest {
+class UtilsTest {
 	@Test
 	fun escapeValue10() {
 		val unescapedValue = "\u000b\u000c"

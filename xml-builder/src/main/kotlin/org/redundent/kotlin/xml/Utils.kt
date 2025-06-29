@@ -3,7 +3,11 @@ package org.redundent.kotlin.xml
 import org.apache.commons.lang3.StringEscapeUtils
 import java.lang.StringBuilder
 
-internal fun escapeValue(value: Any?, xmlVersion: XmlVersion, useCharacterReference: Boolean = false): String? {
+internal fun escapeValue(
+    value: Any?,
+    xmlVersion: XmlVersion,
+    useCharacterReference: Boolean = false
+): String? {
 	val asString = value?.toString() ?: return null
 
 	if (useCharacterReference) {
@@ -33,7 +37,12 @@ internal fun referenceCharacter(asString: String): String {
 	return builder.toString()
 }
 
-internal fun buildName(name: String, namespace: Namespace?): String =
-	if (namespace == null || namespace.isDefault) name else "${namespace.name}:$name"
+internal fun buildName(name: String, namespace: Namespace?): String {
+    return if (namespace == null || namespace.isDefault) {
+        name
+    } else {
+        "${namespace.name}:$name"
+    }
+}
 
 fun unsafe(value: Any?): Unsafe = Unsafe(value)

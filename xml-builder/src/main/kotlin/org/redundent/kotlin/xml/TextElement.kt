@@ -8,7 +8,10 @@ package org.redundent.kotlin.xml
  * <loc>http://blog.redundent.org</loc>
  * ```
  */
-open class TextElement internal constructor(val text: String, private val unsafe: Boolean = false) : Element {
+open class TextElement internal constructor(
+    val text: String,
+    private val unsafe: Boolean = false
+) : Element {
 	override fun render(builder: Appendable, indent: String, printOptions: PrintOptions) {
 		if (text.isEmpty()) {
 			return

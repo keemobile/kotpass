@@ -1,7 +1,9 @@
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package org.redundent.kotlin.xml
 
 /**
- * Represents an xml namespace (`xmlns`).
+ * Represents Xml namespace (`xmlns`).
  */
 data class Namespace(
 	/**
@@ -19,7 +21,5 @@ data class Namespace(
 
 	val fqName: String = if (isDefault) "xmlns" else "xmlns:$name"
 
-	override fun toString(): String {
-		return "$fqName=\"$value\""
-	}
+	override fun toString(): String = "$fqName=\"$value\""
 }

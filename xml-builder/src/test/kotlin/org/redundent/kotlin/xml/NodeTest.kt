@@ -7,235 +7,223 @@ import kotlin.test.assertNotEquals
 import kotlin.test.assertSame
 
 class NodeTest : TestBase() {
-	@Test
-	fun `equals null`() {
-		val xml = xml("test")
+    @Test
+    fun `equals null`() {
+        val xml = xml("test")
 
-		assertFalse(xml.equals(null))
-	}
+        assertFalse(xml.equals(null))
+    }
 
-	@Test
-	fun `equals different type`() {
-		val xml = xml("test")
-		val other = TextElement("test")
+    @Test
+    fun `equals different type`() {
+        val xml = xml("test")
+        val other = TextElement("test")
 
-		assertFalse(xml == other)
-	}
+        assertFalse(xml == other)
+    }
 
-	@Test
-	fun `equals different name`() {
-		val xml1 = xml("test1")
-		val xml2 = xml("test2")
+    @Test
+    fun `equals different name`() {
+        val xml1 = xml("test1")
+        val xml2 = xml("test2")
 
-		assertNotEquals(xml1, xml2)
-		assertNotEquals(xml2, xml1)
-	}
+        assertNotEquals(xml1, xml2)
+        assertNotEquals(xml2, xml1)
+    }
 
-	@Test
-	fun equals() {
-		val xml1 = xml("complex_node", encoding = "utf-8", version = XmlVersion.V11) {
-			xmlns = "https://test.com"
-			namespace("t", "https://t.co")
+    @Test
+    fun equals() {
+        val xml1 = xml("complex_node", encoding = "utf-8", version = XmlVersion.V11) {
+            xmlns = "https://test.com"
+            namespace("t", "https://t.co")
 
-			globalProcessingInstruction("global_pi", "global" to "top_level")
+            globalProcessingInstruction("global_pi", "global" to "top_level")
 
-			attribute("attr", "value")
-			attribute("other_attr", "some text & more")
+            attribute("attr", "value")
+            attribute("other_attr", "some text & more")
 
-			processingInstruction("blah", "pi_attr" to "value")
+            processingInstruction("blah", "pi_attr" to "value")
 
-			"child1"("text")
+            element("child1") { text("text") }
+            element("child2") { comment("comment1") }
+        }
 
-			"child2" {
-				comment("comment1")
-			}
-		}
+        val xml2 = xml("complex_node", encoding = "utf-8", version = XmlVersion.V11) {
+            xmlns = "https://test.com"
+            namespace("t", "https://t.co")
 
-		val xml2 = xml("complex_node", encoding = "utf-8", version = XmlVersion.V11) {
-			xmlns = "https://test.com"
-			namespace("t", "https://t.co")
+            globalProcessingInstruction("global_pi", "global" to "top_level")
 
-			globalProcessingInstruction("global_pi", "global" to "top_level")
+            attribute("attr", "value")
+            attribute("other_attr", "some text & more")
 
-			attribute("attr", "value")
-			attribute("other_attr", "some text & more")
+            processingInstruction("blah", "pi_attr" to "value")
 
-			processingInstruction("blah", "pi_attr" to "value")
+            element("child1") { text("text") }
+            element("child2") { comment("comment1") }
+        }
 
-			"child1"("text")
+        assertEquals(xml1, xml2)
+        assertEquals(xml2, xml1)
+    }
 
-			"child2" {
-				comment("comment1")
-			}
-		}
+    @Test
+    fun `equals slight difference`() {
+        val xml1 = xml("complex_node", encoding = "utf-8", version = XmlVersion.V11) {
+            xmlns = "https://test.com"
+            namespace("t", "https://t.co")
 
-		assertEquals(xml1, xml2)
-		assertEquals(xml2, xml1)
-	}
+            globalProcessingInstruction("global_pi", "global" to "top_level")
 
-	@Test
-	fun `equals slight difference`() {
-		val xml1 = xml("complex_node", encoding = "utf-8", version = XmlVersion.V11) {
-			xmlns = "https://test.com"
-			namespace("t", "https://t.co")
+            attribute("attr", "value")
+            attribute("other_attr", "some text & more")
 
-			globalProcessingInstruction("global_pi", "global" to "top_level")
+            processingInstruction("blah", "pi_attr" to "value")
 
-			attribute("attr", "value")
-			attribute("other_attr", "some text & more")
+            element("child1") { text("text") }
+            element("child2") { comment("comment1") }
+        }
 
-			processingInstruction("blah", "pi_attr" to "value")
+        val xml2 = xml("complex_node", encoding = "utf-8", version = XmlVersion.V11) {
+            xmlns = "https://test.com"
+            namespace("t", "https://t.co")
 
-			"child1"("text")
+            globalProcessingInstruction("global_pi", "global" to "top_level")
 
-			"child2" {
-				comment("comment1")
-			}
-		}
+            attribute("attr", "value")
+            attribute("other_attr", "some text & more")
 
-		val xml2 = xml("complex_node", encoding = "utf-8", version = XmlVersion.V11) {
-			xmlns = "https://test.com"
-			namespace("t", "https://t.co")
+            processingInstruction("blah", "pi_attr" to "value")
 
-			globalProcessingInstruction("global_pi", "global" to "top_level")
+            element("child1") { text("text") }
+            element("child2") { comment("comment2") }
+        }
 
-			attribute("attr", "value")
-			attribute("other_attr", "some text & more")
+        assertNotEquals(xml1, xml2)
+        assertNotEquals(xml2, xml1)
+    }
 
-			processingInstruction("blah", "pi_attr" to "value")
+    @Suppress("ReplaceGetOrSet")
+    @Test
+    fun set() {
+        val xml = xml("root")
 
-			"child1"("text")
+        xml.set("myAttr", "myValue")
 
-			"child2" {
-				comment("comment2")
-			}
-		}
+        assertEquals("myValue" as String?, xml.get("myAttr"))
+    }
 
-		assertNotEquals(xml1, xml2)
-		assertNotEquals(xml2, xml1)
-	}
+    @Suppress("ReplaceGetOrSet")
+    @Test
+    fun `set null`() {
+        val xml = xml("root")
 
-	@Suppress("ReplaceGetOrSet")
-	@Test
-	fun set() {
-		val xml = xml("root")
+        xml.set("myAttr", "myValue")
+        assertEquals("myValue" as String?, xml.get("myAttr"))
 
-		xml.set("myAttr", "myValue")
+        xml.set("myAttr", null)
+        assertFalse(xml.hasAttribute("myAttr"))
+    }
 
-		assertEquals("myValue" as String?, xml.get("myAttr"))
-	}
+    @Test
+    fun `addElements varargs`() {
+        val xml = xml("root")
 
-	@Suppress("ReplaceGetOrSet")
-	@Test
-	fun `set null`() {
-		val xml = xml("root")
+        val text = TextElement("test")
+        val cdata = CDATAElement("cdata")
 
-		xml.set("myAttr", "myValue")
-		assertEquals("myValue" as String?, xml.get("myAttr"))
+        xml.addElements(text, cdata)
 
-		xml.set("myAttr", null)
-		assertFalse(xml.hasAttribute("myAttr"))
-	}
+        assertSame(text, xml.children[0], "first child is text element")
+        assertSame(cdata, xml.children[1], "second child is cdata element")
+    }
 
-	@Test
-	fun `addElements varargs`() {
-		val xml = xml("root")
+    @Test
+    fun `addElements iterable`() {
+        val xml = xml("root")
 
-		val text = TextElement("test")
-		val cdata = CDATAElement("cdata")
+        val text = TextElement("test")
+        val cdata = CDATAElement("cdata")
 
-		xml.addElements(text, cdata)
+        xml.addElements(listOf(text, cdata))
 
-		assertSame(text, xml.children[0], "first child is text element")
-		assertSame(cdata, xml.children[1], "second child is cdata element")
-	}
+        assertSame(text, xml.children[0], "first child is text element")
+        assertSame(cdata, xml.children[1], "second child is cdata element")
+    }
 
-	@Test
-	fun `addElements iterable`() {
-		val xml = xml("root")
+    @Test(expected = IllegalArgumentException::class)
+    fun `addElementsAfter not found`() {
+        val xml = xml("root")
+        val text = TextElement("test")
+        xml.addElements(text)
 
-		val text = TextElement("test")
-		val cdata = CDATAElement("cdata")
+        val after = CDATAElement("cdata")
 
-		xml.addElements(listOf(text, cdata))
+        xml.addElementsAfter(after, TextElement("new"))
+    }
 
-		assertSame(text, xml.children[0], "first child is text element")
-		assertSame(cdata, xml.children[1], "second child is cdata element")
-	}
+    @Test
+    fun addElementsAfter() {
+        val after = node("third")
 
-	@Test(expected = IllegalArgumentException::class)
-	fun `addElementsAfter not found`() {
-		val xml = xml("root")
-		val text = TextElement("test")
-		xml.addElements(text)
+        val xml = xml("root") {
+            element("first") { text("") }
+            element("second") { text("") }
+            addElement(after)
+            element("fourth") { text("") }
+            element("fifth") { text("") }
+        }
 
-		val after = CDATAElement("cdata")
+        xml.addElementsAfter(
+            after,
+            node("new1"),
+            node("new2")
+        )
 
-		xml.addElementsAfter(after, TextElement("new"))
-	}
+        validate(
+            xml,
+            PrintOptions(
+                singleLineTextElements = true,
+                useSelfClosingTags = true
+            )
+        )
+    }
 
-	@Test
-	fun addElementsAfter() {
-		val after = node("third")
+    @Test(expected = IllegalArgumentException::class)
+    fun `addElementsBefore not found`() {
+        val xml = xml("root")
+        val text = TextElement("test")
+        xml.addElements(text)
 
-		val xml = xml("root") {
-			"first"("")
-			"second"("")
-			addElement(after)
-			"fourth"("")
-			"fifth"("")
-		}
+        val before = CDATAElement("cdata")
 
-		xml.addElementsAfter(
-			after,
-			node("new1"),
-			node("new2")
-		)
+        xml.addElementsBefore(before, TextElement("new"))
+    }
 
-		validate(
-			xml,
-			PrintOptions(
-				singleLineTextElements = true,
-				useSelfClosingTags = true
-			)
-		)
-	}
+    @Test
+    fun addElementsBefore() {
+        val before = node("third")
 
-	@Test(expected = IllegalArgumentException::class)
-	fun `addElementsBefore not found`() {
-		val xml = xml("root")
-		val text = TextElement("test")
-		xml.addElements(text)
+        val xml = xml("root") {
+            element("first") { text("") }
+            element("second") { text("") }
+            addElement(before)
+            element("fourth") { text("") }
+            element("fifth") { text("") }
+        }
 
-		val before = CDATAElement("cdata")
+        xml.addElementsBefore(
+            before,
+            node("new1"),
+            node("new2")
+        )
 
-		xml.addElementsBefore(before, TextElement("new"))
-	}
-
-	@Test
-	fun addElementsBefore() {
-		val before = node("third")
-
-		val xml = xml("root") {
-			"first"("")
-			"second"("")
-			addElement(before)
-			"fourth"("")
-			"fifth"("")
-		}
-
-		xml.addElementsBefore(
-			before,
-			node("new1"),
-			node("new2")
-		)
-
-		validate(
-			xml,
-			PrintOptions(
-				singleLineTextElements = true,
-				useSelfClosingTags = true
-			)
-		)
-	}
+        validate(
+            xml,
+            PrintOptions(
+                singleLineTextElements = true,
+                useSelfClosingTags = true
+            )
+        )
+    }
 }
