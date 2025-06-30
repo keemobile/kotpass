@@ -2,8 +2,8 @@
 
 package org.redundent.kotlin.xml
 
-import org.apache.commons.lang3.builder.EqualsBuilder
-import org.apache.commons.lang3.builder.HashCodeBuilder
+import org.apache.commons.lang3.EqualsBuilder
+import org.apache.commons.lang3.HashCodeBuilder
 
 /**
  * Base type for all elements. This is what handles pretty much all the rendering and building.

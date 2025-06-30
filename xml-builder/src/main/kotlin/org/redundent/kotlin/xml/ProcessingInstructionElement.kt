@@ -1,6 +1,6 @@
 package org.redundent.kotlin.xml
 
-import org.apache.commons.lang3.builder.HashCodeBuilder
+import org.apache.commons.lang3.HashCodeBuilder
 
 /**
  * Similar to a [TextElement] except that the inner text is wrapped inside `<??>` tag.

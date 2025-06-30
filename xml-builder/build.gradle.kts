@@ -20,7 +20,5 @@ java {
 }
 
 dependencies {
-	implementation(libs.apache.commons.lang)
-
 	testImplementation(kotlin("test-junit", libs.versions.kotlin.get()))
 }
