@@ -1,0 +1,4 @@
+# Skip coverage check for dependencies
+ignore:
+  - "kotpass/src/main/java/org/apache/commons/lang3/"
+  - "kotpass/src/main/kotlin/org/redundent/kotlin/xml/"
