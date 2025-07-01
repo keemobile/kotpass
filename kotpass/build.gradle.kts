@@ -47,10 +47,10 @@ tasks.test {
 }
 
 dependencies {
-    implementation(project(":xml-builder"))
-
     implementation(libs.okio)
 
     testImplementation(libs.testing.kotest)
     testImplementation(libs.kotlin.reflect)
+    testImplementation(libs.junit.engine)
+    testImplementation(kotlin("test-junit", libs.versions.kotlin.get()))
 }

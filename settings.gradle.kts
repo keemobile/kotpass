@@ -9,4 +9,3 @@ dependencyResolutionManagement {
 rootProject.name = "kotpass"
 
 include(":kotpass")
-include(":xml-builder")

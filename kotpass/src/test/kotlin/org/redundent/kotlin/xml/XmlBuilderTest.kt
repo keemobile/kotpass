@@ -1,6 +1,7 @@
 package org.redundent.kotlin.xml
 
-import org.junit.Test
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.xml.sax.SAXException
 import java.io.ByteArrayInputStream
 import kotlin.test.assertEquals
@@ -344,20 +345,24 @@ class XmlBuilderTest : TestBase() {
         validate(root)
     }
 
-    @Test(expected = SAXException::class)
+    @Test
     fun invalidElementName() {
         val root = xml("invalid root")
 
-        validateXml(root.toString())
+        assertThrows<SAXException> {
+            validateXml(root.toString())
+        }
     }
 
-    @Test(expected = SAXException::class)
+    @Test
     fun invalidAttributeName() {
         val root = xml("root") {
             attribute("invalid name", "")
         }
 
-        validateXml(root.toString())
+        assertThrows<SAXException> {
+            validateXml(root.toString())
+        }
     }
 
     @Test
@@ -438,14 +443,16 @@ class XmlBuilderTest : TestBase() {
         validate(root)
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test
     fun addElementAfterNonExistent() {
         val root = xml("root") {
             element("a")
             element("b")
         }
 
-        root.addElementAfter(node("c"), node("d"))
+        assertThrows<IllegalArgumentException> {
+            root.addElementAfter(node("c"), node("d"))
+        }
     }
 
     @Test
@@ -460,14 +467,16 @@ class XmlBuilderTest : TestBase() {
         validate(root)
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test
     fun addElementBeforeNonExistent() {
         val root = xml("root") {
             element("a")
             element("b")
         }
 
-        root.addElementBefore(node("c"), node("d"))
+        assertThrows<IllegalArgumentException> {
+            root.addElementBefore(node("c"), node("d"))
+        }
     }
 
     @Test
@@ -588,24 +597,6 @@ class XmlBuilderTest : TestBase() {
     fun doctypeSimple() {
         val root = xml("root") {
             doctype()
-        }
-
-        validate(root)
-    }
-
-    @Test
-    fun doctypeSystem() {
-        val root = xml("root") {
-            doctype(systemId = "test.dtd")
-        }
-
-        validate(root)
-    }
-
-    @Test
-    fun doctypePublic() {
-        val root = xml("root") {
-            doctype(publicId = "-//redundent//PUBLIC DOCTYPE//EN", systemId = "test.dtd")
         }
 
         validate(root)

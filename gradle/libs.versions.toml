@@ -1,12 +1,12 @@
 [versions]
 kotlin = "2.1.0"
-apache-commons = "3.5"
 dokka = "2.0.0"
 kotest = "5.6.1"
 spotless = "6.25.0"
 versions = "0.52.0"
 kover = "0.9.1"
 maven-publish = "0.30.0"
+junit5 = "5.10.0"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -17,8 +17,8 @@ spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
 
 [libraries]
-apache-commons-lang = { module = "org.apache.commons:commons-lang3", version.ref = "apache-commons" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 testing-kotest = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }
 
 okio = "com.squareup.okio:okio:3.10.2"
