@@ -49,3 +49,14 @@ val newDatabase = database
         copy(name = "Hello kotpass!")
     }
 ```
+
+## Third-Party Libraries
+
+This project includes modified portions of:
+- [Kotlin Xml Builder](https://github.com/redundent/kotlin-xml-builder), version 1.9.3.
+
+  Modifications: reduced API surface, code cleanup.
+
+- [Apache Commons Lang](https://commons.apache.org/proper/commons-lang), version 3.17.0.
+
+  Modifications: included only small portion, reduced API surface.

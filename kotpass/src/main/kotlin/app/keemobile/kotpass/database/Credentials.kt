@@ -47,13 +47,13 @@ class Credentials private constructor(
                 .uppercase()
 
             return xml(KeyfileXml.Tags.Document, XmlEncoding, XmlVersion.V10) {
-                KeyfileXml.Tags.Meta {
-                    KeyfileXml.Tags.Version {
+                element(KeyfileXml.Tags.Meta) {
+                    element(KeyfileXml.Tags.Version) {
                         text(DefaultVersion)
                     }
                 }
-                KeyfileXml.Tags.Key {
-                    KeyfileXml.Tags.Data {
+                element(KeyfileXml.Tags.Key) {
+                    element(KeyfileXml.Tags.Data) {
                         attribute(KeyfileXml.Attributes.Hash, hash)
                         text(key.encodeHex().uppercase())
                     }

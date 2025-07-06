@@ -161,20 +161,24 @@ private fun unmarshalField(
 internal fun Entry.marshal(
     context: XmlContext.Encode
 ): Node = node(Tags.Entry.TagName) {
-    Tags.Uuid { addUuid(uuid) }
-    Tags.Entry.IconId { text(icon.ordinal.toString()) }
+    element(Tags.Uuid) { addUuid(uuid) }
+    element(Tags.Entry.IconId) { text(icon.ordinal.toString()) }
     if (customIconUuid != null) {
-        Tags.Entry.CustomIconId { addUuid(customIconUuid) }
+        element(Tags.Entry.CustomIconId) { addUuid(customIconUuid) }
     }
-    Tags.Entry.ForegroundColor { foregroundColor?.let(::text) }
-    Tags.Entry.BackgroundColor { backgroundColor?.let(::text) }
-    Tags.Entry.OverrideUrl { text(overrideUrl) }
-    Tags.Entry.Tags { text(tags.joinToString(Const.TagsSeparator)) }
+    element(Tags.Entry.ForegroundColor) {
+        if (foregroundColor != null) text(foregroundColor)
+    }
+    element(Tags.Entry.BackgroundColor) {
+        if (backgroundColor != null) text(backgroundColor)
+    }
+    element(Tags.Entry.OverrideUrl) { text(overrideUrl) }
+    element(Tags.Entry.Tags) { text(tags.joinToString(Const.TagsSeparator)) }
     if (context.version.isAtLeast(4, 1)) {
-        Tags.Entry.QualityCheck { addBoolean(qualityCheck) }
+        element(Tags.Entry.QualityCheck) { addBoolean(qualityCheck) }
     }
     if (context.version.isAtLeast(4, 1) && previousParentGroup != null) {
-        Tags.Entry.PreviousParentGroup { addUuid(previousParentGroup) }
+        element(Tags.Entry.PreviousParentGroup) { addUuid(previousParentGroup) }
     }
     if (times != null) {
         addElement(times.marshal(context))
@@ -192,7 +196,7 @@ internal fun Entry.marshal(
         addElement(autoType.marshal())
     }
     if (history.isNotEmpty()) {
-        Tags.Entry.History {
+        element(Tags.Entry.History) {
             history.forEach { addElement(it.marshal(context)) }
         }
     }
@@ -204,8 +208,8 @@ private fun marshalFields(
 ): List<Node> {
     return fields.map { (key, value) ->
         node(Tags.Entry.Fields.TagName) {
-            Tags.Entry.Fields.ItemKey { text(key) }
-            Tags.Entry.Fields.ItemValue {
+            element(Tags.Entry.Fields.ItemKey) { text(key) }
+            element(Tags.Entry.Fields.ItemValue) {
                 val isProtected = value is EntryValue.Encrypted
 
                 when {

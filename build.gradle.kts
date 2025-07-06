@@ -1,6 +1,7 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
+    alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.spotless)
     alias(libs.plugins.versions)
     id("maven-publish")
@@ -17,7 +18,7 @@ subprojects {
     spotless {
         kotlin {
             target("**/*.kt")
-            targetExclude("$buildDir/**/*.kt")
+            targetExclude("${layout.buildDirectory.get().asFile}/**/*.kt")
             targetExclude("bin/**/*.kt")
             ktlint()
         }

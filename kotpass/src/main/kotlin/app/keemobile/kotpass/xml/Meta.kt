@@ -139,40 +139,48 @@ private fun unmarshalMemoryProtection(node: Node): Set<MemoryProtectionFlag> =
 
 internal fun Meta.marshal(context: XmlContext.Encode): Node {
     return node(Tags.Meta.TagName) {
-        Tags.Meta.Generator { text(generator) }
+        element(Tags.Meta.Generator) { text(generator) }
         if (context.version.major < 4 && headerHash != null) {
-            Tags.Meta.HeaderHash { addBytes(headerHash.toByteArray()) }
+            element(Tags.Meta.HeaderHash) { addBytes(headerHash.toByteArray()) }
         }
         if (settingsChanged != null && context.version.major >= 4) {
-            Tags.Meta.SettingsChanged { addDateTime(context, settingsChanged) }
+            element(Tags.Meta.SettingsChanged) { addDateTime(context, settingsChanged) }
         }
-        Tags.Meta.DatabaseName { text(name) }
-        Tags.Meta.DatabaseNameChanged { addDateTime(context, nameChanged) }
-        Tags.Meta.DatabaseDescription { text(description) }
-        Tags.Meta.DatabaseDescriptionChanged { addDateTime(context, descriptionChanged) }
-        Tags.Meta.DefaultUserName { text(defaultUser) }
-        Tags.Meta.DefaultUserNameChanged { addDateTime(context, defaultUserChanged) }
-        Tags.Meta.MaintenanceHistoryDays { text(maintenanceHistoryDays.toString()) }
-        Tags.Meta.Color { color?.let(this::text) }
-        Tags.Meta.MasterKeyChanged { addDateTime(context, masterKeyChanged) }
-        Tags.Meta.MasterKeyChangeRec { text(masterKeyChangeRec.toString()) }
-        Tags.Meta.MasterKeyChangeForce { text(masterKeyChangeForce.toString()) }
-        Tags.Meta.RecycleBinEnabled { addBoolean(recycleBinEnabled) }
-        Tags.Meta.RecycleBinUuid { recycleBinUuid?.let(this::addUuid) }
-        Tags.Meta.RecycleBinChanged { addDateTime(context, recycleBinChanged) }
-        Tags.Meta.EntryTemplatesGroup { entryTemplatesGroup?.let(this::addUuid) }
-        Tags.Meta.EntryTemplatesGroupChanged { addDateTime(context, entryTemplatesGroupChanged) }
-        Tags.Meta.HistoryMaxItems { text(historyMaxItems.toString()) }
-        Tags.Meta.HistoryMaxSize { text(historyMaxSize.toString()) }
-        Tags.Meta.LastSelectedGroup { lastSelectedGroup?.let(this::addUuid) }
-        Tags.Meta.LastTopVisibleGroup { lastTopVisibleGroup?.let(this::addUuid) }
+        element(Tags.Meta.DatabaseName) { text(name) }
+        element(Tags.Meta.DatabaseNameChanged) { addDateTime(context, nameChanged) }
+        element(Tags.Meta.DatabaseDescription) { text(description) }
+        element(Tags.Meta.DatabaseDescriptionChanged) { addDateTime(context, descriptionChanged) }
+        element(Tags.Meta.DefaultUserName) { text(defaultUser) }
+        element(Tags.Meta.DefaultUserNameChanged) { addDateTime(context, defaultUserChanged) }
+        element(Tags.Meta.MaintenanceHistoryDays) { text(maintenanceHistoryDays.toString()) }
+        element(Tags.Meta.Color) { if (color != null) text(color) }
+        element(Tags.Meta.MasterKeyChanged) { addDateTime(context, masterKeyChanged) }
+        element(Tags.Meta.MasterKeyChangeRec) { text(masterKeyChangeRec.toString()) }
+        element(Tags.Meta.MasterKeyChangeForce) { text(masterKeyChangeForce.toString()) }
+        element(Tags.Meta.RecycleBinEnabled) { addBoolean(recycleBinEnabled) }
+        element(Tags.Meta.RecycleBinUuid) { if (recycleBinUuid != null) addUuid(recycleBinUuid) }
+        element(Tags.Meta.RecycleBinChanged) { addDateTime(context, recycleBinChanged) }
+        element(Tags.Meta.EntryTemplatesGroup) {
+            if (entryTemplatesGroup != null) addUuid(entryTemplatesGroup)
+        }
+        element(Tags.Meta.EntryTemplatesGroupChanged) {
+            addDateTime(context, entryTemplatesGroupChanged)
+        }
+        element(Tags.Meta.HistoryMaxItems) { text(historyMaxItems.toString()) }
+        element(Tags.Meta.HistoryMaxSize) { text(historyMaxSize.toString()) }
+        element(Tags.Meta.LastSelectedGroup) {
+            if (lastSelectedGroup != null) addUuid(lastSelectedGroup)
+        }
+        element(Tags.Meta.LastTopVisibleGroup) {
+            if (lastTopVisibleGroup != null) addUuid(lastTopVisibleGroup)
+        }
         addElement(marshalMemoryProtection(memoryProtection))
         addElement(CustomIcons.marshal(context, customIcons))
         addElement(CustomData.marshal(context, customData))
 
         // In version 4.x files are stored in binary inner header
         if (context.version.major < 4) {
-            Tags.Meta.Binaries.TagName {
+            element(Tags.Meta.Binaries.TagName) {
                 var binaryCount = 0
                 for ((_, binary) in binaries) {
                     addElement(binary.marshal(binaryCount))
@@ -187,7 +195,7 @@ private fun marshalMemoryProtection(
     memoryProtection: Set<MemoryProtectionFlag>
 ): Node = node(Tags.Meta.MemoryProtection.TagName) {
     for (field in MemoryProtectionFlag.entries) {
-        field.value {
+        element(field.value) {
             addBoolean(memoryProtection.contains(field))
         }
     }

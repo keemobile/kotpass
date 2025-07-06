@@ -88,28 +88,28 @@ internal fun unmarshalGroup(
 internal fun Group.marshal(
     context: XmlContext.Encode
 ): Node = node(Tags.Group.TagName) {
-    Tags.Uuid { addUuid(uuid) }
-    Tags.Group.Name { text(name) }
-    Tags.Group.Notes { text(notes) }
-    Tags.Group.IconId { text(icon.ordinal.toString()) }
+    element(Tags.Uuid) { addUuid(uuid) }
+    element(Tags.Group.Name) { text(name) }
+    element(Tags.Group.Notes) { text(notes) }
+    element(Tags.Group.IconId) { text(icon.ordinal.toString()) }
     if (customIconUuid != null) {
-        Tags.Group.CustomIconId { addUuid(customIconUuid) }
+        element(Tags.Group.CustomIconId) { addUuid(customIconUuid) }
     }
     if (times != null) {
         addElement(times.marshal(context))
     }
-    Tags.Group.IsExpanded { addBoolean(expanded) }
-    Tags.Group.DefaultAutoTypeSequence { text(defaultAutoTypeSequence ?: "") }
-    Tags.Group.EnableAutoType { addGroupOverride(enableAutoType) }
-    Tags.Group.EnableSearching { addGroupOverride(enableSearching) }
+    element(Tags.Group.IsExpanded) { addBoolean(expanded) }
+    element(Tags.Group.DefaultAutoTypeSequence) { text(defaultAutoTypeSequence ?: "") }
+    element(Tags.Group.EnableAutoType) { addGroupOverride(enableAutoType) }
+    element(Tags.Group.EnableSearching) { addGroupOverride(enableSearching) }
     if (lastTopVisibleEntry != null) {
-        Tags.Group.LastTopVisibleEntry { addUuid(lastTopVisibleEntry) }
+        element(Tags.Group.LastTopVisibleEntry) { addUuid(lastTopVisibleEntry) }
     }
     if (context.version.isAtLeast(4, 1) && previousParentGroup != null) {
-        Tags.Group.PreviousParentGroup { addUuid(previousParentGroup) }
+        element(Tags.Group.PreviousParentGroup) { addUuid(previousParentGroup) }
     }
     if (context.version.isAtLeast(4, 1)) {
-        Tags.Group.Tags { text(tags.joinToString(Const.TagsSeparator)) }
+        element(Tags.Group.Tags) { text(tags.joinToString(Const.TagsSeparator)) }
     }
     if (customData.isNotEmpty()) {
         addElement(CustomData.marshal(context, customData))
