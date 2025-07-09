@@ -13,7 +13,6 @@ import app.keemobile.kotpass.extensions.childNodes
 import app.keemobile.kotpass.extensions.getBytes
 import app.keemobile.kotpass.extensions.getText
 import app.keemobile.kotpass.extensions.getUuid
-import app.keemobile.kotpass.extensions.toXmlString
 import app.keemobile.kotpass.models.Entry
 import app.keemobile.kotpass.models.EntryValue
 import app.keemobile.kotpass.models.XmlContext
@@ -212,26 +211,29 @@ private fun marshalFields(
             element(Tags.Entry.Fields.ItemValue) {
                 val isProtected = value is EntryValue.Encrypted
 
-                when {
-                    isProtected && context.isXmlExport -> {
-                        attribute(
-                            FormatXml.Attributes.ProtectedInMemPlainXml,
-                            isProtected.toXmlString()
-                        )
-                        text(value.content)
-                    }
-                    isProtected -> {
-                        val encryptedContent = context
-                            .encryption
-                            .processBytes(value.content.toByteArray())
+                when (context) {
+                    is XmlContext.Encode.Encrypted -> {
+                        if (isProtected) {
+                            val encryptedContent = context
+                                .innerEncryption
+                                .processBytes(value.content.toByteArray())
 
-                        attribute(
-                            FormatXml.Attributes.Protected,
-                            isProtected.toXmlString()
-                        )
-                        addBytes(encryptedContent)
+                            attribute(
+                                FormatXml.Attributes.Protected,
+                                FormatXml.Values.True
+                            )
+                            addBytes(encryptedContent)
+                        } else {
+                            text(value.content)
+                        }
                     }
-                    else -> {
+                    is XmlContext.Encode.Plain -> {
+                        if (isProtected || key in context.memoryProtectionKeys) {
+                            attribute(
+                                FormatXml.Attributes.ProtectedInMemPlainXml,
+                                FormatXml.Values.True
+                            )
+                        }
                         text(value.content)
                     }
                 }

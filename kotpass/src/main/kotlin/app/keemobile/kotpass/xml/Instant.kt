@@ -22,7 +22,7 @@ internal fun Node.getInstant(): Instant? = getText()?.let { text ->
 }
 
 internal fun Instant.marshal(context: XmlContext.Encode): String {
-    val binary = context.version.major >= 4 && !context.isXmlExport
+    val binary = context.version.major >= 4 && context !is XmlContext.Encode.Plain
 
     return if (binary) {
         (epochSecond + EpochSecondsFromAD).toByteArray().encodeBase64()

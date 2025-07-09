@@ -1,6 +1,5 @@
 package app.keemobile.kotpass.models
 
-import app.keemobile.kotpass.cryptography.EncryptionSaltGenerator
 import app.keemobile.kotpass.extensions.parseAsXml
 import app.keemobile.kotpass.resources.DeletedObjectRes
 import app.keemobile.kotpass.xml.marshal
@@ -23,10 +22,10 @@ class DeletedObjectSpec : DescribeSpec({
         }
 
         it("Uuid is encoded as Base64") {
-            val context = XmlContext.Encode(
+            val context = XmlContext.Encode.Plain(
                 version = FormatVersion(4, 0),
-                encryption = EncryptionSaltGenerator.ChaCha20(byteArrayOf()),
-                binaries = linkedMapOf()
+                binaries = linkedMapOf(),
+                memoryProtectionFlags = emptySet()
             )
 
             DeletedObjectRes

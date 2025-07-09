@@ -1,6 +1,5 @@
 package app.keemobile.kotpass.models
 
-import app.keemobile.kotpass.cryptography.EncryptionSaltGenerator
 import app.keemobile.kotpass.extensions.parseAsXml
 import app.keemobile.kotpass.resources.CustomDataRes
 import app.keemobile.kotpass.xml.CustomData
@@ -43,10 +42,10 @@ class CustomDataSpec : DescribeSpec({
 
     describe("Writing CustomData to Xml string") {
         it("Basic custom data") {
-            val context = XmlContext.Encode(
+            val context = XmlContext.Encode.Plain(
                 version = FormatVersion(4, 1),
-                encryption = EncryptionSaltGenerator.ChaCha20(byteArrayOf()),
-                binaries = linkedMapOf()
+                binaries = linkedMapOf(),
+                memoryProtectionFlags = emptySet()
             )
             val customData = mapOf(
                 "k1" to CustomDataValue("v1"),

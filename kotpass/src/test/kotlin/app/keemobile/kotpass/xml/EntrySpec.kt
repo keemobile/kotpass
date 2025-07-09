@@ -1,17 +1,19 @@
 package app.keemobile.kotpass.xml
 
 import app.keemobile.kotpass.common.renderTestXmlString
+import app.keemobile.kotpass.constants.BasicField
+import app.keemobile.kotpass.constants.MemoryProtectionFlag
 import app.keemobile.kotpass.cryptography.EncryptionSaltGenerator
+import app.keemobile.kotpass.models.EntryValue
 import app.keemobile.kotpass.models.FormatVersion
 import app.keemobile.kotpass.models.XmlContext
 import io.kotest.core.spec.style.DescribeSpec
-import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.shouldBe
 import org.redundent.kotlin.xml.parse
 
-class GroupSpec : DescribeSpec({
+class EntrySpec : DescribeSpec({
 
-    describe("Group XML") {
+    describe("Entry XML") {
         it("Deserialize XML") {
             val context = XmlContext.Decode(
                 version = FormatVersion(4, 1),
@@ -19,25 +21,28 @@ class GroupSpec : DescribeSpec({
                 binaries = linkedMapOf()
             )
             val document = ClassLoader
-                .getSystemResourceAsStream("xml/group.xml")!!
+                .getSystemResourceAsStream("xml/entry.xml")!!
                 .use(::parse)
-            val group = unmarshalGroup(context, document)
+            val entry = unmarshalEntry(context, document)
 
-            group.groups.shouldNotBeEmpty()
-            group.groups.first().groups.shouldNotBeEmpty()
+            entry[BasicField.UserName] shouldBe EntryValue.Plain("Test User")
         }
 
         it("Serialize XML") {
             val version = FormatVersion(4, 1)
             val encryption = EncryptionSaltGenerator.ChaCha20(byteArrayOf())
-            val encodeCtx = XmlContext.Encode.Plain(version, linkedMapOf(), emptySet())
+            val encodeCtx = XmlContext.Encode.Plain(
+                version = version,
+                binaries = linkedMapOf(),
+                memoryProtectionFlags = setOf(MemoryProtectionFlag.Password)
+            )
             val decodeCtx = XmlContext.Decode(version, encryption, linkedMapOf())
-            val resourceStream = { ClassLoader.getSystemResourceAsStream("xml/group.xml")!! }
+            val resourceStream = { ClassLoader.getSystemResourceAsStream("xml/entry.xml")!! }
             val document = resourceStream().use(::parse)
             val rawData = resourceStream().readAllBytes().decodeToString()
-            val group = unmarshalGroup(decodeCtx, document)
+            val autoTypeData = unmarshalEntry(decodeCtx, document)
 
-            renderTestXmlString(group.marshal(encodeCtx)) shouldBe rawData
+            renderTestXmlString(autoTypeData.marshal(encodeCtx)) shouldBe rawData
         }
     }
 })
