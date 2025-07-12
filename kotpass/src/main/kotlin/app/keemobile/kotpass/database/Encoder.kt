@@ -45,15 +45,14 @@ private fun KeePassDatabase.encodeAsBinary(
 
     var rawContent = when (this) {
         is KeePassDatabase.Ver3x -> {
-            val saltGenerator = EncryptionSaltGenerator.create(
+            val innerEncryption = EncryptionSaltGenerator.create(
                 id = header.innerRandomStreamId,
                 key = header.innerRandomStreamKey
             )
-            val context = XmlContext.Encode(
+            val context = XmlContext.Encode.Encrypted(
                 version = header.version,
-                encryption = saltGenerator,
-                binaries = binaries,
-                isXmlExport = false
+                innerEncryption = innerEncryption,
+                binaries = binaries
             )
             val newMeta = content.meta.copy(headerHash = headerHash)
 
@@ -62,15 +61,14 @@ private fun KeePassDatabase.encodeAsBinary(
                 .toByteArray(Charsets.UTF_8)
         }
         is KeePassDatabase.Ver4x -> {
-            val saltGenerator = EncryptionSaltGenerator.create(
+            val innerEncryption = EncryptionSaltGenerator.create(
                 id = innerHeader.randomStreamId,
                 key = innerHeader.randomStreamKey
             )
-            val context = XmlContext.Encode(
+            val context = XmlContext.Encode.Encrypted(
                 version = header.version,
-                encryption = saltGenerator,
-                binaries = binaries,
-                isXmlExport = false
+                innerEncryption = innerEncryption,
+                binaries = binaries
             )
             val hmacKey = KeyTransform.hmacKey(
                 masterSeed = header.masterSeed.toByteArray(),
@@ -106,33 +104,15 @@ private fun KeePassDatabase.encodeAsBinary(
 
 fun KeePassDatabase.encodeAsXml(
     contentParser: XmlContentParser = DefaultXmlContentParser
-): String {
-    val saltGenerator = when (this) {
-        is KeePassDatabase.Ver3x -> {
-            EncryptionSaltGenerator.create(
-                id = header.innerRandomStreamId,
-                key = header.innerRandomStreamKey
-            )
-        }
-        is KeePassDatabase.Ver4x -> {
-            EncryptionSaltGenerator.create(
-                id = innerHeader.randomStreamId,
-                key = innerHeader.randomStreamKey
-            )
-        }
-    }
-
-    return contentParser.marshalContent(
-        context = XmlContext.Encode(
-            version = header.version,
-            encryption = saltGenerator,
-            binaries = binaries,
-            isXmlExport = true
-        ),
-        content = content,
-        pretty = true
-    )
-}
+): String = contentParser.marshalContent(
+    context = XmlContext.Encode.Plain(
+        version = header.version,
+        binaries = binaries,
+        memoryProtectionFlags = content.meta.memoryProtection
+    ),
+    content = content,
+    pretty = true
+)
 
 private fun BufferedSink.writeEncryptedContent(
     header: DatabaseHeader,

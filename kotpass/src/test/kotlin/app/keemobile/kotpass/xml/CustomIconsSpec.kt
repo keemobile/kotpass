@@ -2,7 +2,6 @@ package app.keemobile.kotpass.xml
 
 import app.keemobile.kotpass.common.renderTestXmlString
 import app.keemobile.kotpass.constants.Const
-import app.keemobile.kotpass.cryptography.EncryptionSaltGenerator
 import app.keemobile.kotpass.models.FormatVersion
 import app.keemobile.kotpass.models.XmlContext
 import io.kotest.core.spec.style.DescribeSpec
@@ -31,10 +30,10 @@ class CustomIconsSpec : DescribeSpec({
         }
 
         it("Serialize XML") {
-            val context = XmlContext.Encode(
+            val context = XmlContext.Encode.Plain(
                 version = FormatVersion(4, 1),
-                encryption = EncryptionSaltGenerator.ChaCha20(byteArrayOf()),
-                binaries = linkedMapOf()
+                binaries = linkedMapOf(),
+                memoryProtectionFlags = emptySet()
             )
             val resourceStream = { ClassLoader.getSystemResourceAsStream("xml/custom_icons.xml")!! }
             val document = resourceStream().use(::parse)
