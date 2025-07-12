@@ -5,19 +5,46 @@ import app.keemobile.kotpass.constants.Defaults
 import app.keemobile.kotpass.constants.MemoryProtectionFlag
 import app.keemobile.kotpass.cryptography.EncryptionSaltGenerator
 import okio.ByteString
+import java.time.format.DateTimeFormatter
 
+/**
+ * Provides shared configuration and state across encoding/decoding process.
+ */
 sealed class XmlContext {
+    /**
+     * Defines the format version, which affects the XML structure.
+     */
     abstract val version: FormatVersion
 
+    /**
+     * XML parser context used during encoding.
+     */
     sealed class Encode : XmlContext() {
+        /**
+         * Supports encoding references to binary data.
+         */
         abstract val binaries: Map<ByteString, BinaryData>
 
+        /**
+         * Used when XML file is supposed to be encrypted in binary KDBX format.
+         *
+         * This mode affects how fields are processed:
+         * * `protected` fields are additionally encrypted using [innerEncryption].
+         * * timestamps are encoded as `BASE64(i64)` when [version] is `4.x`.
+         */
         class Encrypted(
             override val version: FormatVersion,
             override val binaries: Map<ByteString, BinaryData>,
             val innerEncryption: EncryptionSaltGenerator
         ) : Encode()
 
+        /**
+         * Used when XML file is supposed to be saved as plain text.
+         *
+         * This mode affects how fields are processed:
+         * * `protected` fields are saved unencrypted with `ProtectInMemory` attribute.
+         * * timestamps are encoded as [ISO_INSTANT][DateTimeFormatter.ISO_INSTANT] format.
+         */
         class Plain(
             override val version: FormatVersion,
             override val binaries: Map<ByteString, BinaryData>,
@@ -30,6 +57,9 @@ sealed class XmlContext {
         }
     }
 
+    /**
+     * XML parser context used during decoding.
+     */
     class Decode(
         override val version: FormatVersion,
         val encryption: EncryptionSaltGenerator,

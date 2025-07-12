@@ -13,8 +13,18 @@ private val SalsaNonce = intArrayOf(0xe8, 0x30, 0x09, 0x4b, 0x97, 0x20, 0x5d, 0x
     .toByteArray()
 
 /**
- * Used to encrypt/decrypt values marked with 'Protected' flag
- * during XML content encoding/decoding.
+ * Used as inner encryption to improve process memory protection, it does not enhance
+ * the cryptographic security of the KDBX file format itself.
+ *
+ * **Problem**: XML parsers use regular strings that persist in process memory,
+ * making sensitive data vulnerable.
+ *
+ * **Solution**: store sensitive data encrypted within the XML document using
+ * the inner header’s encryption algorithm and key.
+ *
+ * **Note**:
+ * - Uses stream cipher *without* state reset between protected fields.
+ * - Encryption order matters: data encrypted sequentially using consecutive cipher output bytes.
  */
 sealed class EncryptionSaltGenerator {
     /**
