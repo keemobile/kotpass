@@ -4,6 +4,7 @@ import app.keemobile.kotpass.builders.buildEntry
 import app.keemobile.kotpass.constants.BasicField
 import app.keemobile.kotpass.constants.GroupOverride
 import app.keemobile.kotpass.cryptography.EncryptedValue
+import app.keemobile.kotpass.database.modifiers.binaries
 import app.keemobile.kotpass.database.modifiers.cleanupHistory
 import app.keemobile.kotpass.database.modifiers.modifyEntries
 import app.keemobile.kotpass.database.modifiers.modifyEntry
@@ -83,6 +84,16 @@ class KeePassDatabaseSpec : DescribeSpec({
                 credentials = Credentials.from(EncryptedValue.fromString("1"))
             )
             database.content.group.name shouldBe "New"
+        }
+
+        it("Stores binaries when exporting to plain text XML") {
+            val database = loadDatabase("ver4_with_binaries.kdbx", "1")
+
+            database.binaries.size shouldBe 2
+
+            val rawXml = database.encodeAsXml()
+            rawXml.indexOf("Binary ID=\"0\"") shouldNotBe -1
+            rawXml.indexOf("Binary ID=\"1\"") shouldNotBe -1
         }
     }
 

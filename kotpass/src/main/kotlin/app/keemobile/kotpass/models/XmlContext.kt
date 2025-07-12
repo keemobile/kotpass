@@ -44,6 +44,7 @@ sealed class XmlContext {
          * This mode affects how fields are processed:
          * * `protected` fields are saved unencrypted with `ProtectInMemory` attribute.
          * * timestamps are encoded as [ISO_INSTANT][DateTimeFormatter.ISO_INSTANT] format.
+         * * binaries are stored as `BASE64(u8..)` in [Meta].
          */
         class Plain(
             override val version: FormatVersion,

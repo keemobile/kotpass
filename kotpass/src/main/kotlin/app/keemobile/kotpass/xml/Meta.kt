@@ -179,10 +179,10 @@ internal fun Meta.marshal(context: XmlContext.Encode): Node {
         addElement(CustomData.marshal(context, customData))
 
         // In version 4.x files are stored in binary inner header
-        if (context.version.major < 4) {
+        if (context.version.major < 4 || context is XmlContext.Encode.Plain) {
             element(Tags.Meta.Binaries.TagName) {
                 var binaryCount = 0
-                for ((_, binary) in binaries) {
+                for ((_, binary) in context.binaries) {
                     addElement(binary.marshal(binaryCount))
                     binaryCount++
                 }
