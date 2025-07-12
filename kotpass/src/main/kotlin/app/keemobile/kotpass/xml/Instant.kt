@@ -8,6 +8,7 @@ import app.keemobile.kotpass.io.encodeBase64
 import app.keemobile.kotpass.models.XmlContext
 import org.redundent.kotlin.xml.Node
 import java.time.Instant
+import java.time.format.DateTimeFormatter
 
 private const val EpochSecondsFromAD = 62135596800
 
@@ -27,6 +28,6 @@ internal fun Instant.marshal(context: XmlContext.Encode): String {
     return if (binary) {
         (epochSecond + EpochSecondsFromAD).toByteArray().encodeBase64()
     } else {
-        this.toString()
+        DateTimeFormatter.ISO_INSTANT.format(this)
     }
 }
