@@ -2,3 +2,10 @@
 ignore:
   - "kotpass/src/main/java/org/apache/commons/lang3/"
   - "kotpass/src/main/kotlin/org/redundent/kotlin/xml/"
+coverage:
+  status:
+    project:
+      default:
+        target: 70%
+        threshold: 10%
+        informational: true
