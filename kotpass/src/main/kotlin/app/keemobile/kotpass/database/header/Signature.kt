@@ -5,10 +5,10 @@ import app.keemobile.kotpass.io.BufferedStream
 import okio.BufferedSink
 import okio.ByteString
 
-class Signature(
-    val base: ByteString,
-    val secondary: ByteString
-) {
+/**
+ * This signature is used to identify the file type and version.
+ */
+class Signature(val base: ByteString, val secondary: ByteString) {
     internal fun writeTo(sink: BufferedSink) = with(sink) {
         write(base)
         write(secondary)

@@ -9,6 +9,13 @@ import app.keemobile.kotpass.models.TimeData
 import java.time.Instant
 import java.util.UUID
 
+/**
+ * Moves an entry to a new parent group.
+ *
+ * @param uuid The UUID of the entry to move.
+ * @param parentGroup The UUID of the destination parent group.
+ * @return A new [KeePassDatabase] instance with the entry moved.
+ */
 fun KeePassDatabase.moveEntry(
     uuid: UUID,
     parentGroup: UUID
@@ -29,6 +36,13 @@ fun KeePassDatabase.moveEntry(
     }
 }
 
+/**
+ * Modifies a specific entry in the database.
+ *
+ * @param uuid The UUID of the entry to modify.
+ * @param block A lambda that takes [Entry] as a receiver and returns modified [Entry].
+ * @return A new [KeePassDatabase] instance with the entry modified.
+ */
 fun KeePassDatabase.modifyEntry(
     uuid: UUID,
     block: Entry.() -> Entry
@@ -36,12 +50,24 @@ fun KeePassDatabase.modifyEntry(
     copy(group = group.modifyEntry(uuid, block))
 }
 
+/**
+ * Modifies all entries in the database.
+ *
+ * @param block A lambda that takes [Entry] as a receiver and returns modified [Entry].
+ * @return A new [KeePassDatabase] instance with all entries modified.
+ */
 fun KeePassDatabase.modifyEntries(
     block: Entry.() -> Entry
 ) = modifyContent {
     copy(group = group.modifyEntries(block))
 }
 
+/**
+ * Removes an entry from the database and adds it to the deleted objects list.
+ *
+ * @param uuid The UUID of the entry to remove.
+ * @return A new [KeePassDatabase] instance with the entry removed.
+ */
 fun KeePassDatabase.removeEntry(
     uuid: UUID
 ) = modifyContent {
@@ -51,6 +77,12 @@ fun KeePassDatabase.removeEntry(
     )
 }
 
+/**
+ * Creates a new entry with a historical record of the current entry.
+ *
+ * @param block A lambda that takes [Entry] as a receiver and returns modified [Entry].
+ * @return A new [Entry] instance with the current entry added to its history.
+ */
 fun Entry.withHistory(
     block: Entry.() -> Entry
 ): Entry {
@@ -60,6 +92,13 @@ fun Entry.withHistory(
     )
 }
 
+/**
+ * Modifies a specific entry within this group or its subgroups.
+ *
+ * @param uuid The UUID of the entry to modify.
+ * @param block A lambda that takes [Entry] as a receiver and returns modified [Entry].
+ * @return A new [Group] instance with the entry modified.
+ */
 private fun Group.modifyEntry(
     uuid: UUID,
     block: Entry.() -> Entry
@@ -80,6 +119,12 @@ private fun Group.modifyEntry(
     }
 }
 
+/**
+ * Modifies all entries within this group and its subgroups.
+ *
+ * @param block A lambda that takes [Entry] as a receiver and returns modified [Entry].
+ * @return A new [Group] instance with all entries modified.
+ */
 private fun Group.modifyEntries(
     block: Entry.() -> Entry
 ): Group = copy(
@@ -101,6 +146,12 @@ private fun Group.modifyEntries(
     groups = groups.map { it.modifyEntries(block) }
 )
 
+/**
+ * Removes an entry from this group or its subgroups.
+ *
+ * @param uuid The UUID of the entry to remove.
+ * @return A new [Group] instance with the entry removed.
+ */
 private fun Group.removeChildEntry(
     uuid: UUID
 ): Group {
