@@ -8,10 +8,6 @@ import app.keemobile.kotpass.extensions.sha256
 import app.keemobile.kotpass.extensions.sha512
 import okio.ByteString
 
-private val SalsaNonce = intArrayOf(0xe8, 0x30, 0x09, 0x4b, 0x97, 0x20, 0x5d, 0x2a)
-    .map(Int::toByte)
-    .toByteArray()
-
 /**
  * Used as inner encryption to improve process memory protection, it does not enhance
  * the cryptographic security of the KDBX file format itself.
@@ -39,8 +35,11 @@ sealed class EncryptionSaltGenerator {
     abstract fun processBytes(input: ByteArray): ByteArray
 
     class Salsa20(key: ByteArray) : EncryptionSaltGenerator() {
+        // Static 'nonce' provided by KeePass specification
+        private val nonce = byteArrayOf(0xe8.toByte(), 0x30, 0x09, 0x4b, 0x97.toByte(), 0x20, 0x5d, 0x2a)
+
         private val engine = Salsa20Engine().apply {
-            init(key.sha256(), SalsaNonce)
+            init(key.sha256(), nonce)
         }
 
         override fun getSalt(length: Int) = engine.getBytes(length)

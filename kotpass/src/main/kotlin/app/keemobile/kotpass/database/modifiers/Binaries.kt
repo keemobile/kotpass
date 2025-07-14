@@ -7,12 +7,20 @@ import app.keemobile.kotpass.models.Group
 import okio.ByteString
 import java.util.Stack
 
+/**
+ * Returns a map of binary data associated with [KeePassDatabase].
+ */
 val KeePassDatabase.binaries
     get() = when (this) {
         is KeePassDatabase.Ver3x -> content.meta.binaries
         is KeePassDatabase.Ver4x -> innerHeader.binaries
     }
 
+/**
+ * Modifies binaries map of [KeePassDatabase] using the provided [block].
+ *
+ * @return A new [KeePassDatabase] instance with the modified binaries.
+ */
 inline fun KeePassDatabase.modifyBinaries(
     crossinline block: (Map<ByteString, BinaryData>) -> Map<ByteString, BinaryData>
 ): KeePassDatabase = when (this) {
@@ -26,6 +34,12 @@ inline fun KeePassDatabase.modifyBinaries(
     )
 }
 
+/**
+ * This function traverses all groups and entries, including historical entries,
+ * to identify and remove unreferenced binary data.
+ *
+ * @return A new [KeePassDatabase] instance with unused binaries removed.
+ */
 fun KeePassDatabase.removeUnusedBinaries(): KeePassDatabase {
     val cleanupList = binaries.keys.toMutableSet()
 

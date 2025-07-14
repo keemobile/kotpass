@@ -256,7 +256,9 @@ open class Node(val nodeName: String) : Element {
         }
 
         if (_globalLevelProcessingInstructions.isNotEmpty()) {
-            _globalLevelProcessingInstructions.forEach { it.render(appendable, "", printOptions) }
+            for (element in _globalLevelProcessingInstructions) {
+                element.render(appendable, "", printOptions)
+            }
         }
 
         render(appendable, "", printOptions)

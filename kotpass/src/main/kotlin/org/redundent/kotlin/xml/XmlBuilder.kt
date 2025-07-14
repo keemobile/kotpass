@@ -88,19 +88,14 @@ fun parse(document: Document): Node {
     copyAttributes(root, result)
 
     val children = root.childNodes
-    (0 until children.length)
-        .map(children::item)
-        .forEach { copy(it, result) }
-
+    for (i in 0..<children.length) {
+        copy(children.item(i), result)
+    }
     return result
 }
 
 internal fun getLineEnding(printOptions: PrintOptions): String? {
-    return if (printOptions.pretty) {
-        System.lineSeparator()
-    } else {
-        ""
-    }
+    return if (printOptions.pretty) System.lineSeparator() else ""
 }
 
 private fun copy(source: W3CNode, dest: Node) {
@@ -111,15 +106,14 @@ private fun copy(source: W3CNode, dest: Node) {
             copyAttributes(source, cur)
 
             val children = source.childNodes
-            (0 until children.length)
-                .map(children::item)
-                .forEach { copy(it, cur) }
-        }
 
+            for (i in 0..<children.length) {
+                copy(children.item(i), cur)
+            }
+        }
         W3CNode.CDATA_SECTION_NODE -> {
             dest.cdata(source.nodeValue)
         }
-
         W3CNode.TEXT_NODE -> {
             dest.text(source.nodeValue.trim { it.isWhitespace() || it == '\r' || it == '\n' })
         }
@@ -132,13 +126,12 @@ private fun copyAttributes(source: W3CNode, dest: Node) {
         return
     }
 
-    (0 until attributes.length)
-        .map(attributes::item)
-        .forEach {
-            if (it.nodeName.startsWith("xmlns")) {
-                dest.namespace(it.nodeName.substring(min(6, it.nodeName.length)), it.nodeValue)
-            } else {
-                dest.attribute(it.nodeName, it.nodeValue)
-            }
+    for (i in 0..<attributes.length) {
+        val attr = attributes.item(i)
+        if (attr.nodeName.startsWith("xmlns")) {
+            dest.namespace(attr.nodeName.substring(min(6, attr.nodeName.length)), attr.nodeValue)
+        } else {
+            dest.attribute(attr.nodeName, attr.nodeValue)
         }
+    }
 }
