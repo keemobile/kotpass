@@ -138,8 +138,13 @@ private fun unmarshalField(
         .firstOrNull(Tags.Entry.Fields.ItemValue)
         ?.get<String?>(FormatXml.Attributes.Protected)
         .toBoolean()
+    // Important when importing raw XML file
+    val protectInMemory = node
+        .firstOrNull(Tags.Entry.Fields.ItemValue)
+        ?.get<String?>(FormatXml.Attributes.ProtectedInMemPlainXml)
+        .toBoolean()
 
-    return if (protected) {
+    return if (protected || protectInMemory) {
         val bytes = node
             .firstOrNull(Tags.Entry.Fields.ItemValue)
             ?.getBytes()

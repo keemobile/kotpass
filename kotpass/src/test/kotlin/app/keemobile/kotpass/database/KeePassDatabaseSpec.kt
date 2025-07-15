@@ -21,6 +21,7 @@ import app.keemobile.kotpass.database.modifiers.withRecycleBin
 import app.keemobile.kotpass.models.DatabaseElement
 import app.keemobile.kotpass.models.DeletedObject
 import app.keemobile.kotpass.models.Entry
+import app.keemobile.kotpass.models.EntryValue
 import app.keemobile.kotpass.models.Group
 import app.keemobile.kotpass.models.Meta
 import app.keemobile.kotpass.models.TimeData
@@ -33,6 +34,7 @@ import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.collections.shouldNotBeIn
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.time.Instant
@@ -58,6 +60,20 @@ class KeePassDatabaseSpec : DescribeSpec({
             val database = loadDatabase("ver4_with_binaries.kdbx", "1")
 
             database.content.group.name shouldBe "New"
+        }
+
+        it("Reads and imports raw XML file") {
+            val rawXml = loadDatabase("ver4_with_binaries.kdbx", "1").encodeAsXml()
+            val database = KeePassDatabase.decodeFromXml(
+                inputStream = rawXml.byteInputStream(),
+                credentials = Credentials.from(EncryptedValue.fromString("1"))
+            )
+
+            database.traverse { element ->
+                if (element is Entry) {
+                    element[BasicField.Password].shouldBeInstanceOf<EntryValue.Encrypted>()
+                }
+            }
         }
     }
 
