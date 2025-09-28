@@ -4,6 +4,8 @@ package app.keemobile.kotpass.database
 
 import app.keemobile.kotpass.constants.GroupOverride
 import app.keemobile.kotpass.cryptography.KeyTransform
+import app.keemobile.kotpass.cryptography.format.BaseKdfProvider
+import app.keemobile.kotpass.cryptography.format.KdfProvider
 import app.keemobile.kotpass.database.header.DatabaseHeader
 import app.keemobile.kotpass.database.header.DatabaseInnerHeader
 import app.keemobile.kotpass.extensions.clear
@@ -224,8 +226,10 @@ fun KeePassDatabase.findEntries(
  * Measures KDF transform rounds performance based on
  * [header][KeePassDatabase.header] parameters.
  */
-fun KeePassDatabase.measureKeyTransformMillis() = measureTimeMillis {
+fun KeePassDatabase.measureKeyTransformMillis(
+    kdfProvider: KdfProvider = BaseKdfProvider
+): Long = measureTimeMillis {
     KeyTransform
-        .transformedKey(header, credentials)
+        .transformedKey(kdfProvider, header, credentials)
         .clear()
 }

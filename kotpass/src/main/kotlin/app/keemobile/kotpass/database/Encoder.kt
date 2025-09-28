@@ -3,7 +3,9 @@ package app.keemobile.kotpass.database
 import app.keemobile.kotpass.cryptography.EncryptionSaltGenerator
 import app.keemobile.kotpass.cryptography.KeyTransform
 import app.keemobile.kotpass.cryptography.format.BaseCiphers
+import app.keemobile.kotpass.cryptography.format.BaseKdfProvider
 import app.keemobile.kotpass.cryptography.format.CipherProvider
+import app.keemobile.kotpass.cryptography.format.KdfProvider
 import app.keemobile.kotpass.database.header.DatabaseHeader
 import app.keemobile.kotpass.database.modifiers.binaries
 import app.keemobile.kotpass.database.modifiers.regenerateVectors
@@ -25,19 +27,18 @@ fun KeePassDatabase.encode(
     outputStream: OutputStream,
     contentParser: XmlContentParser = DefaultXmlContentParser,
     cipherProviders: List<CipherProvider> = BaseCiphers.entries,
+    kdfProvider: KdfProvider = BaseKdfProvider,
     random: SecureRandom = SecureRandom()
 ) = regenerateVectors(random, cipherProviders)
-    .encodeAsBinary(outputStream, contentParser, cipherProviders)
+    .encodeAsBinary(outputStream, contentParser, cipherProviders, kdfProvider)
 
 private fun KeePassDatabase.encodeAsBinary(
     outputStream: OutputStream,
     contentParser: XmlContentParser = DefaultXmlContentParser,
-    cipherProviders: List<CipherProvider>
+    cipherProviders: List<CipherProvider>,
+    kdfProvider: KdfProvider
 ) = apply {
-    val transformedKey = KeyTransform.transformedKey(
-        header = header,
-        credentials = credentials
-    )
+    val transformedKey = KeyTransform.transformedKey(kdfProvider, header, credentials)
     val headerBuffer = Buffer().apply {
         header.writeTo(this)
     }
