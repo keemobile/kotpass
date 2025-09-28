@@ -18,7 +18,7 @@ The latest release is available on [Maven Central](https://central.sonatype.com/
 
 ```kotlin
 dependencies {
-    implementation("app.keemobile:kotpass:0.12.0")
+    implementation("app.keemobile:kotpass:0.13.0")
 }
 ```
 
