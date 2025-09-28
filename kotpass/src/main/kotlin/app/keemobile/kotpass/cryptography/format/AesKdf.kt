@@ -1,7 +1,6 @@
 package app.keemobile.kotpass.cryptography.format
 
 import app.keemobile.kotpass.errors.CryptoError
-import app.keemobile.kotpass.extensions.clear
 import app.keemobile.kotpass.extensions.sha256
 import java.security.GeneralSecurityException
 import java.security.NoSuchAlgorithmException
@@ -18,15 +17,13 @@ internal object AesKdf {
         val keySpec = SecretKeySpec(seed, "AES")
         cipher.init(Cipher.ENCRYPT_MODE, keySpec)
 
-        for (r in 0 until rounds.toLong()) {
+        repeat(rounds.toInt()) {
             cipher.update(key, 0, 16, key, 0)
             cipher.update(key, 16, 16, key, 16)
         }
-        key.sha256().also {
-            key.clear()
-        }
-    } catch (e: GeneralSecurityException) {
-        if (e is NoSuchAlgorithmException) {
+        key.sha256()
+    } catch (error: GeneralSecurityException) {
+        if (error is NoSuchAlgorithmException) {
             throw CryptoError.AlgorithmUnavailable("AES/ECB encryption is not supported in current environment.")
         } else {
             throw CryptoError.InvalidKey("Wrong KDF seed used for decryption.")

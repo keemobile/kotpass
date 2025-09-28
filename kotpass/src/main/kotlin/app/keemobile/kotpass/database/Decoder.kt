@@ -4,7 +4,9 @@ import app.keemobile.kotpass.constants.Defaults
 import app.keemobile.kotpass.cryptography.EncryptionSaltGenerator
 import app.keemobile.kotpass.cryptography.KeyTransform
 import app.keemobile.kotpass.cryptography.format.BaseCiphers
+import app.keemobile.kotpass.cryptography.format.BaseKdfProvider
 import app.keemobile.kotpass.cryptography.format.CipherProvider
+import app.keemobile.kotpass.cryptography.format.KdfProvider
 import app.keemobile.kotpass.database.header.DatabaseHeader
 import app.keemobile.kotpass.database.header.DatabaseHeader.Compression
 import app.keemobile.kotpass.database.header.DatabaseInnerHeader
@@ -30,6 +32,7 @@ fun KeePassDatabase.Companion.decode(
     validateHashes: Boolean = true,
     contentParser: XmlContentParser = DefaultXmlContentParser,
     cipherProviders: List<CipherProvider> = BaseCiphers.entries,
+    kdfProvider: KdfProvider = BaseKdfProvider,
     untitledLabel: String = Defaults.UntitledLabel
 ): KeePassDatabase {
     val headerBuffer = Buffer()
@@ -47,7 +50,7 @@ fun KeePassDatabase.Companion.decode(
             throw FormatError.UnsupportedVersion("File version is not supported.")
         }
         val rawHeaderData = headerBuffer.snapshot()
-        val transformedKey = KeyTransform.transformedKey(header, credentials)
+        val transformedKey = KeyTransform.transformedKey(kdfProvider, header, credentials)
 
         return when (header) {
             is DatabaseHeader.Ver3x -> {
