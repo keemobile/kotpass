@@ -15,7 +15,8 @@ sealed class KdfParameters {
      * are supported by KeePass format by default:
      *
      * ```properties
-     * AES-KDF  C9:D9:F3:9A:62:8A:44:60:BF:74:0D:08:C1:8A:4F:EA
+     * AES-KDBX3  C9:D9:F3:9A:62:8A:44:60:BF:74:0D:08:C1:8A:4F:EA
+     * AES-KDBX4  7C:02:BB:82:79:A7:4A:C0:92:7D:11:4A:00:64:82:38
      * Argon2d  EF:63:6D:DF:8C:29:44:4B:91:F7:A9:A4:03:E3:0A:0C
      * Argon2id 9E:29:8B:19:56:DB:47:73:B2:3D:FC:3E:C6:F0:A1:E6
      */
@@ -28,16 +29,31 @@ sealed class KdfParameters {
      * @property seed Used as AES seed.
      */
     data class Aes(
+        val variant: Variant,
         val rounds: ULong,
         val seed: ByteString
     ) : KdfParameters() {
-        override val uuid = Uuid
+        override val uuid = variant.uuid
 
-        internal companion object {
-            val Uuid = Const.bytes(
-                0xC9, 0xD9, 0xF3, 0x9A, 0x62, 0x8A, 0x44, 0x60,
-                0xBF, 0x74, 0x0D, 0x08, 0xC1, 0x8A, 0x4F, 0xEA
-            )
+        enum class Variant(internal val uuid: ByteString) {
+            AesKdbx3(
+                Const.bytes(
+                    0xC9, 0xD9, 0xF3, 0x9A, 0x62, 0x8A, 0x44, 0x60,
+                    0xBF, 0x74, 0x0D, 0x08, 0xC1, 0x8A, 0x4F, 0xEA
+                )
+            ),
+            AesKdbx4(
+                Const.bytes(
+                    0x7C, 0x02, 0xBB, 0x82, 0x79, 0xA7, 0x4A, 0xC0,
+                    0x92, 0x7D, 0x11, 0x4A, 0x00, 0x64, 0x82, 0x38
+                )
+            );
+
+            internal companion object {
+                val Uuids = Variant.entries.map(Variant::uuid)
+
+                fun from(uuid: ByteString) = Variant.entries.first { it.uuid == uuid }
+            }
         }
     }
 
@@ -139,8 +155,9 @@ sealed class KdfParameters {
                 ?: throw FormatError.InvalidHeader("No KDF UUID found.")
 
             when (uuid) {
-                Aes.Uuid -> {
+                in Aes.Variant.Uuids -> {
                     Aes(
+                        variant = Aes.Variant.from(uuid),
                         rounds = (get(KdfConst.Keys.Rounds) as? VariantItem.UInt64)?.value
                             ?: throw FormatError.InvalidHeader("No KDF rounds found."),
                         seed = (get(KdfConst.Keys.SaltOrSeed) as? VariantItem.Bytes)?.value

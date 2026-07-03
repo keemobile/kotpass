@@ -36,7 +36,7 @@ internal object KeyTransform {
                 is DatabaseHeader.Ver3x -> {
                     // KeePass 3.x supports only AES as key-derivation function
                     kdfProvider.transformKey(
-                        kdfParameters = Aes(header.transformRounds, header.transformSeed),
+                        kdfParameters = Aes(Aes.Variant.AesKdbx3, header.transformRounds, header.transformSeed),
                         compositeKey = compositeKey
                     )
                 }
