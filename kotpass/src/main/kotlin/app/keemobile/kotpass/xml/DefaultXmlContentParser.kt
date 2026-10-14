@@ -44,8 +44,14 @@ object DefaultXmlContentParser : XmlContentParser {
             ?.filter { it.nodeName == Tags.DeletedObjects.Object }
             ?.mapNotNull(::unmarshalDeletedObject)
             ?: listOf()
+        val unknownElements = documentNode
+            .childNodes()
+            .filter { it.nodeName != Tags.Meta.TagName && it.nodeName != Tags.Root }
+        val unknownRootElements = rootNode
+            .childNodes()
+            .filter { it.nodeName != Tags.Group.TagName && it.nodeName != Tags.DeletedObjects.TagName }
 
-        return DatabaseContent(meta, rootGroup, deletedObjects)
+        return DatabaseContent(meta, rootGroup, deletedObjects, unknownElements, unknownRootElements)
     }
 
     override fun marshalContent(
@@ -63,6 +69,13 @@ object DefaultXmlContentParser : XmlContentParser {
                         addElement(it.marshal(context))
                     }
                 }
+                content.unknownRootElements.forEach {
+                    addElement(it)
+                }
+            }
+
+            content.unknownElements.forEach {
+                addElement(it)
             }
         }.toString(
             PrintOptions(

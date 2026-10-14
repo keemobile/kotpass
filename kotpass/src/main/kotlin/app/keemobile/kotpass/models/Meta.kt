@@ -3,6 +3,7 @@ package app.keemobile.kotpass.models
 import app.keemobile.kotpass.constants.Defaults
 import app.keemobile.kotpass.constants.MemoryProtectionFlag
 import okio.ByteString
+import org.redundent.kotlin.xml.Node
 import java.time.Instant
 import java.util.UUID
 
@@ -69,5 +70,6 @@ data class Meta(
     val customIcons: Map<UUID, CustomIcon> = mapOf(),
     val customData: Map<String, CustomDataValue> = mapOf(),
     @PublishedApi
-    internal val binaries: Map<ByteString, BinaryData> = linkedMapOf()
+    internal val binaries: Map<ByteString, BinaryData> = linkedMapOf(),
+    val unknownElements: List<Node> = listOf()
 )

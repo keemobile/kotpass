@@ -33,6 +33,7 @@ internal fun unmarshalEntry(
     return buildEntry(uuid) {
         for (childNode in node.childNodes()) {
             when (childNode.nodeName) {
+                Tags.Uuid -> Unit
                 Tags.Entry.IconId -> {
                     icon = childNode
                         .getText()
@@ -88,6 +89,7 @@ internal fun unmarshalEntry(
                 Tags.Entry.QualityCheck -> {
                     qualityCheck = childNode.getText()?.toBoolean() ?: true
                 }
+                else -> unknownElements.add(childNode)
             }
         }
 
@@ -204,6 +206,7 @@ internal fun Entry.marshal(
             history.forEach { addElement(it.marshal(context)) }
         }
     }
+    unknownElements.forEach { addElement(it) }
 }
 
 private fun marshalFields(

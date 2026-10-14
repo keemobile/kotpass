@@ -6,6 +6,7 @@ import app.keemobile.kotpass.models.CustomDataValue
 import app.keemobile.kotpass.models.Entry
 import app.keemobile.kotpass.models.Group
 import app.keemobile.kotpass.models.TimeData
+import org.redundent.kotlin.xml.Node
 import java.util.UUID
 
 internal class MutableGroup(
@@ -24,7 +25,8 @@ internal class MutableGroup(
     var tags: MutableList<String> = mutableListOf(),
     var groups: MutableList<Group> = mutableListOf(),
     var entries: MutableList<Entry> = mutableListOf(),
-    var customData: MutableMap<String, CustomDataValue> = mutableMapOf()
+    var customData: MutableMap<String, CustomDataValue> = mutableMapOf(),
+    var unknownElements: MutableList<Node> = mutableListOf()
 )
 
 internal inline fun buildGroup(
@@ -49,6 +51,7 @@ internal inline fun buildGroup(
             tags = tags,
             groups = groups,
             entries = entries,
-            customData = customData
+            customData = customData,
+            unknownElements = unknownElements
         )
     }

@@ -6,6 +6,7 @@ import app.keemobile.kotpass.extensions.addBoolean
 import app.keemobile.kotpass.extensions.addBytes
 import app.keemobile.kotpass.extensions.addDateTime
 import app.keemobile.kotpass.extensions.addUuid
+import app.keemobile.kotpass.extensions.childNodes
 import app.keemobile.kotpass.extensions.getBytes
 import app.keemobile.kotpass.extensions.getText
 import app.keemobile.kotpass.extensions.getUuid
@@ -15,6 +16,36 @@ import app.keemobile.kotpass.xml.FormatXml.Tags
 import okio.ByteString.Companion.toByteString
 import org.redundent.kotlin.xml.Node
 import org.redundent.kotlin.xml.node
+
+private val KnownMetaTags = setOf(
+    Tags.Meta.Generator,
+    Tags.Meta.HeaderHash,
+    Tags.Meta.SettingsChanged,
+    Tags.Meta.DatabaseName,
+    Tags.Meta.DatabaseNameChanged,
+    Tags.Meta.DatabaseDescription,
+    Tags.Meta.DatabaseDescriptionChanged,
+    Tags.Meta.DefaultUserName,
+    Tags.Meta.DefaultUserNameChanged,
+    Tags.Meta.MaintenanceHistoryDays,
+    Tags.Meta.Color,
+    Tags.Meta.MasterKeyChanged,
+    Tags.Meta.MasterKeyChangeRec,
+    Tags.Meta.MasterKeyChangeForce,
+    Tags.Meta.RecycleBinEnabled,
+    Tags.Meta.RecycleBinUuid,
+    Tags.Meta.RecycleBinChanged,
+    Tags.Meta.EntryTemplatesGroup,
+    Tags.Meta.EntryTemplatesGroupChanged,
+    Tags.Meta.HistoryMaxItems,
+    Tags.Meta.HistoryMaxSize,
+    Tags.Meta.LastSelectedGroup,
+    Tags.Meta.LastTopVisibleGroup,
+    Tags.Meta.MemoryProtection.TagName,
+    Tags.Meta.Binaries.TagName,
+    Tags.Meta.CustomIcons.TagName,
+    Tags.CustomData.TagName
+)
 
 internal fun unmarshalMeta(node: Node): Meta {
     return Meta(
@@ -112,7 +143,10 @@ internal fun unmarshalMeta(node: Node): Meta {
             ?: mapOf(),
         customData = node.firstOrNull(Tags.CustomData.TagName)
             ?.let(CustomData::unmarshal)
-            ?: mapOf()
+            ?: mapOf(),
+        unknownElements = node
+            .childNodes()
+            .filterNot { it.nodeName in KnownMetaTags }
     )
 }
 
@@ -188,6 +222,7 @@ internal fun Meta.marshal(context: XmlContext.Encode): Node {
                 }
             }
         }
+        unknownElements.forEach { addElement(it) }
     }
 }
 

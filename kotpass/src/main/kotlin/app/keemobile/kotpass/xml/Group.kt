@@ -29,6 +29,7 @@ internal fun unmarshalGroup(
     return buildGroup(uuid) {
         for (childNode in node.childNodes()) {
             when (childNode.nodeName) {
+                Tags.Uuid -> Unit
                 Tags.Group.Name -> {
                     name = childNode.getText() ?: ""
                 }
@@ -80,6 +81,7 @@ internal fun unmarshalGroup(
                 Tags.CustomData.TagName -> {
                     customData = CustomData.unmarshal(childNode).toMutableMap()
                 }
+                else -> unknownElements.add(childNode)
             }
         }
     }
@@ -116,4 +118,5 @@ internal fun Group.marshal(
     }
     groups.forEach { group -> addElement(group.marshal(context)) }
     entries.forEach { entry -> addElement(entry.marshal(context)) }
+    unknownElements.forEach { addElement(it) }
 }

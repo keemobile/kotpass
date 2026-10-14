@@ -2,6 +2,7 @@ package app.keemobile.kotpass.models
 
 import app.keemobile.kotpass.constants.BasicField
 import app.keemobile.kotpass.constants.PredefinedIcon
+import org.redundent.kotlin.xml.Node
 import java.util.UUID
 
 data class Entry(
@@ -19,7 +20,8 @@ data class Entry(
     val history: List<Entry> = listOf(),
     val customData: Map<String, CustomDataValue> = mapOf(),
     val previousParentGroup: UUID? = null,
-    val qualityCheck: Boolean = true
+    val qualityCheck: Boolean = true,
+    val unknownElements: List<Node> = listOf()
 ) : DatabaseElement {
     operator fun get(field: BasicField): EntryValue? = fields[field()]
 }

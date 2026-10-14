@@ -8,6 +8,7 @@ import app.keemobile.kotpass.models.Entry
 import app.keemobile.kotpass.models.EntryFields
 import app.keemobile.kotpass.models.EntryValue
 import app.keemobile.kotpass.models.TimeData
+import org.redundent.kotlin.xml.Node
 import java.util.UUID
 
 internal class MutableEntry(
@@ -25,7 +26,8 @@ internal class MutableEntry(
     var history: MutableList<Entry> = mutableListOf(),
     var customData: MutableMap<String, CustomDataValue> = mutableMapOf(),
     var previousParentGroup: UUID? = null,
-    var qualityCheck: Boolean = true
+    var qualityCheck: Boolean = true,
+    var unknownElements: MutableList<Node> = mutableListOf()
 )
 
 internal inline fun buildEntry(
@@ -49,6 +51,7 @@ internal inline fun buildEntry(
             history = history,
             customData = customData,
             previousParentGroup = previousParentGroup,
-            qualityCheck = qualityCheck
+            qualityCheck = qualityCheck,
+            unknownElements = unknownElements
         )
     }
