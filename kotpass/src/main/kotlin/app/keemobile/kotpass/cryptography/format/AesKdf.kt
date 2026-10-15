@@ -1,6 +1,7 @@
 package app.keemobile.kotpass.cryptography.format
 
 import app.keemobile.kotpass.errors.CryptoError
+import app.keemobile.kotpass.errors.FormatError
 import app.keemobile.kotpass.extensions.clear
 import app.keemobile.kotpass.extensions.sha256
 import java.security.GeneralSecurityException
@@ -30,7 +31,7 @@ internal object AesKdf {
             if (error is NoSuchAlgorithmException) {
                 throw CryptoError.AlgorithmUnavailable("AES/ECB encryption is not supported in current environment.")
             } else {
-                throw CryptoError.InvalidKey("Wrong KDF seed used for decryption.")
+                throw FormatError.InvalidHeader("KDF seed has an invalid length.")
             }
         } finally {
             bytes.clear()

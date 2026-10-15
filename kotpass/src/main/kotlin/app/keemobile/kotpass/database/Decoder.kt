@@ -173,7 +173,7 @@ private fun decryptRawContent(
             )
             val streamStartBytes = header.streamStartBytes
             if (!streamStartBytes.rangeEquals(0, contentBlocks, 0, streamStartBytes.size)) {
-                FormatError.InvalidContent("Database content could be corrupted or cannot be decrypted.")
+                throw CryptoError.InvalidKey("Wrong key used for decryption.")
             }
 
             ContentBlocks.readContentBlocksVer3x(
