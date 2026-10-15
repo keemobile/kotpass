@@ -43,8 +43,10 @@ internal object CustomData {
                 element(FormatXml.Tags.CustomData.ItemValue) { text(item.value) }
 
                 if (context.version.isAtLeast(4, 1)) {
-                    element(FormatXml.Tags.TimeData.LastModificationTime) {
-                        addDateTime(context, item.lastModified)
+                    if (item.lastModified != null) {
+                        element(FormatXml.Tags.TimeData.LastModificationTime) {
+                            addDateTime(context, item.lastModified)
+                        }
                     }
                 }
             }

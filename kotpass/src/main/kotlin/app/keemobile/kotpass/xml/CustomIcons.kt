@@ -55,8 +55,10 @@ internal object CustomIcons {
                     element(Tags.Meta.CustomIcons.ItemName) {
                         if (item.name != null) text(item.name)
                     }
-                    element(Tags.TimeData.LastModificationTime) {
-                        addDateTime(context, item.lastModified)
+                    if (item.lastModified != null) {
+                        element(Tags.TimeData.LastModificationTime) {
+                            addDateTime(context, item.lastModified)
+                        }
                     }
                 }
             }
