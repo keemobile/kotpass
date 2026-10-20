@@ -32,6 +32,13 @@ class EncryptedValueSpec : DescribeSpec({
                 .encodeHex() shouldBe "1f5c3ef76d43e72ee2c5216c36187c799b153cab3d0cb63a6f3ecccc2627f535"
         }
 
+        it("Keeps the value intact after calculating its hash") {
+            val value = EncryptedValue(encValueBytes.copyOf(), saltBytes.copyOf())
+
+            value.getHash() shouldBe value.getHash()
+            value.text shouldBe "strvalue"
+        }
+
         it("Creates value from string") {
             EncryptedValue
                 .fromString("test")

@@ -28,9 +28,17 @@ class EncryptedValue(
     val text: String get() = getBinary().toString(Charsets.UTF_8)
 
     /**
-     * Decrypts value and calculates SHA256.
+     * Decrypts value and calculates SHA256. The decrypted copy is zeroed after hashing,
+     * so the plain value does not stay in memory.
      */
-    fun getHash() = getBinary().sha256()
+    fun getHash(): ByteArray {
+        val bytes = getBinary()
+        return try {
+            bytes.sha256()
+        } finally {
+            bytes.fill(0)
+        }
+    }
 
     /**
      * Decrypts value and returns raw bytes.
